@@ -67,6 +67,11 @@ python3 -m http.server 8000
 信息由各主办方官方渠道（上博 / 浦东美术馆 / PSA / 品牌小程序 / 区政府公告等）与公开报道整理，
 `verifiedAt` 标注核对日期。**票价、展期、预约规则随时可能变，出行前请以官方最新公告为准。**
 
+## 在线地址
+
+👉 **https://naphjohn.github.io/weekend-go/**
+
 ## 部署
 
 仓库 Settings → Pages → Source 选 `Deploy from a branch` → 分支 `main`、目录 `/ (root)`，保存即可。
+（本仓库已按此配置，推送到 `main` 即自动重新发布。）

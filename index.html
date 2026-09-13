@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>周末去哪玩 · 上海展览市集决策器</title>
+<meta name="description" content="刷两小时小红书，不如让机器替你选。上海展览、市集、节庆结构化清单，按剩余天数排序，支持免费/不用预约/区域筛选，一键帮你决定这周末去哪。">
+<meta property="og:title" content="周末去哪玩 · 上海">
+<meta property="og:description" content="上海展览 · 市集 · 节庆清单，快结束的排前面，点一下它就替你决定了。">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>周末去哪玩</h1>
+    <div class="sub">上海展览 / 市集 / 节庆决策器 —— 不用再刷两小时小红书了</div>
+    <div class="stats">
+      <div class="stat"><b id="s-total">-</b>个正在进行</div>
+      <div class="stat"><b id="s-free">-</b>个免费</div>
+      <div class="stat"><b id="s-nobook">-</b>个不用预约</div>
+      <div class="stat"><b id="s-urgent">-</b>个 10 天内结束</div>
+    </div>
+    <div class="meta">数据核对于 <span id="verifiedAt"></span>　·　出行前请以主办方官方最新公告为准</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="panel">
+    <div class="panel-title">懒得挑？让它替你决定</div>
+    <div class="decide-row">
+      <button class="btn" id="btnDecide">帮我选一个</button>
+      <span class="hint">按「评分 + 快结束了 + 免费 + 离你近」加权随机，再点一次换一个</span>
+    </div>
+    <div id="pickResult"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">筛选</div>
+    <div class="filters">
+      <span class="chip on" data-group="type" data-val="all">全部</span>
+      <span class="chip" data-group="type" data-val="exhibition">展览</span>
+      <span class="chip" data-group="type" data-val="market">市集</span>
+      <span class="chip" data-group="type" data-val="event">活动/节庆</span>
+      <span class="chip" data-group="toggle" data-val="onlyFree">只看免费</span>
+      <span class="chip" data-group="toggle" data-val="onlyNoBooking">只看不用预约</span>
+      <span class="chip" data-group="toggle" data-val="hideEnded">隐藏已结束</span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="district" data-val="all">全部区域</span>
+      <span class="chip" data-group="district" data-val="浦东">浦东</span>
+      <span class="chip" data-group="district" data-val="黄浦">黄浦</span>
+      <span class="chip" data-group="district" data-val="静安">静安</span>
+      <span class="chip" data-group="district" data-val="长宁">长宁</span>
+      <span class="chip" data-group="district" data-val="闵行">闵行</span>
+      <span class="chip" data-group="district" data-val="青浦">青浦</span>
+      <span class="chip" data-group="district" data-val="奉贤">奉贤</span>
+      <span class="chip" data-group="district" data-val="全市">全市</span>
+    </div>
+    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果，按剩余天数排序（快结束的在前）</div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    数据来自各主办方官方渠道与公开报道，人工核对整理。<br>
+    想加新展？直接改 <code>data/activities.js</code>，提个 PR 或本地改完推送即可。
+  </footer>
+
+</div>
+
+<script src="data/activities.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

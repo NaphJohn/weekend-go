@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上海看剧 · 音乐剧/歌剧/舞剧 每周在演清单</title>
+<meta name="description" content="上海音乐剧、歌剧、舞剧、话剧演出清单：悲惨世界、巴黎圣母院、罗密欧与朱丽叶、伊丽莎白、堂吉诃德、基督山伯爵等名剧，按「本周在演 / 即将开演」排序，附场次时间、票价区间与购票平台（大麦等）。">
+<meta property="og:title" content="上海看剧 · 每周在演清单">
+<meta property="og:description" content="上海演出/剧目结构化清单：本周在演、即将开演，场次时间 + 票价 + 购票渠道一目了然。">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav class="nav">
+      <a href="index.html">🎪 展览 · 市集</a>
+      <a class="on" href="shows.html">🎭 看剧 · 演出</a>
+    </nav>
+    <h1>上海看剧</h1>
+    <div class="sub">音乐剧 / 歌剧 / 舞剧 / 话剧 —— 本周在演 · 即将开演，场次时间 + 票价 + 购票渠道</div>
+    <div class="stats">
+      <div class="stat"><b id="s-run">-</b>部在演中</div>
+      <div class="stat"><b id="s-soon">-</b>部即将开演</div>
+      <div class="stat"><b id="s-week">-</b>部本周有场</div>
+      <div class="stat"><b id="s-total">-</b>部收录</div>
+    </div>
+    <div class="meta">数据核对于 <span id="verifiedAt"></span>　·　档期/票价请以大麦等官方最新开票为准</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="panel week-panel">
+    <div class="panel-title">🗓️ 本周在演（<span id="weekRange"></span>）</div>
+    <div id="weekBox"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">懒得挑？让它替你决定</div>
+    <div class="decide-row">
+      <button class="btn" id="btnDecide">帮我选一部剧</button>
+      <span class="hint">按「评分 + 正在上演 + 快开演 + 有低价票」加权随机，再点一次换一个</span>
+    </div>
+    <div id="pickResult"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">筛选</div>
+    <div class="filters">
+      <span class="chip on" data-group="type" data-val="all">全部类型</span>
+      <span class="chip" data-group="type" data-val="musical">音乐剧</span>
+      <span class="chip" data-group="type" data-val="opera">歌剧</span>
+      <span class="chip" data-group="type" data-val="dance">舞剧/芭蕾</span>
+      <span class="chip" data-group="type" data-val="resident">驻演·小剧场</span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="status" data-val="all">全部状态</span>
+      <span class="chip" data-group="status" data-val="running">在演中</span>
+      <span class="chip" data-group="status" data-val="upcoming">即将开演</span>
+      <span class="chip" data-group="status" data-val="ended">已结束</span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="district" data-val="all">全部区域</span>
+      <span class="chip" data-group="district" data-val="黄浦">黄浦</span>
+      <span class="chip" data-group="district" data-val="静安">静安</span>
+      <span class="chip" data-group="district" data-val="浦东">浦东</span>
+      <span class="chip on" data-group="band" data-val="all">票价不限</span>
+      <span class="chip" data-group="band" data-val="low">有 200 元内票</span>
+      <span class="chip" data-group="band" data-val="high">高价位(≥800)</span>
+    </div>
+    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果，按「在演中 → 即将开演 → 档期待定 → 已结束」排序</div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    数据来自大麦、各剧院官网与公开报道，人工核对整理。<br>
+    ⚠️ 演出档期、票价、卡司随时可能调整，购票前请以大麦 / 剧院官方最新公告为准，本页不售票。<br>
+    想加新剧？直接改 <code>data/shows.js</code>，提个 PR 或本地改完推送即可。
+  </footer>
+
+</div>
+
+<script src="data/shows.js"></script>
+<script src="assets/shows.js"></script>
+</body>
+</html>

@@ -105,6 +105,23 @@ summary{cursor:pointer;font-size:13px;color:var(--blue);user-select:none;outline
 
 .empty{text-align:center;color:var(--sub);padding:40px 0;font-size:14px}
 
+/* ---- 顶部导航（展览市集 / 看剧演出 互链）---- */
+.nav{display:flex;gap:8px;margin-bottom:14px}
+.nav a{color:#fff;opacity:.82;text-decoration:none;font-size:13.5px;font-weight:600;padding:6px 15px;border-radius:20px;background:rgba(255,255,255,.14);transition:all .15s}
+.nav a:hover{opacity:1}
+.nav a.on{background:#fff;color:var(--blue);opacity:1}
+
+/* ---- 剧目页附加样式 ---- */
+.b-run{background:#e6f7ee;color:var(--green)}
+.b-tbd{background:#f0ecfb;color:var(--purple)}
+.pill-type{display:inline-block;font-size:11px;font-weight:700;color:var(--blue);background:var(--soft);border-radius:5px;padding:1px 8px}
+
+.week-panel{background:linear-gradient(120deg,#f2fbf6,#eef3ff);border-color:#d6e8dd}
+.week-item{padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px;line-height:1.5}
+.week-item:last-child{border-bottom:none}
+.week-meta{font-size:12.5px;color:var(--sub);margin-top:2px}
+.week-empty{font-size:13.5px;color:#4a5568}
+
 footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:30px;line-height:1.9}
 
 @media(max-width:560px){

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-label="上海地铁线路示意图（装饰用，非实际地理比例）">
+  <title>上海地铁线路示意图（装饰用 · 非实际地理比例）</title>
+
+  <!-- 黄浦江 / 苏州河 -->
+  <path d="M600 0 C560 60 652 108 610 168 C568 228 642 262 604 300"
+        fill="none" stroke="#8fd8ff" stroke-width="10" stroke-opacity=".26" stroke-linecap="round"/>
+  <path d="M228 118 C330 98 402 140 500 128 C542 122 572 134 600 150"
+        fill="none" stroke="#8fd8ff" stroke-width="5" stroke-opacity=".18" stroke-linecap="round"/>
+
+  <!-- 地铁线（拓扑示意，非地理比例） -->
+  <g fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M520 6 L520 96 L610 186 L610 296"                        stroke="#E4002B" stroke-opacity=".55"/>
+    <path d="M20 158 L338 158 L440 108 L822 108 L920 158 L1180 158"   stroke="#00A650" stroke-opacity=".55"/>
+    <path d="M198 16 L198 100 L300 202 L300 292"                      stroke="#FFD100" stroke-opacity=".50"/>
+    <path d="M380 108 L700 108 L760 168 L700 228 L380 228 L320 168 Z" stroke="#7B2D8E" stroke-opacity=".50"/>
+    <path d="M118 88 L338 88 L430 176 L430 292"                       stroke="#F3641F" stroke-opacity=".50"/>
+    <path d="M600 296 L652 244 L652 140 L762 58 L986 58"              stroke="#009EDB" stroke-opacity=".50"/>
+    <path d="M58 252 L280 252 L370 162 L700 162 L800 252 L1016 252"   stroke="#79BCE8" stroke-opacity=".45"/>
+    <path d="M700 16 L700 104 L800 202 L1062 202"                     stroke="#C2A5CF" stroke-opacity=".45"/>
+  </g>
+
+  <!-- 换乘节点 -->
+  <g fill="#ffffff" fill-opacity=".40">
+    <circle cx="520" cy="96"  r="4.5"/>
+    <circle cx="610" cy="186" r="4.5"/>
+    <circle cx="440" cy="108" r="4.5"/>
+    <circle cx="822" cy="108" r="4.5"/>
+    <circle cx="430" cy="176" r="4.5"/>
+    <circle cx="652" cy="140" r="4.5"/>
+    <circle cx="652" cy="244" r="4.5"/>
+    <circle cx="700" cy="162" r="4.5"/>
+    <circle cx="800" cy="202" r="4.5"/>
+    <circle cx="370" cy="162" r="4.5"/>
+    <circle cx="300" cy="202" r="4.5"/>
+    <circle cx="198" cy="100" r="4.5"/>
+    <circle cx="762" cy="58"  r="4.5"/>
+  </g>
+
+  <!-- 区名标注 -->
+  <g fill="#ffffff" fill-opacity=".52" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,Microsoft YaHei,sans-serif" font-size="20" font-weight="600">
+    <text x="556" y="46">宝山</text>
+    <text x="896" y="82">杨浦</text>
+    <text x="676" y="92">虹口</text>
+    <text x="150" y="146">普陀</text>
+    <text x="352" y="214">静安</text>
+    <text x="498" y="252">黄浦</text>
+    <text x="96"  y="60">长宁</text>
+    <text x="176" y="288">徐汇</text>
+    <text x="60"  y="196">闵行</text>
+    <text x="1042" y="146">浦东</text>
+  </g>
+
+  <text x="24" y="290" fill="#ffffff" fill-opacity=".30" font-family="-apple-system,BlinkMacSystemFont,PingFang SC,sans-serif" font-size="14">上海地铁线路示意图 · 非实际地理比例</text>
+</svg>

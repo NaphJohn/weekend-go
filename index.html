@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>周末去哪玩 · 上海展览市集决策器</title>
-<meta name="description" content="刷两小时小红书，不如让机器替你选。上海展览、市集、节庆结构化清单，按剩余天数排序，支持免费/不用预约/区域筛选，一键帮你决定这周末去哪。">
+<title>周末去哪玩 · 上海展览市集美食决策器</title>
+<meta name="description" content="刷两小时小红书，不如让机器替你选。上海展览、市集、节庆、美食街结构化清单，输入你的位置就近排序，支持免费/不用预约/区域筛选，一键帮你决定这周末去哪。">
 <meta property="og:title" content="周末去哪玩 · 上海">
-<meta property="og:description" content="上海展览 · 市集 · 节庆清单，快结束的排前面，点一下它就替你决定了。">
+<meta property="og:description" content="上海展览 · 市集 · 节庆 · 美食清单，输入地点就近排，点一下它就替你决定了。">
 <meta property="og:type" content="website">
 <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -15,12 +15,13 @@
 <header>
   <div class="wrap">
     <h1>周末去哪玩</h1>
-    <div class="sub">上海展览 / 市集 / 节庆 + 周边游决策器 —— 不用再刷两小时小红书了</div>
+    <div class="sub">上海展览 / 市集 / 节庆 / 美食 + 周边游决策器 —— 输入你在哪，就近给你排</div>
     <div class="stats">
       <div class="stat"><b id="s-total">-</b>个市内活动</div>
       <div class="stat"><b id="s-free">-</b>个免费</div>
       <div class="stat"><b id="s-nobook">-</b>个不用预约</div>
       <div class="stat"><b id="s-urgent">-</b>个 10 天内结束</div>
+      <div class="stat"><b id="s-food">-</b>个美食街区</div>
       <div class="stat"><b id="s-trip">-</b>个周边游</div>
     </div>
     <div class="meta">数据核对于 <span id="verifiedAt"></span>　·　出行前请以主办方官方最新公告为准</div>
@@ -30,7 +31,22 @@
 <div class="wrap">
 
   <div class="panel">
-    <div class="panel-title">懒得挑？让它替你决定</div>
+    <div class="panel-title">① 你在哪？填个地点，就近给你排（可选）</div>
+    <div class="loc-row">
+      <input id="locInput" class="loc-input" type="text" placeholder="例如：杨浦宁国路 / 五角场 / 徐家汇 / 武康路 / 浦东前滩">
+      <button class="btn" id="btnLoc">定位</button>
+      <button class="btn ghost" id="btnLocClear">清除</button>
+    </div>
+    <div class="filters" id="quickStations" style="margin-top:8px"></div>
+    <div id="locResult" style="margin-top:8px"></div>
+    <div style="margin-top:8px">
+      <span class="chip" id="chipNear" style="display:none">📍 就近优先（已开）</span>
+    </div>
+    <div class="hint" style="margin-top:8px">支持道路名、商圈、景区、高校、地铁站名，也可以只输区名。路程按直线距离估算，只用来排先后。</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">② 懒得挑？让它替你决定</div>
     <div class="decide-row">
       <button class="btn" id="btnDecide">帮我选一个</button>
       <span class="hint">按「评分 + 快结束了 + 免费 + 离你近」加权随机，再点一次换一个</span>
@@ -39,24 +55,30 @@
   </div>
 
   <div class="panel">
-    <div class="panel-title">筛选</div>
+    <div class="panel-title">③ 筛选</div>
     <div class="filters">
       <span class="chip on" data-group="type" data-val="all">全部</span>
       <span class="chip" data-group="type" data-val="exhibition">展览</span>
       <span class="chip" data-group="type" data-val="market">市集</span>
       <span class="chip" data-group="type" data-val="event">活动/节庆</span>
+      <span class="chip" data-group="type" data-val="food">美食</span>
       <span class="chip" data-group="type" data-val="trip">周边游</span>
       <span class="chip" data-group="toggle" data-val="onlyFree">只看免费</span>
       <span class="chip" data-group="toggle" data-val="onlyNoBooking">只看不用预约</span>
-      <span class="chip" data-group="toggle" data-val="hideEnded">隐藏已结束</span>
+      <span class="chip on" data-group="toggle" data-val="hideEnded">隐藏已结束</span>
     </div>
     <div class="filters" style="margin-top:10px">
       <span class="chip on" data-group="district" data-val="all">全部区域</span>
       <span class="chip" data-group="district" data-val="浦东">浦东</span>
       <span class="chip" data-group="district" data-val="黄浦">黄浦</span>
       <span class="chip" data-group="district" data-val="静安">静安</span>
+      <span class="chip" data-group="district" data-val="徐汇">徐汇</span>
       <span class="chip" data-group="district" data-val="长宁">长宁</span>
+      <span class="chip" data-group="district" data-val="普陀">普陀</span>
+      <span class="chip" data-group="district" data-val="虹口">虹口</span>
+      <span class="chip" data-group="district" data-val="杨浦">杨浦</span>
       <span class="chip" data-group="district" data-val="闵行">闵行</span>
+      <span class="chip" data-group="district" data-val="嘉定">嘉定</span>
       <span class="chip" data-group="district" data-val="青浦">青浦</span>
       <span class="chip" data-group="district" data-val="奉贤">奉贤</span>
       <span class="chip" data-group="district" data-val="崇明">崇明</span>
@@ -73,19 +95,44 @@
       <span class="chip" data-group="tripLen" data-val="2d">2天1夜</span>
       <span class="chip" data-group="tripLen" data-val="3d">3天以上</span>
     </div>
-    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果：市内活动按剩余天数排（快结束的在前），周边游排在后面、按推荐度排序</div>
+    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果：市内活动按剩余天数排（快结束的在前），美食次之，周边游在最后按推荐度排；定位后自动改成距离优先。</div>
   </div>
 
   <div class="grid" id="grid"></div>
 
+  <div class="panel" style="margin-top:20px">
+    <div class="panel-title">💬 我的笔记</div>
+    <div id="myNotes"></div>
+    <div style="margin-top:10px">
+      <button class="mini" id="btnExport">导出为 JSON</button>
+      <span class="hint" style="margin-left:8px">笔记只存在这台设备的浏览器里，换设备不会同步；导出后可自己备份或在别处导入。</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🗣 评论 / 讨论</div>
+    <div id="giscusBox"></div>
+  </div>
+
   <footer>
-    数据来自各主办方官方渠道与公开报道，人工核对整理。<br>
-    想加新展？直接改 <code>data/activities.js</code>，提个 PR 或本地改完推送即可。
+    数据来自各主办方官方渠道与公开报道，人工核对整理；地铁站坐标为示意坐标，路程仅供参考。<br>
+    想加新展？直接改 <code>data/activities.js</code>、<code>data/food.js</code>、<code>data/metro.js</code>，提个 PR 或本地改完推送即可。
   </footer>
 
 </div>
 
 <script src="data/activities.js"></script>
+<script src="data/food.js"></script>
+<script src="data/metro.js"></script>
+<script>
+  /**
+   * 想让访客用 GitHub 账号留言时，把 enabled 改成 true 并填好这三项：
+   *   repo   → NaphJohn/weekend-go
+   *   repoId / categoryId → 到 https://giscus.app 输入仓库名后自动生成
+   * 前提：仓库 Settings → Features 勾选 Discussions，并安装 giscus GitHub App。
+   */
+  window.GISCUS_CFG = { enabled: false, repo: 'NaphJohn/weekend-go', repoId: '', category: 'General', categoryId: '' };
+</script>
 <script src="assets/app.js"></script>
 </body>
 </html>

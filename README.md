@@ -113,3 +113,54 @@ python3 -m http.server 8000
 
 仓库 Settings → Pages → Source 选 `Deploy from a branch` → 分支 `main`、目录 `/ (root)`，保存即可。
 （本仓库已按此配置，推送到 `main` 即自动重新发布。）
+
+## 美食数据（data/food.js）
+
+与 `activities.js` 分开，放「常年可去」的美食街 / 商圈 / 夜市，没有截止日期。
+
+```js
+{
+  id: 'daxue-road',
+  name: '大学路 · 创智天地',
+  type: 'food',                  // 必须是 food
+  venue: '大学路（淞沪路—智星路段）',
+  district: '杨浦',
+  metro: '江湾体育场',            // 对应 data/metro.js 里的站名，用于就近排序
+  address: '杨浦区大学路，近淞沪路',
+  start: '2026-01-01', end: '2099-12-31',
+  hours: '多数 10:00-22:00，酒吧到凌晨',
+  budget: '人均 60-120 元',
+  best: '周末下午 + 晚上，露台区最舒服',
+  must: ['各类 brunch / 咖啡', '沿街小酒馆'],
+  booking: { required: false, level: 'none', channel: '直接去', steps: ['…'] },
+  highlight: '…',
+  tags: ['露台', '小酒馆'],
+  rating: 5
+}
+```
+
+## 按地点就近推荐（data/metro.js）
+
+用户在页头输入地点（如「杨浦宁国路」），代码按四步定位到地铁站，再按直线距离排序：
+
+1. 正好是地铁站名 → 直接用
+2. `places` 词典命中（道路 / 商圈 / 景区 / 高校，取最长关键词）
+3. 地铁站名部分匹配
+4. 只输了区名 → `district` 里的区中心代表站
+
+```js
+stations: ['站名', x, y, '线路', '区']   // 人民广场为原点 (0,0)，x 东正 y 北正，1 单位 = 100 米
+places:   ['地铁站', ['关键词1', '关键词2']]
+district: { '杨浦': '五角场', … }
+venue:    { '活动id': '最近地铁站' }      // 场馆位置固定，集中维护
+```
+
+- 坐标是**示意坐标，不是测绘数据**，只用于「谁近谁远」的粗排和路程档位（就在附近 / 很近 / 不远 / 跨区 / 较远）。
+- 加新活动时在 `venue` 里补一条就能参与就近排序；不补也不影响其它功能。
+
+## 评论 / 笔记
+
+纯静态站没有后端，分两层：
+
+- **我的笔记**：每张卡片下面可写，存 `localStorage`（key `weekendgo_notes_v1`），只在当前设备当前浏览器可见，底部面板可导出 JSON 备份。
+- **全局讨论区**：走 Giscus（GitHub Discussions）。启用三步 —— 仓库 Settings 勾选 Discussions → giscus.app 授权拿 `repoId` / `categoryId` → 填进 `index.html` 的 `window.GISCUS_CFG` 并把 `enabled` 改成 `true`。

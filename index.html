@@ -14,17 +14,14 @@
 
 <header>
   <div class="wrap">
-    <nav class="nav">
-      <a class="on" href="index.html">🎪 展览 · 市集</a>
-      <a href="shows.html">🎭 看剧 · 演出</a>
-    </nav>
     <h1>周末去哪玩</h1>
-    <div class="sub">上海展览 / 市集 / 节庆决策器 —— 不用再刷两小时小红书了</div>
+    <div class="sub">上海展览 / 市集 / 节庆 + 周边游决策器 —— 不用再刷两小时小红书了</div>
     <div class="stats">
-      <div class="stat"><b id="s-total">-</b>个正在进行</div>
+      <div class="stat"><b id="s-total">-</b>个市内活动</div>
       <div class="stat"><b id="s-free">-</b>个免费</div>
       <div class="stat"><b id="s-nobook">-</b>个不用预约</div>
       <div class="stat"><b id="s-urgent">-</b>个 10 天内结束</div>
+      <div class="stat"><b id="s-trip">-</b>个周边游</div>
     </div>
     <div class="meta">数据核对于 <span id="verifiedAt"></span>　·　出行前请以主办方官方最新公告为准</div>
   </div>
@@ -48,6 +45,7 @@
       <span class="chip" data-group="type" data-val="exhibition">展览</span>
       <span class="chip" data-group="type" data-val="market">市集</span>
       <span class="chip" data-group="type" data-val="event">活动/节庆</span>
+      <span class="chip" data-group="type" data-val="trip">周边游</span>
       <span class="chip" data-group="toggle" data-val="onlyFree">只看免费</span>
       <span class="chip" data-group="toggle" data-val="onlyNoBooking">只看不用预约</span>
       <span class="chip" data-group="toggle" data-val="hideEnded">隐藏已结束</span>
@@ -61,9 +59,21 @@
       <span class="chip" data-group="district" data-val="闵行">闵行</span>
       <span class="chip" data-group="district" data-val="青浦">青浦</span>
       <span class="chip" data-group="district" data-val="奉贤">奉贤</span>
+      <span class="chip" data-group="district" data-val="崇明">崇明</span>
+      <span class="chip" data-group="district" data-val="浙江">浙江</span>
+      <span class="chip" data-group="district" data-val="江苏">江苏</span>
+      <span class="chip" data-group="district" data-val="安徽">安徽</span>
+      <span class="chip" data-group="district" data-val="江西">江西</span>
       <span class="chip" data-group="district" data-val="全市">全市</span>
     </div>
-    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果，按剩余天数排序（快结束的在前）</div>
+    <div class="filters" style="margin-top:10px">
+      <span class="hint" style="align-self:center;margin-right:2px">行程：</span>
+      <span class="chip on" data-group="tripLen" data-val="all">不限</span>
+      <span class="chip" data-group="tripLen" data-val="day">当天往返</span>
+      <span class="chip" data-group="tripLen" data-val="2d">2天1夜</span>
+      <span class="chip" data-group="tripLen" data-val="3d">3天以上</span>
+    </div>
+    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果：市内活动按剩余天数排（快结束的在前），周边游排在后面、按推荐度排序</div>
   </div>
 
   <div class="grid" id="grid"></div>

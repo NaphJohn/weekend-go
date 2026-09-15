@@ -67,6 +67,8 @@ header .meta{margin-top:14px;font-size:12.5px;opacity:.85}
   display:flex;flex-direction:column;gap:8px;
 }
 .card.done{opacity:.55}
+.card-trip{border-color:#cfe8dd;background:linear-gradient(180deg,#fafffd,#ffffff)}
+.card-trip h3{color:#0f5f47}
 .card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .card h3{font-size:16.5px;font-weight:700;line-height:1.4}
 .badge{
@@ -77,6 +79,7 @@ header .meta{margin-top:14px;font-size:12.5px;opacity:.85}
 .b-ok{background:#eaf6f0;color:var(--green)}
 .b-long{background:var(--soft);color:var(--blue)}
 .b-end{background:#f1f1f3;color:#8b8b93}
+.b-trip{background:#e6f7f0;color:#0d8a63}
 
 .meta-line{font-size:13px;color:var(--sub)}
 .meta-line b{color:var(--ink);font-weight:600}
@@ -102,25 +105,13 @@ summary{cursor:pointer;font-size:13px;color:var(--blue);user-select:none;outline
 .detail li{margin:4px 0}
 .detail .tip{background:#fdf6e9;border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:8px 12px;margin-top:9px;font-size:13px;color:#7a5310}
 .detail .hl{margin-top:9px;font-size:13px;color:var(--sub)}
+.detail .sec-title{font-size:12.5px;font-weight:700;color:var(--sub);margin-top:12px;letter-spacing:.5px}
+.facts{background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin-top:8px}
+.fact{display:flex;gap:8px;font-size:13px;line-height:1.65}
+.fact-k{flex:0 0 62px;color:var(--sub)}
+.fact-v{flex:1;color:#41506a}
 
 .empty{text-align:center;color:var(--sub);padding:40px 0;font-size:14px}
-
-/* ---- 顶部导航（展览市集 / 看剧演出 互链）---- */
-.nav{display:flex;gap:8px;margin-bottom:14px}
-.nav a{color:#fff;opacity:.82;text-decoration:none;font-size:13.5px;font-weight:600;padding:6px 15px;border-radius:20px;background:rgba(255,255,255,.14);transition:all .15s}
-.nav a:hover{opacity:1}
-.nav a.on{background:#fff;color:var(--blue);opacity:1}
-
-/* ---- 剧目页附加样式 ---- */
-.b-run{background:#e6f7ee;color:var(--green)}
-.b-tbd{background:#f0ecfb;color:var(--purple)}
-.pill-type{display:inline-block;font-size:11px;font-weight:700;color:var(--blue);background:var(--soft);border-radius:5px;padding:1px 8px}
-
-.week-panel{background:linear-gradient(120deg,#f2fbf6,#eef3ff);border-color:#d6e8dd}
-.week-item{padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px;line-height:1.5}
-.week-item:last-child{border-bottom:none}
-.week-meta{font-size:12.5px;color:var(--sub);margin-top:2px}
-.week-empty{font-size:13.5px;color:#4a5568}
 
 footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:30px;line-height:1.9}
 

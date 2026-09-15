@@ -312,7 +312,21 @@
     renderMyNotes();
   }
 
+  /** 各类型数量，写在筛选 chip 上——让「周边游」这类沉底的内容也能被看见 */
+  function renderCounts() {
+    var c = { all: 0 };
+    DATA.forEach(function (a) {
+      if (state.hideEnded && isEnded(a)) return;
+      c[a.type] = (c[a.type] || 0) + 1;
+      c.all++;
+    });
+    document.querySelectorAll('[data-cnt]').forEach(function (el) {
+      el.textContent = c[el.getAttribute('data-cnt')] || 0;
+    });
+  }
+
   function renderStats() {
+    renderCounts();
     var live = DATA.filter(function (a) { return !isTrip(a) && !isFood(a) && !isEnded(a); });
     document.getElementById('s-total').textContent = live.length;
     document.getElementById('s-free').textContent = live.filter(function (a) { return a.price.free; }).length;
@@ -529,6 +543,17 @@
     document.getElementById('btnDecide').addEventListener('click', pick);
     document.getElementById('btnLoc').addEventListener('click', applyLoc);
     document.getElementById('btnLocClear').addEventListener('click', clearLoc);
+
+    // 快速跳转：直接筛出某一类型并滚到列表
+    document.querySelectorAll('[data-jump]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var v = el.getAttribute('data-jump');
+        var target = document.querySelector('.chip[data-group="type"][data-val="' + v + '"]');
+        if (target) target.click();
+        var g = document.getElementById('grid');
+        if (g && g.scrollIntoView) g.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
     document.getElementById('locInput').addEventListener('keydown', function (e) {
       if (e.key === 'Enter') applyLoc();
     });

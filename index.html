@@ -8,7 +8,10 @@
 <meta property="og:title" content="周末去哪玩 · 上海">
 <meta property="og:description" content="上海展览 · 市集 · 节庆 · 美食清单，输入地点就近排，点一下它就替你决定了。">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="assets/style.css">
+<!-- 每次改动都把 v= 后面的版本号 +1，避免浏览器/GitHub Pages 缓存导致看不到更新
+     （GitHub Pages 对 HTML 和资源都返回 cache-control: max-age=600，最长 10 分钟才失效） -->
+<link rel="stylesheet" href="assets/style.css?v=20260916b">
+<meta http-equiv="Cache-Control" content="max-age=0">
 </head>
 <body>
 
@@ -57,15 +60,20 @@
   <div class="panel">
     <div class="panel-title">③ 筛选</div>
     <div class="filters">
-      <span class="chip on" data-group="type" data-val="all">全部</span>
-      <span class="chip" data-group="type" data-val="exhibition">展览</span>
-      <span class="chip" data-group="type" data-val="market">市集</span>
-      <span class="chip" data-group="type" data-val="event">活动/节庆</span>
-      <span class="chip" data-group="type" data-val="food">美食</span>
-      <span class="chip" data-group="type" data-val="trip">周边游</span>
+      <span class="chip on" data-group="type" data-val="all">全部 <b class="cnt" data-cnt="all">0</b></span>
+      <span class="chip" data-group="type" data-val="exhibition">展览 <b class="cnt" data-cnt="exhibition">0</b></span>
+      <span class="chip" data-group="type" data-val="market">市集 <b class="cnt" data-cnt="market">0</b></span>
+      <span class="chip" data-group="type" data-val="event">活动/节庆 <b class="cnt" data-cnt="event">0</b></span>
+      <span class="chip" data-group="type" data-val="food">美食 <b class="cnt" data-cnt="food">0</b></span>
+      <span class="chip" data-group="type" data-val="trip">周边游 <b class="cnt" data-cnt="trip">0</b></span>
       <span class="chip" data-group="toggle" data-val="onlyFree">只看免费</span>
       <span class="chip" data-group="toggle" data-val="onlyNoBooking">只看不用预约</span>
       <span class="chip on" data-group="toggle" data-val="hideEnded">隐藏已结束</span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="hint" style="align-self:center;margin-right:2px">快速跳转：</span>
+      <span class="chip jump" data-jump="trip">去看全部 <b class="cnt" data-cnt="trip">0</b> 条周边游 ↓</span>
+      <span class="chip jump" data-jump="food">附近有啥好吃的 ↓</span>
     </div>
     <div class="filters" style="margin-top:10px">
       <span class="chip on" data-group="district" data-val="all">全部区域</span>
@@ -95,7 +103,7 @@
       <span class="chip" data-group="tripLen" data-val="2d">2天1夜</span>
       <span class="chip" data-group="tripLen" data-val="3d">3天以上</span>
     </div>
-    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果：市内活动按剩余天数排（快结束的在前），美食次之，周边游在最后按推荐度排；定位后自动改成距离优先。</div>
+    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果：市内活动按剩余天数排（快结束的在前），美食次之，<b>周边游排在最后</b>（点上面的「周边游」或「去看全部 N 条周边游」直接筛出）；定位后自动改成距离优先。</div>
   </div>
 
   <div class="grid" id="grid"></div>
@@ -121,9 +129,9 @@
 
 </div>
 
-<script src="data/activities.js"></script>
-<script src="data/food.js"></script>
-<script src="data/metro.js"></script>
+<script src="data/activities.js?v=20260916b"></script>
+<script src="data/food.js?v=20260916b"></script>
+<script src="data/metro.js?v=20260916b"></script>
 <script>
   /**
    * 想让访客用 GitHub 账号留言时，把 enabled 改成 true 并填好这三项：
@@ -133,6 +141,6 @@
    */
   window.GISCUS_CFG = { enabled: false, repo: 'NaphJohn/weekend-go', repoId: '', category: 'General', categoryId: '' };
 </script>
-<script src="assets/app.js"></script>
+<script src="assets/app.js?v=20260916b"></script>
 </body>
 </html>

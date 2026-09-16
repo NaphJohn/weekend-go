@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <!-- 每次改动都把 v= 后面的版本号 +1，避免浏览器/GitHub Pages 缓存导致看不到更新
      （GitHub Pages 对 HTML 和资源都返回 cache-control: max-age=600，最长 10 分钟才失效） -->
-<link rel="stylesheet" href="assets/style.css?v=20260916b">
+<link rel="stylesheet" href="assets/style.css?v=20260916c">
 <meta http-equiv="Cache-Control" content="max-age=0">
 </head>
 <body>
@@ -32,6 +32,34 @@
 </header>
 
 <div class="wrap">
+
+  <div class="panel hud-panel">
+    <div class="panel-title">先选板块 · 剧 / 展览 / 周边游 分开看</div>
+    <div class="hud">
+      <a class="block block-shows" href="shows.html">
+        <div class="bk-go">进入 →</div>
+        <div class="bk-ico">🎭</div>
+        <div class="bk-title">看剧 · 演出</div>
+        <div class="bk-desc">音乐剧 / 歌剧 / 舞剧 / 话剧 / 驻演小剧场</div>
+        <div class="bk-stat"><b id="hk-shows">-</b> 部在演中</div>
+      </a>
+      <a class="block block-exh" href="index.html">
+        <div class="bk-go">浏览 →</div>
+        <div class="bk-ico">🎪</div>
+        <div class="bk-title">展览 · 市集 · 美食</div>
+        <div class="bk-desc">展览 / 市集 / 节庆 / 美食街区，快结束的排前面</div>
+        <div class="bk-stat"><b id="hk-exh">-</b> 个进行中</div>
+      </a>
+      <a class="block block-tour" href="index.html?jump=trip">
+        <div class="bk-go">只看周边游 →</div>
+        <div class="bk-ico">🚗</div>
+        <div class="bk-title">周边游</div>
+        <div class="bk-desc">古镇 / 自然 / 海滨 / 园林 / 山景，一日两日都行</div>
+        <div class="bk-stat"><b id="hk-trip">-</b> 个目的地</div>
+      </a>
+    </div>
+    <div class="hint" style="margin-top:10px">三个板块都能选「你在哪」（顶部定位），就近给你排。点「周边游」直接只看周边游，和展览分开。</div>
+  </div>
 
   <div class="panel">
     <div class="panel-title">① 你在哪？填个地点，就近给你排（可选）</div>
@@ -129,9 +157,10 @@
 
 </div>
 
-<script src="data/activities.js?v=20260916b"></script>
-<script src="data/food.js?v=20260916b"></script>
-<script src="data/metro.js?v=20260916b"></script>
+<script src="data/shows.js?v=20260916c"></script>
+<script src="data/activities.js?v=20260916c"></script>
+<script src="data/food.js?v=20260916c"></script>
+<script src="data/metro.js?v=20260916c"></script>
 <script>
   /**
    * 想让访客用 GitHub 账号留言时，把 enabled 改成 true 并填好这三项：
@@ -141,6 +170,28 @@
    */
   window.GISCUS_CFG = { enabled: false, repo: 'NaphJohn/weekend-go', repoId: '', category: 'General', categoryId: '' };
 </script>
-<script src="assets/app.js?v=20260916b"></script>
+<script src="assets/app.js?v=20260916c"></script>
+<script>
+  /* 总览三块：实时数量（剧在演 / 展览进行中 / 周边游） */
+  (function () {
+    try {
+      var TODAY = new Date(); TODAY.setHours(0, 0, 0, 0);
+      function dl(end) { var p = end.split('-'); return Math.round((new Date(+p[0], +p[1] - 1, +p[2]) - TODAY) / 86400000); }
+      var SH = window.SHOWS || [];
+      function stOf(s) {
+        if (!s.start || !s.end) return 'tbd';
+        var p = s.start.split('-'), st = new Date(+p[0], +p[1] - 1, +p[2]);
+        var q = s.end.split('-'), en = new Date(+q[0], +q[1] - 1, +q[2]);
+        if (en < TODAY) return 'ended'; if (st <= TODAY) return 'running'; return 'upcoming';
+      }
+      var run = SH.filter(function (s) { return stOf(s) === 'running'; }).length;
+      var AC = window.ACTIVITIES || [];
+      var live = AC.filter(function (a) { return a.type !== 'trip' && a.type !== 'food' && dl(a.end) >= 0; }).length;
+      var trip = AC.filter(function (a) { return a.type === 'trip'; }).length;
+      function set(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+      set('hk-shows', run); set('hk-exh', live); set('hk-trip', trip);
+    } catch (e) {}
+  })();
+</script>
 </body>
 </html>

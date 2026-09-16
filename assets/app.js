@@ -637,6 +637,20 @@
     }
   }
 
+  /* ---------- 深链：?jump=trip 等，直接筛出某类型并滚到列表 ---------- */
+  function applyJump() {
+    try {
+      var v = new URLSearchParams(location.search).get('jump');
+      if (!v) return;
+      var target = document.querySelector('.chip[data-group="type"][data-val="' + v + '"]');
+      if (target) {
+        target.click();
+        var g = document.getElementById('grid');
+        if (g && g.scrollIntoView) g.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } catch (e) {}
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('verifiedAt').textContent = META.verifiedAt || '';
     renderQuick();
@@ -645,5 +659,6 @@
     bind();
     setupGiscus();
     render();
+    applyJump();
   });
 })();

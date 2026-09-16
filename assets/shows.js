@@ -10,6 +10,73 @@
     theatre: '话剧', concert: '音乐会', resident: '驻演·小剧场'
   };
 
+  // ===== 地点定位（与展览页共用逻辑，按区中心估距）=====
+  var METRO = window.METRO || { stations: [], places: [], district: {}, venue: {}, quick: [] };
+  var STATION = {};
+  METRO.stations.forEach(function (s) { STATION[s[0]] = { x: s[1], y: s[2], lines: s[3], d: s[4] }; });
+  function escShow(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+  function stationOfShow(a) {
+    if (a.metro) return a.metro;
+    if (METRO.venue[a.id]) return METRO.venue[a.id];
+    if (a.district && METRO.district[a.district]) return METRO.district[a.district];
+    return null;
+  }
+  function kmBetween(n1, n2) {
+    var a = STATION[n1], b = STATION[n2];
+    if (!a || !b) return null;
+    var dx = a.x - b.x, dy = a.y - b.y;
+    return Math.sqrt(dx * dx + dy * dy) * METRO.unit / 1000;
+  }
+  function distOfShow(a) {
+    if (!state.loc) return null;
+    return kmBetween(state.loc.station, stationOfShow(a));
+  }
+  function gradeOf(km) {
+    if (km == null) return null;
+    if (km < 1.2) return { txt: '就在附近', sub: '步行或 1 站内', cls: 'd1' };
+    if (km < 3.5) return { txt: '很近', sub: '地铁约 15 分钟', cls: 'd2' };
+    if (km < 8) return { txt: '不远', sub: '地铁约 30 分钟', cls: 'd3' };
+    if (km < 16) return { txt: '跨区', sub: '地铁约 45 分钟', cls: 'd4' };
+    return { txt: '较远', sub: '地铁 1 小时起', cls: 'd5' };
+  }
+  function locate(raw) {
+    var q0 = (raw || '').trim();
+    if (!q0) return null;
+    var q = q0.replace(/\s+/g, '').replace(/^上海市?/, '').replace(/市$/, '');
+    if (!q) return null;
+    if (STATION[q]) return { station: q, how: '定位到地铁站「' + q + '」' };
+    var best = null, score = 0;
+    METRO.places.forEach(function (p) {
+      p[1].forEach(function (kw) {
+        if (q.indexOf(kw) >= 0 && kw.length > score) { score = kw.length; best = { station: p[0], how: '按「' + kw + '」定位到 ' + p[0] + '站' }; }
+      });
+    });
+    if (best) return best;
+    var cand = null, diff = 1e9;
+    Object.keys(STATION).forEach(function (n) {
+      if (q.length >= 2 && n.indexOf(q) >= 0) { var d = n.length - q.length; if (d < diff) { diff = d; cand = n; } }
+    });
+    if (cand) return { station: cand, how: '匹配到地铁站「' + cand + '」' };
+    var dq = q.replace(/区$/, '');
+    if (METRO.district[dq] !== undefined) {
+      var st = METRO.district[dq];
+      if (st) return { station: st, how: '按「' + dq + '区」中心定位到 ' + st + '站' };
+      return { station: null, how: dq + ' 暂无地铁直达，试试附近的区' };
+    }
+    return null;
+  }
+  function distLineShow(a) {
+    if (!state.loc) return '';
+    var km = distOfShow(a);
+    if (km == null) return '';
+    var g = gradeOf(km);
+    return '<div class="dist ' + g.cls + '">📍 距 ' + escShow(state.loc.station) + ' 约 ' + km.toFixed(1) + ' 公里　<b>' + g.txt + '</b>　<span>' + g.sub + '</span></div>';
+  }
+
   // 本周（周一 ~ 周日）
   function weekStart() {
     var d = new Date(TODAY);
@@ -53,7 +120,7 @@
     return { cls: 'b-tbd', txt: '档期待定' };
   }
 
-  var state = { type: 'all', status: 'all', district: 'all', band: 'all' };
+  var state = { type: 'all', status: 'all', district: 'all', band: 'all', loc: null, nearBy: false };
 
   function match(s) {
     if (state.type !== 'all' && s.type !== state.type) return false;
@@ -70,6 +137,13 @@
 
   var ORD = { running: 0, upcoming: 1, tbd: 2, ended: 3 };
   function sortFn(x, y) {
+    // 定位 + 就近优先：纯按距离排
+    if (state.loc && state.nearBy) {
+      var d1 = distOfShow(x), d2 = distOfShow(y);
+      if (d1 != null && d2 != null && Math.abs(d1 - d2) > 0.2) return d1 - d2;
+      if (d1 == null && d2 != null) return 1;
+      if (d1 != null && d2 == null) return -1;
+    }
     var a = ORD[statusOf(x)], b = ORD[statusOf(y)];
     if (a !== b) return a - b;
     var sx = x.start ? parse(x.start).getTime() : 9e15;
@@ -111,6 +185,7 @@
         (s.language ? '　<span style="color:var(--sub)">· ' + s.language + '</span>' : '') + '</div>' +
       (s.duration ? '<div class="meta-line">⏱ ' + s.duration + '　<span style="color:var(--sub)">· ' + (s.platform || '') + '</span></div>' : '') +
       '<div class="tags">' + tags + '</div>' +
+      distLineShow(s) +
       '<details><summary>展开：怎么买票 / 值不值得看</summary><div class="detail">' +
       detailHTML(s) +
       '</div></details>' +
@@ -150,6 +225,51 @@
       return '<div class="week-item"><span class="badge ' + b.cls + '">' + b.txt + '</span>' +
         '<b>' + s.name + '</b>　<span style="color:var(--sub)">' + s.venue + ' · ' + (TYPE_TEXT[s.type] || '') + '</span>' +
         '<div class="week-meta">' + (s.sessions || '') + '　·　' + (s.price && s.price.text ? s.price.text : '以官方为准') + '</div></div>';
+    }).join('');
+  }
+
+  /* ---------- 地点面板 ---------- */
+  function renderLoc() {
+    var box = document.getElementById('locResult');
+    var chip = document.getElementById('chipNear');
+    if (!box) return;
+    if (!state.loc || !state.loc.station) {
+      box.innerHTML = state.loc
+        ? '<span class="loc-bad">' + escShow(state.loc.how) + '</span>'
+        : '<span class="hint">不填也能用，下面是全部剧目。</span>';
+      if (chip) { chip.style.display = 'none'; state.nearBy = false; chip.classList.remove('on'); }
+      return;
+    }
+    var st = STATION[state.loc.station];
+    box.innerHTML = '<span class="loc-ok">✅ ' + escShow(state.loc.how) +
+      (st ? '　·　' + st.lines + ' 号线　·　' + st.d : '') + '</span>' +
+      '<span class="hint" style="margin-left:8px">已按距离重排，每张卡片标了路程。</span>';
+    if (chip) {
+      chip.style.display = '';
+      chip.classList.toggle('on', state.nearBy);
+      chip.textContent = state.nearBy ? '📍 就近优先：开（点一下关掉）' : '📍 就近优先：关（点一下开启）';
+    }
+  }
+  function applyLoc() {
+    var v = document.getElementById('locInput').value;
+    var r = locate(v);
+    state.loc = r;
+    state.nearBy = !!(r && r.station);
+    renderLoc();
+    var pr = document.getElementById('pickResult'); if (pr) pr.style.display = 'none';
+    render();
+  }
+  function clearLoc() {
+    document.getElementById('locInput').value = '';
+    state.loc = null; state.nearBy = false;
+    renderLoc();
+    render();
+  }
+  function renderQuick() {
+    var box = document.getElementById('quickStations');
+    if (!box) return;
+    box.innerHTML = METRO.quick.map(function (n) {
+      return '<span class="chip sm" data-quick="' + n + '">' + n + '</span>';
     }).join('');
   }
 
@@ -197,14 +317,47 @@
       });
     });
     document.getElementById('btnDecide').addEventListener('click', pick);
+
+    // 地点定位
+    var bl = document.getElementById('btnLoc'); if (bl) bl.addEventListener('click', applyLoc);
+    var bc = document.getElementById('btnLocClear'); if (bc) bc.addEventListener('click', clearLoc);
+    var li = document.getElementById('locInput');
+    if (li) li.addEventListener('keydown', function (e) { if (e.key === 'Enter') applyLoc(); });
+    var chipNear = document.getElementById('chipNear');
+    if (chipNear) {
+      chipNear.addEventListener('click', function () {
+        if (!state.loc || !state.loc.station) return;
+        state.nearBy = !state.nearBy;
+        chipNear.classList.toggle('on', state.nearBy);
+        chipNear.textContent = state.nearBy ? '📍 就近优先：开（点一下关掉）' : '📍 就近优先：关（点一下开启）';
+        render();
+      });
+    }
+    var qbox = document.getElementById('quickStations');
+    if (qbox) {
+      qbox.addEventListener('click', function (e) {
+        var t = e.target.closest('[data-quick]');
+        if (!t) return;
+        document.getElementById('locInput').value = t.getAttribute('data-quick');
+        applyLoc();
+      });
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function () {
+    if (!document.getElementById('grid')) return; // 仅在本页（shows.html）运行
     document.getElementById('verifiedAt').textContent = META.verifiedAt || '';
     document.getElementById('weekRange').textContent = fmt(WS) + ' ~ ' + fmt(WE);
     renderStats();
     renderWeek();
+    renderQuick();
+    renderLoc();
     bind();
     render();
+    // 从总览带 ?here= 进来 → 预填定位，让「你在哪」延续
+    try {
+      var h = new URLSearchParams(location.search).get('here') || new URLSearchParams(location.search).get('loc');
+      if (h) { var inp = document.getElementById('locInput'); if (inp) { inp.value = h; applyLoc(); } }
+    } catch (e) {}
   });
 })();

@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <!-- 每次改动都把 v= 后面的版本号 +1，避免浏览器/GitHub Pages 缓存导致看不到更新
      （GitHub Pages 对 HTML 和资源都返回 cache-control: max-age=600，最长 10 分钟才失效） -->
-<link rel="stylesheet" href="assets/style.css?v=20260916i">
+<link rel="stylesheet" href="assets/style.css?v=20260916j">
 <meta http-equiv="Cache-Control" content="max-age=0">
 </head>
 <body>
@@ -185,27 +185,30 @@
 
 </div>
 
-<script src="data/shows.js?v=20260916i"></script>
-<script src="data/activities.js?v=20260916i"></script>
-<script src="data/food.js?v=20260916i"></script>
-<script src="data/metro.js?v=20260916i"></script>
+<script src="data/shows.js?v=20260916j"></script>
+<script src="data/activities.js?v=20260916j"></script>
+<script src="data/food.js?v=20260916j"></script>
+<script src="data/metro.js?v=20260916j"></script>
 <script>
   /**
-   * 想让访客用 GitHub 账号留言时，把 enabled 改成 true 并填好这三项：
+   * 想让访客用 GitHub 账号留言时的配置，已填好可直接用：
    *   repo   → NaphJohn/weekend-go
-   *   repoId → 仓库的 node_id，已填好（R_kgDOUY4zNw）
-   *   categoryId → 若评论区一直不出现，到 https://giscus.app 选好仓库后把生成的 categoryId 粘到这里
-   * 前提：仓库 Settings → General → Features 勾选 Discussions，并安装 giscus GitHub App。
+   *   repoId → 仓库的 node_id（R_kgDOUY4zNw）
+   *   category → 本仓库 Discussions 里的分类名，必须是「真实存在」的那个。
+   *              本站的讨论建在 Announcements 分类下；写成别的名字会报
+   *              「Discussion not found」——这一项填错是最常见的坑。
+   *   categoryId → 可选。只填 category 名就能用；填了 ID 更稳。
+   * 前提：仓库是 public、Settings 里勾了 Discussions、且已安装 giscus GitHub App。
    */
   window.GISCUS_CFG = {
     enabled: true,
     repo: 'NaphJohn/weekend-go',
     repoId: 'R_kgDOUY4zNw',
-    category: 'General',
+    category: 'Announcements',
     categoryId: ''
   };
 </script>
-<script src="assets/app.js?v=20260916i"></script>
+<script src="assets/app.js?v=20260916j"></script>
 <script>
   /* 总览三块：实时数量（剧在演 / 展览进行中 / 周边游） */
   (function () {

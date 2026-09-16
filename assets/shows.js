@@ -548,18 +548,28 @@
       } else if (tries > 40) { clearInterval(iv); }
     }, 500);
 
+    // 按错误类型翻译成对应的可操作指引
     window.addEventListener('message', function (ev) {
       if (ev.origin !== 'https://giscus.app') return;
       var d = ev.data && ev.data.giscus;
       if (!d || !d.error) return;
       if (!hint) return;
+      var err = String(d.error);
+      var advice;
+      if (/not installed/i.test(err)) {
+        advice = '这个仓库还没装 giscus App —— ' +
+          '<a href="https://github.com/apps/giscus/installations/new" target="_blank" rel="noopener noreferrer">点这里安装</a>' +
+          '（一下授权，免费），装完刷新本页即可，不用改代码。';
+      } else if (/discussion not found/i.test(err)) {
+        advice = '多半是 <code>window.GISCUS_CFG.category</code> 填的分类名和仓库里真实的' +
+          '分类对不上（搜不到就报这个）。到仓库 Discussions 里核对分类名；' +
+          '如果本页只是还没有讨论，直接在下面的框里发第一条即可，giscus 会自动建。';
+      } else {
+        advice = '核对：① 仓库 Settings 里 <b>Discussions</b> 是否勾选；' +
+          '② <code>category</code> 是否是该仓库真实存在的分类；③ 仓库是否 public。';
+      }
       hint.className = 'giscus-bad';
-      hint.innerHTML = '评论区没加载成功：<code>' + String(d.error) + '</code><br>' +
-        '最常见就是这个仓库还没装 giscus App —— ' +
-        '<a href="https://github.com/apps/giscus/installations/new" target="_blank" rel="noopener noreferrer">点这里安装</a>' +
-        '（一下授权，免费），装完刷新本页即可，不用改代码。<br>' +
-        '若已安装仍失败，再核对：① 仓库 Settings 里 <b>Discussions</b> 是否勾选；' +
-        '② <code>category</code> 填的是否是该仓库真实存在的分类。';
+      hint.innerHTML = '评论区没加载成功：<code>' + err + '</code><br>' + advice;
       hint.style.display = '';
     });
   }

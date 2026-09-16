@@ -130,6 +130,11 @@ summary{cursor:pointer;font-size:13px;color:var(--blue);user-select:none;outline
   border:1px solid var(--line);border-radius:10px;padding:11px 14px;outline:none;color:var(--ink);
 }
 .loc-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,107,255,.10)}
+/* 中间点：填两个地点 → 用中点当参考点 */
+.mid-row{margin-top:8px}
+.mid-tag{font-size:13px;color:var(--sub);white-space:nowrap}
+.mid-row .loc-input{flex:1 1 120px;min-width:104px;padding:9px 12px}
+.mid-x{color:var(--sub);font-size:14px;font-weight:700;flex:0 0 auto}
 .loc-ok{font-size:13px;color:#0d8a63;font-weight:600}
 .loc-bad{font-size:13px;color:var(--amber)}
 .chip.sm{padding:4px 11px;font-size:12.5px}

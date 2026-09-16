@@ -8,7 +8,7 @@
 <meta property="og:title" content="上海看剧 · 每周在演清单">
 <meta property="og:description" content="上海演出/剧目结构化清单：本周在演、即将开演，场次时间 + 票价 + 购票渠道一目了然。">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="assets/style.css?v=20260916g">
+<link rel="stylesheet" href="assets/style.css?v=20260916i">
 </head>
 <body>
 
@@ -53,12 +53,19 @@
       <button class="btn" id="btnLoc">定位</button>
       <button class="btn ghost" id="btnLocClear">清除</button>
     </div>
+    <div class="loc-row mid-row">
+      <span class="mid-tag">或者算两个人的<strong>中间点</strong>：</span>
+      <input id="locInputA" class="loc-input" type="text" placeholder="甲：张江">
+      <span class="mid-x">↔</span>
+      <input id="locInputB" class="loc-input" type="text" placeholder="乙：徐家汇">
+      <button class="btn" id="btnMid">算中间点</button>
+    </div>
     <div class="filters" id="quickStations" style="margin-top:8px"></div>
     <div id="locResult" style="margin-top:8px"></div>
     <div style="margin-top:8px">
       <span class="chip" id="chipNear" style="display:none">📍 就近优先（已开）</span>
     </div>
-    <div class="hint" style="margin-top:8px">支持道路名、商圈、景区、高校、地铁站名，也可以只输区名。路程按直线距离估算，只用来排先后。</div>
+    <div class="hint" style="margin-top:8px">支持道路名、商圈、景区、高校、地铁站名，也可以只输区名。路程按直线距离估算，只用来排先后。<br>两个人一起看剧、或者先约在中间碰头，就填两个地点点「算中间点」，下面所有剧目都会改按<strong>到中间点</strong>的距离排。</div>
   </div>
 
   <div class="panel">
@@ -123,8 +130,8 @@
 
 </div>
 
-<script src="data/shows.js?v=20260916g"></script>
-<script src="data/metro.js?v=20260916g"></script>
+<script src="data/shows.js?v=20260916i"></script>
+<script src="data/metro.js?v=20260916i"></script>
 <script>
   /* 评论（Giscus）。repoId 来自仓库 node_id；若评论区不出现，到 giscus.app 取 categoryId 填这里。 */
   window.GISCUS_CFG = {
@@ -135,6 +142,6 @@
     categoryId: ''
   };
 </script>
-<script src="assets/shows.js?v=20260916g"></script>
+<script src="assets/shows.js?v=20260916i"></script>
 </body>
 </html>

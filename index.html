@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <!-- 每次改动都把 v= 后面的版本号 +1，避免浏览器/GitHub Pages 缓存导致看不到更新
      （GitHub Pages 对 HTML 和资源都返回 cache-control: max-age=600，最长 10 分钟才失效） -->
-<link rel="stylesheet" href="assets/style.css?v=20260916g">
+<link rel="stylesheet" href="assets/style.css?v=20260916i">
 <meta http-equiv="Cache-Control" content="max-age=0">
 </head>
 <body>
@@ -68,12 +68,19 @@
       <button class="btn" id="btnLoc">定位</button>
       <button class="btn ghost" id="btnLocClear">清除</button>
     </div>
+    <div class="loc-row mid-row">
+      <span class="mid-tag">或者算两个人的<strong>中间点</strong>：</span>
+      <input id="locInputA" class="loc-input" type="text" placeholder="甲：张江">
+      <span class="mid-x">↔</span>
+      <input id="locInputB" class="loc-input" type="text" placeholder="乙：徐家汇">
+      <button class="btn" id="btnMid">算中间点</button>
+    </div>
     <div class="filters" id="quickStations" style="margin-top:8px"></div>
     <div id="locResult" style="margin-top:8px"></div>
     <div style="margin-top:8px">
       <span class="chip" id="chipNear" style="display:none">📍 就近优先（已开）</span>
     </div>
-    <div class="hint" style="margin-top:8px">支持道路名、商圈、景区、高校、地铁站名，也可以只输区名。路程按直线距离估算，只用来排先后。</div>
+    <div class="hint" style="margin-top:8px">支持道路名、商圈、景区、高校、地铁站名，也可以只输区名。路程按直线距离估算，只用来排先后。<br>两个人一起出门、或者先约在中间碰头，就填两个地点点「算中间点」，下面所有展览 / 市集 / 美食都会改按<strong>到中间点</strong>的距离排。</div>
   </div>
 
   <div class="panel">
@@ -178,10 +185,10 @@
 
 </div>
 
-<script src="data/shows.js?v=20260916g"></script>
-<script src="data/activities.js?v=20260916g"></script>
-<script src="data/food.js?v=20260916g"></script>
-<script src="data/metro.js?v=20260916g"></script>
+<script src="data/shows.js?v=20260916i"></script>
+<script src="data/activities.js?v=20260916i"></script>
+<script src="data/food.js?v=20260916i"></script>
+<script src="data/metro.js?v=20260916i"></script>
 <script>
   /**
    * 想让访客用 GitHub 账号留言时，把 enabled 改成 true 并填好这三项：
@@ -198,7 +205,7 @@
     categoryId: ''
   };
 </script>
-<script src="assets/app.js?v=20260916g"></script>
+<script src="assets/app.js?v=20260916i"></script>
 <script>
   /* 总览三块：实时数量（剧在演 / 展览进行中 / 周边游） */
   (function () {

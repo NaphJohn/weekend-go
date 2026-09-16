@@ -272,6 +272,21 @@
     }).join('');
   }
 
+  /* ---------- 「你在哪」记忆（与展览页共用同一个 key） ---------- */
+  var LOC_KEY = 'weekendgo_loc_v1';
+  var LOC_TTL = 12 * 3600 * 1000;
+  function saveLoc(v) {
+    try { if (v) localStorage.setItem(LOC_KEY, JSON.stringify({ v: v, t: Date.now() })); } catch (e) {}
+  }
+  function readLoc() {
+    try {
+      var o = JSON.parse(localStorage.getItem(LOC_KEY) || 'null');
+      if (o && o.v && (Date.now() - o.t) < LOC_TTL) return o.v;
+    } catch (e) {}
+    return '';
+  }
+  function dropLoc() { try { localStorage.removeItem(LOC_KEY); } catch (e) {} }
+
   /* ---------- 地点面板 ---------- */
   function renderLoc() {
     var box = document.getElementById('locResult');
@@ -299,6 +314,7 @@
     var r = locate(v);
     state.loc = r;
     state.nearBy = !!(r && r.station);
+    if (r && r.station) saveLoc(v);      // 记住地点，点「🎪 展览 · 市集」回展览页也生效
     renderLoc();
     var pr = document.getElementById('pickResult'); if (pr) pr.style.display = 'none';
     render();
@@ -306,8 +322,28 @@
   function clearLoc() {
     document.getElementById('locInput').value = '';
     state.loc = null; state.nearBy = false;
+    dropLoc();
     renderLoc();
     render();
+  }
+
+  /* 页头互链带「你在哪」：剧页 → 展览页曾漏掉，导致定位丢失 */
+  function carryLoc() {
+    var links = document.querySelectorAll('.nav a, nav a, a.block');
+    Array.prototype.forEach.call(links, function (a) {
+      a.addEventListener('click', function (ev) {
+        var inp = document.getElementById('locInput');
+        var v = inp ? (inp.value || '').trim() : '';
+        if (!v) return;
+        try {
+          var u = new URL(a.getAttribute('href'), location.href);
+          u.searchParams.set('here', v);
+          a.setAttribute('href', u.toString());
+          ev.preventDefault();
+          location.href = u.toString();
+        } catch (e) {}
+      });
+    });
   }
   function renderQuick() {
     var box = document.getElementById('quickStations');
@@ -399,10 +435,13 @@
     renderQuick();
     renderLoc();
     bind();
+    carryLoc();
     render();
-    // 从总览带 ?here= 进来 → 预填定位，让「你在哪」延续
+    // 续上「你在哪」：优先 ?here=/?loc=，其次本机记住的（当天有效）
     try {
-      var h = new URLSearchParams(location.search).get('here') || new URLSearchParams(location.search).get('loc');
+      var h = new URLSearchParams(location.search).get('here')
+        || new URLSearchParams(location.search).get('loc')
+        || readLoc();
       if (h) { var inp = document.getElementById('locInput'); if (inp) { inp.value = h; applyLoc(); } }
     } catch (e) {}
   });

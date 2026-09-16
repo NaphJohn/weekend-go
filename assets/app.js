@@ -60,6 +60,7 @@
   /* ================= 状态 ================= */
   var state = {
     type: 'all',
+    scope: '',      // ''=总览 / 'city'=市内板块 / 'trip'=周边游板块（由 ?jump= 决定）
     onlyFree: false,
     onlyNoBooking: false,
     hideEnded: true,
@@ -88,6 +89,9 @@
   }
 
   function match(a) {
+    // 板块隔离：进「周边游」板块只看目的地，进「市内」板块则排除周边游
+    if (state.scope === 'trip' && !isTrip(a)) return false;
+    if (state.scope === 'city' && isTrip(a)) return false;
     if (state.hideEnded && isEnded(a)) return false;
     if (state.type !== 'all' && a.type !== state.type) return false;
     if (state.onlyFree && !a.price.free) return false;
@@ -219,6 +223,77 @@
       detailHTML(a) +
       noteHTML(a) +
       '</div>';
+  }
+
+  /* ================= 板块视图（市内 / 周边游） ================= */
+  var SUB_ALL = '上海展览 / 市集 / 节庆 / 美食 + 周边游决策器 —— 输入你在哪，就近给你排';
+  var SCOPE_TEXT = {
+    trip: {
+      nav: 'navTrip', title: '🚗 周边游', doc: '周边游 · 周末去哪玩',
+      sub: '上海周边 1–3 小时可达的目的地：古镇 / 自然 / 海滨 / 园林 / 山景 —— 按行程长短和车程给你排',
+      bar: '现在在「🚗 周边游」板块 · 只出周边目的地'
+    },
+    city: {
+      nav: 'navCity', title: '🎪 市内 · 展览市集美食', doc: '市内展览市集美食 · 周末去哪玩',
+      sub: '上海的展览 / 市集 / 节庆 / 美食街区，快结束的排前面 —— 填「你在哪」就近给你排',
+      bar: '现在在「🎪 市内」板块 · 只出市内的展览 / 市集 / 节庆 / 美食'
+    }
+  };
+
+  function jumpParam() {
+    try { return new URLSearchParams(location.search).get('jump') || ''; } catch (e) { return ''; }
+  }
+
+  function syncTypeChips() {
+    document.querySelectorAll('.chip[data-group="type"]').forEach(function (o) {
+      o.classList.toggle('on', o.getAttribute('data-val') === state.type);
+    });
+  }
+
+  /** 切换板块外观：标题、说明、导航高亮、入口块高亮、顶部提示条 */
+  function setScopeUI(scope) {
+    var cfg = SCOPE_TEXT[scope] || null;
+    document.body.classList.remove('scope-city', 'scope-trip');
+    if (cfg) document.body.classList.add('scope-' + scope);
+
+    var t = document.getElementById('pgTitle'), s = document.getElementById('pgSub');
+    if (t) t.textContent = cfg ? cfg.title : '周末去哪玩';
+    if (s) s.textContent = cfg ? cfg.sub : SUB_ALL;
+    if (cfg) document.title = cfg.doc;
+    ['navCity', 'navTrip'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('on', !!cfg && cfg.nav === id);
+    });
+    document.querySelectorAll('.hud .block').forEach(function (b) {
+      b.classList.toggle('now', !!cfg && b.getAttribute('data-block') === scope);
+    });
+
+    var bar = document.getElementById('scopeBar');
+    if (!bar) return;
+    if (!cfg) { bar.style.display = 'none'; bar.innerHTML = ''; return; }
+    var other = scope === 'trip'
+      ? { href: 'index.html?jump=city', txt: '看市内展览 · 市集 · 美食' }
+      : { href: 'index.html?jump=trip', txt: '看周边游' };
+    bar.style.display = '';
+    bar.innerHTML = '<span>' + cfg.bar + '</span>' +
+      '<a class="mini ghost" href="' + other.href + '">' + other.txt + ' →</a>' +
+      '<a class="mini ghost" href="index.html">← 回到总览</a>';
+  }
+
+  /** 进入板块时同步 state + 外观（不 render，交给调用方统一渲染） */
+  function setScope(scope) {
+    state.scope = (scope === 'trip' || scope === 'city') ? scope : '';
+    if (state.scope === 'trip') state.type = 'trip';
+    else if (state.scope === 'city' && state.type === 'trip') state.type = 'all';
+    syncTypeChips();
+    setScopeUI(state.scope);
+  }
+
+  /** URL 深链：?jump=trip / ?jump=city */
+  function applyJump(smooth) {
+    setScope(jumpParam());
+    var g = document.getElementById('grid');
+    if (smooth && g && g.scrollIntoView) g.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   /* ================= 渲染 ================= */
@@ -496,6 +571,17 @@
           document.querySelectorAll('.chip[data-group="' + g + '"]').forEach(function (o) { o.classList.remove('on'); });
           el.classList.add('on');
           state[g] = v;
+          // 在板块里切类型：跟着换板块（点「周边游」＝进周边游板块，点回市内类型＝回市内板块），
+          // 并同步 URL，刷新后才不会跳回去。
+          // 只在「已经进入某个板块」时才跟着换：总览页点 chip 就是纯筛选，不该整页换标题。
+          if (g === 'type' && state.scope) {
+            var ns = v === 'trip' ? 'trip' : (v === 'all' ? '' : 'city');
+            if (ns !== state.scope) {
+              state.scope = ns;
+              setScopeUI(ns);
+              try { history.replaceState(null, '', ns ? ('index.html?jump=' + ns) : 'index.html'); } catch (e) {}
+            }
+          }
         }
         document.getElementById('pickResult').style.display = 'none';
         render();
@@ -606,6 +692,7 @@
     renderLoc();
     bind();
     setupGiscus();
+    applyJump(false);
     render();
   });
 })();

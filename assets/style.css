@@ -239,6 +239,42 @@ mark.anno:hover{background:#ffe066}
 .anno-del{color:var(--red)}
 .anno-bar-ops{display:flex;gap:8px;margin-top:8px}
 
+/* ===== 板块：市内 / 周边游（三块入口 + 板块内视图） ===== */
+.hud{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:6px}
+.block{
+  display:flex;flex-direction:column;gap:8px;
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:20px 18px 18px;text-decoration:none;color:var(--ink);
+  transition:all .18s;position:relative;overflow:hidden;
+}
+.block:hover{transform:translateY(-3px);border-color:#c9d4ea;box-shadow:0 8px 22px rgba(47,107,255,.10)}
+.block-shows{border-top:4px solid var(--purple)}
+.block-exh{border-top:4px solid var(--blue)}
+.block-tour{border-top:4px solid var(--green)}
+.block.now{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,107,255,.12)}
+.block.now .bk-title:after{content:' · 当前板块';font-size:11px;color:var(--blue);font-weight:600}
+.bk-go{position:absolute;right:16px;top:16px;font-size:13px;color:var(--blue);font-weight:700}
+.bk-ico{font-size:30px;line-height:1}
+.bk-title{font-size:18px;font-weight:800}
+.bk-desc{font-size:12.5px;color:var(--sub);line-height:1.5}
+.bk-stat{font-size:13px;color:#4a5568;margin-top:2px}
+.bk-stat b{font-size:16px;color:var(--ink);margin-right:2px}
+.hud-panel .panel-title{margin-bottom:12px}
+.scope-bar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+  background:var(--soft);border:1px solid var(--line);border-radius:12px;
+  padding:10px 14px;margin-bottom:18px;font-size:13px;color:#3d4a63;
+}
+.scope-bar span{font-weight:700}
+.scope-bar a{margin-left:auto;text-decoration:none}
+.scope-bar a + a{margin-left:0}
+body.scope-trip .stat[data-scope="city"]{display:none}
+body.scope-city .stat[data-scope="trip"]{display:none}
+@media(max-width:680px){
+  .hud{grid-template-columns:1fr}
+  .bk-go{position:static;text-align:right}
+}
+
 /* 评论区（giscus）报错提示 */
 #giscusBox:empty{display:none}
 .giscus-bad{background:#fff5f5;border:1px dashed #f0c2c0;border-radius:10px;padding:12px 14px;font-size:13px;color:var(--red);line-height:1.7;margin-bottom:14px}

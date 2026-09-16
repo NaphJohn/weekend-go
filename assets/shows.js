@@ -384,6 +384,74 @@
     box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
+  /* ---------- Giscus 评论（与展览页共用同一仓库，按 pathname 分成不同讨论串） ---------- */
+  function setupGiscus() {
+    var cfg = window.GISCUS_CFG || {};
+    var box = document.getElementById('giscusBox');
+    var hint = document.getElementById('giscusHint');
+    if (!box) return;
+
+    if (!cfg.enabled || !cfg.repo) {
+      if (hint) hint.style.display = '';
+      box.innerHTML = '<div class="note-empty">评论区还没开：把 <code>window.GISCUS_CFG.enabled</code> 改成 true。</div>';
+      return;
+    }
+
+    var s = document.createElement('script');
+    s.src = 'https://giscus.app/client.js';
+    s.setAttribute('data-repo', cfg.repo);
+    if (cfg.repoId) s.setAttribute('data-repo-id', cfg.repoId);
+    if (cfg.category) s.setAttribute('data-category', cfg.category);
+    if (cfg.categoryId) s.setAttribute('data-category-id', cfg.categoryId);
+    s.setAttribute('data-mapping', 'pathname');
+    s.setAttribute('data-strict', '0');
+    s.setAttribute('data-reactions-enabled', '1');
+    s.setAttribute('data-emit-metadata', '0');
+    s.setAttribute('data-input-position', 'bottom');
+    s.setAttribute('data-theme', 'light');
+    s.setAttribute('data-lang', 'zh-CN');
+    s.setAttribute('crossorigin', 'anonymous');
+    s.async = true;
+    box.appendChild(s);
+
+    var tries = 0;
+    var iv = setInterval(function () {
+      tries++;
+      if (document.querySelector('iframe.giscus-frame')) {
+        if (hint) hint.style.display = 'none';
+        clearInterval(iv);
+      } else if (tries > 40) { clearInterval(iv); }
+    }, 500);
+
+    window.addEventListener('message', function (ev) {
+      if (ev.origin !== 'https://giscus.app') return;
+      var d = ev.data && ev.data.giscus;
+      if (!d || !d.error) return;
+      if (!hint) return;
+      hint.className = 'giscus-bad';
+      hint.innerHTML = '评论区没加载成功：<code>' + String(d.error) + '</code><br>' +
+        '最常见就是这个仓库还没装 giscus App —— ' +
+        '<a href="https://github.com/apps/giscus/installations/new" target="_blank" rel="noopener noreferrer">点这里安装</a>' +
+        '（一下授权，免费），装完刷新本页即可，不用改代码。<br>' +
+        '若已安装仍失败，再核对：① 仓库 Settings 里 <b>Discussions</b> 是否勾选；' +
+        '② <code>category</code> 填的是否是该仓库真实存在的分类。';
+      hint.style.display = '';
+    });
+  }
+
+  /* ---------- 打赏：收款码没到位就把整块收起来 ---------- */
+  function setupReward() {
+    var panel = document.getElementById('rewardPanel');
+    if (!panel) return;
+    var imgs = panel.querySelectorAll('img');
+    if (!imgs.length) { panel.style.display = 'none'; return; }
+    Array.prototype.forEach.call(imgs, function (im) {
+      function kill() { panel.style.display = 'none'; }
+      im.addEventListener('error', kill);
+      if (im.complete && im.naturalWidth === 0) kill();
+    });
+  }
+
   function bind() {
     // 只绑真正带 data-group 的筛选芯片；快捷站点 / 「就近优先」芯片由各自的处理函数负责
     document.querySelectorAll('.chip[data-group]').forEach(function (el) {
@@ -436,6 +504,8 @@
     renderLoc();
     bind();
     carryLoc();
+    setupGiscus();
+    setupReward();
     render();
     // 续上「你在哪」：优先 ?here=/?loc=，其次本机记住的（当天有效）
     try {

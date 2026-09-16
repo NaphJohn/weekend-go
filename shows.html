@@ -8,7 +8,7 @@
 <meta property="og:title" content="上海看剧 · 每周在演清单">
 <meta property="og:description" content="上海演出/剧目结构化清单：本周在演、即将开演，场次时间 + 票价 + 购票渠道一目了然。">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="assets/style.css?v=20260916e">
+<link rel="stylesheet" href="assets/style.css?v=20260916g">
 </head>
 <body>
 
@@ -90,6 +90,31 @@
 
   <div class="grid" id="grid"></div>
 
+  <div class="panel" style="margin-top:20px">
+    <div class="panel-title">🗣 评论 / 讨论</div>
+    <div id="giscusHint" class="giscus-hint">
+      评论由 <a href="https://giscus.app" target="_blank" rel="noopener noreferrer">Giscus</a> 驱动，留言保存在本仓库的 GitHub Discussions 里，用 GitHub 账号登录即可发言。<br>
+      <b>如果这里一直是空白，只差一步：</b>给本仓库装上 <a href="https://github.com/apps/giscus/installations/new" target="_blank" rel="noopener noreferrer">giscus App</a>（点一下授权即可，免费）。装完后 <b>不用改任何代码</b>，刷新本页就会出现评论框。
+    </div>
+    <div id="giscusBox"></div>
+  </div>
+
+  <div class="panel" id="rewardPanel">
+    <div class="panel-title">☕ 请我喝杯咖啡</div>
+    <div class="hint" style="margin-bottom:6px">这个站免费、没有广告，档期和票价也是一条条人工核对的。如果它帮你省下了刷帖的两小时，欢迎打赏支持一下 🙏</div>
+    <div class="reward">
+      <div class="reward-col">
+        <div class="reward-qr"><img src="assets/reward/wechat.jpg" alt="微信收款码" loading="lazy"></div>
+        <p>微信</p>
+      </div>
+      <div class="reward-col">
+        <div class="reward-qr"><img src="assets/reward/alipay.jpg" alt="支付宝收款码" loading="lazy"></div>
+        <p>支付宝</p>
+      </div>
+    </div>
+    <div class="reward-note">打赏与否都不影响使用，内容一样全部开放 🌱</div>
+  </div>
+
   <footer>
     数据来自大麦、各剧院官网与公开报道，人工核对整理。<br>
     ⚠️ 演出档期、票价、卡司随时可能调整，购票前请以大麦 / 剧院官方最新公告为准，本页不售票。<br>
@@ -98,8 +123,18 @@
 
 </div>
 
-<script src="data/shows.js?v=20260916e"></script>
-<script src="data/metro.js?v=20260916e"></script>
-<script src="assets/shows.js?v=20260916e"></script>
+<script src="data/shows.js?v=20260916g"></script>
+<script src="data/metro.js?v=20260916g"></script>
+<script>
+  /* 评论（Giscus）。repoId 来自仓库 node_id；若评论区不出现，到 giscus.app 取 categoryId 填这里。 */
+  window.GISCUS_CFG = {
+    enabled: true,
+    repo: 'NaphJohn/weekend-go',
+    repoId: 'R_kgDOUY4zNw',
+    category: 'General',
+    categoryId: ''
+  };
+</script>
+<script src="assets/shows.js?v=20260916g"></script>
 </body>
 </html>

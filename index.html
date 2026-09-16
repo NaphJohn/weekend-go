@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <!-- 每次改动都把 v= 后面的版本号 +1，避免浏览器/GitHub Pages 缓存导致看不到更新
      （GitHub Pages 对 HTML 和资源都返回 cache-control: max-age=600，最长 10 分钟才失效） -->
-<link rel="stylesheet" href="assets/style.css?v=20260916e">
+<link rel="stylesheet" href="assets/style.css?v=20260916g">
 <meta http-equiv="Cache-Control" content="max-age=0">
 </head>
 <body>
@@ -148,7 +148,27 @@
 
   <div class="panel">
     <div class="panel-title">🗣 评论 / 讨论</div>
+    <div id="giscusHint" class="giscus-hint">
+      评论由 <a href="https://giscus.app" target="_blank" rel="noopener noreferrer">Giscus</a> 驱动，留言保存在本仓库的 GitHub Discussions 里，用 GitHub 账号登录即可发言。<br>
+      <b>如果这里一直是空白，只差一步：</b>给本仓库装上 <a href="https://github.com/apps/giscus/installations/new" target="_blank" rel="noopener noreferrer">giscus App</a>（点一下授权即可，免费）。装完后 <b>不用改任何代码</b>，刷新本页就会出现评论框。
+    </div>
     <div id="giscusBox"></div>
+  </div>
+
+  <div class="panel" id="rewardPanel">
+    <div class="panel-title">☕ 请我喝杯咖啡</div>
+    <div class="hint" style="margin-bottom:6px">这个站免费、没有广告，清单和票价也是一条条人工核对的。如果它帮你省下了刷帖的两小时，欢迎打赏支持一下 🙏</div>
+    <div class="reward">
+      <div class="reward-col">
+        <div class="reward-qr"><img src="assets/reward/wechat.jpg" alt="微信收款码" loading="lazy"></div>
+        <p>微信</p>
+      </div>
+      <div class="reward-col">
+        <div class="reward-qr"><img src="assets/reward/alipay.jpg" alt="支付宝收款码" loading="lazy"></div>
+        <p>支付宝</p>
+      </div>
+    </div>
+    <div class="reward-note">打赏与否都不影响使用，内容一样全部开放 🌱</div>
   </div>
 
   <footer>
@@ -158,20 +178,27 @@
 
 </div>
 
-<script src="data/shows.js?v=20260916e"></script>
-<script src="data/activities.js?v=20260916e"></script>
-<script src="data/food.js?v=20260916e"></script>
-<script src="data/metro.js?v=20260916e"></script>
+<script src="data/shows.js?v=20260916g"></script>
+<script src="data/activities.js?v=20260916g"></script>
+<script src="data/food.js?v=20260916g"></script>
+<script src="data/metro.js?v=20260916g"></script>
 <script>
   /**
    * 想让访客用 GitHub 账号留言时，把 enabled 改成 true 并填好这三项：
    *   repo   → NaphJohn/weekend-go
-   *   repoId / categoryId → 到 https://giscus.app 输入仓库名后自动生成
-   * 前提：仓库 Settings → Features 勾选 Discussions，并安装 giscus GitHub App。
+   *   repoId → 仓库的 node_id，已填好（R_kgDOUY4zNw）
+   *   categoryId → 若评论区一直不出现，到 https://giscus.app 选好仓库后把生成的 categoryId 粘到这里
+   * 前提：仓库 Settings → General → Features 勾选 Discussions，并安装 giscus GitHub App。
    */
-  window.GISCUS_CFG = { enabled: false, repo: 'NaphJohn/weekend-go', repoId: '', category: 'General', categoryId: '' };
+  window.GISCUS_CFG = {
+    enabled: true,
+    repo: 'NaphJohn/weekend-go',
+    repoId: 'R_kgDOUY4zNw',
+    category: 'General',
+    categoryId: ''
+  };
 </script>
-<script src="assets/app.js?v=20260916e"></script>
+<script src="assets/app.js?v=20260916g"></script>
 <script>
   /* 总览三块：实时数量（剧在演 / 展览进行中 / 周边游） */
   (function () {

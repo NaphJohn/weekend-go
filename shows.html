@@ -8,7 +8,7 @@
 <meta property="og:title" content="上海看剧 · 每周在演清单">
 <meta property="og:description" content="上海演出/剧目结构化清单：本周在演、即将开演，场次时间 + 票价 + 购票渠道一目了然。">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="assets/style.css?v=20260916n">
+<link rel="stylesheet" href="assets/style.css?v=20260916o">
 </head>
 <body>
 
@@ -97,6 +97,7 @@
 
   <div class="panel">
     <div class="panel-title">🗣 评论 / 讨论</div>
+    <div class="hint" style="margin-bottom:10px">和首页共用同一个留言区（讨论 #1）。</div>
     <div id="giscusBox"></div>
   </div>
 
@@ -108,16 +109,23 @@
 
 </div>
 
-<script src="data/metro.js?v=20260916n"></script>
-<script src="assets/locate.js?v=20260916n"></script>
-<script src="data/shows.js?v=20260916n"></script>
+<script src="data/metro.js?v=20260916o"></script>
+<script src="assets/locate.js?v=20260916o"></script>
+<script src="data/shows.js?v=20260916o"></script>
 <script>
   /**
    * 访客用 GitHub 账号留言（giscus）。
    * ⚠️ category 必须和仓库里真实存在的讨论分类「同名」——仓库讨论开在
    *    Announcements 下，写成 General 会直接报 Discussion not found。
+   * ⚠️ repoId 不能留空，否则同样查不到讨论。
+   * 这一页还没有自己的讨论帖，所以用 mapping:'number' 直接指向讨论 #1，
+   *   和首页共用同一个留言区（以后想分开，在仓库 Discussions 新建一个，
+   *   把 mapping 改回 'pathname' 即可）。
    */
-  window.GISCUS_CFG = { enabled: true, repo: 'NaphJohn/weekend-go', repoId: 'R_kgDOUY4zNw', category: 'Announcements', categoryId: '' };
+  window.GISCUS_CFG = {
+    enabled: true, repo: 'NaphJohn/weekend-go', repoId: 'R_kgDOUY4zNw',
+    category: 'Announcements', categoryId: '', mapping: 'number', term: '1'
+  };
   (function () {
     var cfg = window.GISCUS_CFG || {}, box = document.getElementById('giscusBox');
     if (!box || !cfg.enabled || !cfg.repo) return;
@@ -127,7 +135,8 @@
     s.setAttribute('data-repo-id', cfg.repoId || '');
     s.setAttribute('data-category', cfg.category || 'Announcements');
     s.setAttribute('data-category-id', cfg.categoryId || '');
-    s.setAttribute('data-mapping', 'pathname');
+    s.setAttribute('data-mapping', cfg.mapping || 'pathname');
+    s.setAttribute('data-term', cfg.term || '');
     s.setAttribute('data-strict', '0');
     s.setAttribute('data-reactions-enabled', '1');
     s.setAttribute('data-emit-metadata', '0');
@@ -151,7 +160,7 @@
     });
   })();
 </script>
-<script src="assets/annotate.js?v=20260916n"></script>
-<script src="assets/shows.js?v=20260916n"></script>
+<script src="assets/annotate.js?v=20260916o"></script>
+<script src="assets/shows.js?v=20260916o"></script>
 </body>
 </html>

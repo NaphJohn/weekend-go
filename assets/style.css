@@ -207,3 +207,38 @@ footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:30px;line-
   header h1{font-size:21px}
   .grid{grid-template-columns:1fr}
 }
+
+
+/* ================= 划词批注（选中卡片上任意一句话 → 划线 → 写批注） ================= */
+mark.anno{background:#fff3bf;border-bottom:2px solid #f0b429;color:inherit;cursor:pointer;padding:0 1px;border-radius:2px}
+mark.anno:hover{background:#ffe066}
+.anno-btn{
+  position:absolute;z-index:60;white-space:nowrap;cursor:pointer;
+  background:#1c2536;color:#fff;border:0;border-radius:999px;
+  padding:7px 13px;font-size:12.5px;font-family:inherit;
+  box-shadow:0 6px 18px rgba(20,28,44,.22);
+}
+.anno-btn:hover{background:var(--blue)}
+.anno-pop{
+  position:absolute;z-index:61;width:300px;max-width:calc(100vw - 24px);
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;
+  box-shadow:0 14px 40px rgba(20,28,44,.18);
+}
+.anno-pop-h{font-size:13px;font-weight:700;margin-bottom:8px}
+.anno-quote{
+  font-size:12.5px;color:var(--sub);background:#f7f8fa;border-left:3px solid #f0b429;
+  border-radius:0 6px 6px 0;padding:6px 8px;margin-bottom:8px;
+  max-height:68px;overflow:hidden;word-break:break-all;
+}
+.anno-ta{
+  width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;
+  border:1px solid var(--line);border-radius:8px;padding:8px 10px;outline:none;color:var(--ink);resize:vertical;
+}
+.anno-ta:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,107,255,.10)}
+.anno-ops{display:flex;gap:8px;margin-top:8px;align-items:center}
+.anno-del{color:var(--red)}
+.anno-bar-ops{display:flex;gap:8px;margin-top:8px}
+
+/* 评论区（giscus）报错提示 */
+#giscusBox:empty{display:none}
+.giscus-bad{background:#fff5f5;border:1px dashed #f0c2c0;border-radius:10px;padding:12px 14px;font-size:13px;color:var(--red);line-height:1.7;margin-bottom:14px}

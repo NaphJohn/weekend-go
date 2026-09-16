@@ -8,7 +8,7 @@
 <meta property="og:title" content="上海看剧 · 每周在演清单">
 <meta property="og:description" content="上海演出/剧目结构化清单：本周在演、即将开演，场次时间 + 票价 + 购票渠道一目了然。">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="assets/style.css?v=20260916d">
+<link rel="stylesheet" href="assets/style.css?v=20260916m">
 </head>
 <body>
 
@@ -90,6 +90,16 @@
 
   <div class="grid" id="grid"></div>
 
+  <div class="panel" style="margin-top:20px">
+    <div class="panel-title">✍️ 划词批注</div>
+    <div id="annoBar"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🗣 评论 / 讨论</div>
+    <div id="giscusBox"></div>
+  </div>
+
   <footer>
     数据来自大麦、各剧院官网与公开报道，人工核对整理。<br>
     ⚠️ 演出档期、票价、卡司随时可能调整，购票前请以大麦 / 剧院官方最新公告为准，本页不售票。<br>
@@ -98,9 +108,50 @@
 
 </div>
 
-<script src="data/metro.js?v=20260916d"></script>
-<script src="assets/locate.js?v=20260916d"></script>
-<script src="data/shows.js?v=20260916d"></script>
-<script src="assets/shows.js?v=20260916d"></script>
+<script src="data/metro.js?v=20260916m"></script>
+<script src="assets/locate.js?v=20260916m"></script>
+<script src="data/shows.js?v=20260916m"></script>
+<script>
+  /**
+   * 访客用 GitHub 账号留言（giscus）。
+   * ⚠️ category 必须和仓库里真实存在的讨论分类「同名」——仓库讨论开在
+   *    Announcements 下，写成 General 会直接报 Discussion not found。
+   */
+  window.GISCUS_CFG = { enabled: true, repo: 'NaphJohn/weekend-go', repoId: '', category: 'Announcements', categoryId: '' };
+  (function () {
+    var cfg = window.GISCUS_CFG || {}, box = document.getElementById('giscusBox');
+    if (!box || !cfg.enabled || !cfg.repo) return;
+    var s = document.createElement('script');
+    s.src = 'https://giscus.app/client.js';
+    s.setAttribute('data-repo', cfg.repo);
+    s.setAttribute('data-repo-id', cfg.repoId || '');
+    s.setAttribute('data-category', cfg.category || 'Announcements');
+    s.setAttribute('data-category-id', cfg.categoryId || '');
+    s.setAttribute('data-mapping', 'pathname');
+    s.setAttribute('data-strict', '0');
+    s.setAttribute('data-reactions-enabled', '1');
+    s.setAttribute('data-emit-metadata', '0');
+    s.setAttribute('data-input-position', 'bottom');
+    s.setAttribute('data-theme', 'light');
+    s.setAttribute('data-lang', 'zh-CN');
+    s.setAttribute('crossorigin', 'anonymous');
+    s.async = true;
+    box.appendChild(s);
+    window.addEventListener('message', function (ev) {
+      if (!ev || !ev.data || ev.origin !== 'https://giscus.app') return;
+      var d = ev.data.giscus || ev.data;
+      if (!d || !d.error || box.querySelector('.giscus-bad')) return;
+      var msg = String(d.error);
+      var tip = /not installed/i.test(msg)
+        ? 'giscus GitHub App 还没装。到 https://github.com/apps/giscus 安装并对 NaphJohn/weekend-go 授权。'
+        : /Discussion not found/i.test(msg)
+          ? '讨论没找到：多半是 category 和仓库真实分类不同名（本仓库讨论在 <b>Announcements</b> 下）。'
+          : msg;
+      box.insertAdjacentHTML('afterbegin', '<div class="giscus-bad">⚠️ 评论区暂时加载不出来：' + tip + '</div>');
+    });
+  })();
+</script>
+<script src="assets/annotate.js?v=20260916m"></script>
+<script src="assets/shows.js?v=20260916m"></script>
 </body>
 </html>

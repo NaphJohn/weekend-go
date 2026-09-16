@@ -205,7 +205,8 @@
 
     var cls = 'card' + (isTrip(a) ? ' card-trip' : '') + (isFood(a) ? ' card-food' : '') + (isEnded(a) ? ' done' : '');
 
-    return '<div class="' + cls + '">' +
+    // data-id 是「划词批注」的定位锚：每次重渲染后靠它把批注画回原处
+    return '<div class="' + cls + '" data-id="' + esc(a.id) + '">' +
       '<div class="top"><h3>' + a.name + '</h3>' +
       '<span class="badge ' + b.cls + '">' + b.txt + '</span></div>' +
       '<div class="meta-line"><b>' + a.venue + '</b>　<span style="color:var(--sub)">' + a.district + '</span></div>' +
@@ -254,6 +255,7 @@
       : '<div class="empty">没有符合条件的，把筛选放宽一点试试。</div>';
     document.getElementById('count').textContent = list.length;
     renderMyNotes();
+    if (window.Annotate) window.Annotate.apply();   // 划词批注重新上色
   }
 
   /** 各类型数量，写在筛选 chip 上——让「周边游」这类沉底的内容也能被看见 */
@@ -384,6 +386,22 @@
       s.async = true;
       box.innerHTML = '';
       box.appendChild(s);
+
+      // giscus 用 postMessage 报错。翻成中文并按类型分流，
+      // 否则「分类名写错」和「没装 App」看起来一样，会把人带偏。
+      window.addEventListener('message', function (ev) {
+        if (!ev || !ev.data || ev.origin !== 'https://giscus.app') return;
+        var d = ev.data.giscus || ev.data;
+        if (!d || !d.error) return;
+        if (box.querySelector('.giscus-bad')) return;
+        var msg = String(d.error);
+        var tip = /not installed/i.test(msg)
+          ? 'giscus GitHub App 还没装。到 https://github.com/apps/giscus 安装，并对 NaphJohn/weekend-go 授权。'
+          : /Discussion not found/i.test(msg)
+            ? '讨论没找到：多半是 index.html 里 GISCUS_CFG.category 和仓库里真实分类不同名（本仓库的讨论开在 <b>Announcements</b> 下）。改成同名即可；若这一页确实还没有讨论，发第一条留言会自动创建。'
+            : msg;
+        box.insertAdjacentHTML('afterbegin', '<div class="giscus-bad">⚠️ 评论区暂时加载不出来：' + tip + '</div>');
+      });
     } else {
       box.innerHTML = '<div class="note-empty">全局讨论区还没接。想让访客用 GitHub 账号直接留言：' +
         '① 仓库 Settings → 勾选 Discussions；② 到 giscus.app 授权并拿到 repo-id / category-id；' +

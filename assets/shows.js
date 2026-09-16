@@ -23,6 +23,8 @@
   function parse(s) { if (!s) return null; var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
   function daysTo(d) { return Math.round((parse(d) - TODAY) / 86400000); }
   function fmt(d) { return d.getFullYear() + '.' + ('0' + (d.getMonth() + 1)).slice(-2) + '.' + ('0' + d.getDate()).slice(-2); }
+  /** 划词批注用的卡片 id 写到属性里，先做最小转义 */
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
   function statusOf(s) {
     if (!s.start || !s.end) return 'tbd';
@@ -131,7 +133,8 @@
     var b = badgeOf(s);
     var tags = (s.tags || []).map(function (t) { return '<span class="tag">' + t + '</span>'; }).join('');
     var cls = statusOf(s) === 'ended' ? ' done' : '';
-    return '<div class="card' + cls + '">' +
+    // data-id 是「划词批注」的定位锚：每次重渲染后靠它把批注画回原处
+    return '<div class="card' + cls + '" data-id="' + esc(s.id) + '">' +
       '<div class="top"><h3>' + s.name + '</h3><span class="badge ' + b.cls + '">' + b.txt + '</span></div>' +
       '<div class="meta-line"><span class="pill-type">' + (TYPE_TEXT[s.type] || '') + '</span>　<b>' + s.venue + '</b>　<span style="color:var(--sub)">' + s.district + '</span></div>' +
       '<div class="meta-line">' + dateLine(s) + '</div>' +
@@ -152,6 +155,7 @@
       ? list.map(cardHTML).join('')
       : '<div class="empty">没有符合条件的剧目，把筛选放宽一点试试。</div>';
     document.getElementById('count').textContent = list.length;
+    if (window.Annotate) window.Annotate.apply();   // 划词批注重新上色
   }
 
   function renderStats() {

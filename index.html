@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <!-- 每次改动都把 v= 后面的版本号 +1，避免浏览器/GitHub Pages 缓存导致看不到更新
      （GitHub Pages 对 HTML 和资源都返回 cache-control: max-age=600，最长 10 分钟才失效） -->
-<link rel="stylesheet" href="assets/style.css?v=20260916d">
+<link rel="stylesheet" href="assets/style.css?v=20260916m">
 <meta http-equiv="Cache-Control" content="max-age=0">
 </head>
 <body>
@@ -113,12 +113,13 @@
   <div class="grid" id="grid"></div>
 
   <div class="panel" style="margin-top:20px">
-    <div class="panel-title">💬 我的笔记</div>
+    <div class="panel-title">💬 我的笔记 · ✍️ 划词批注</div>
     <div id="myNotes"></div>
     <div style="margin-top:10px">
       <button class="mini" id="btnExport">导出为 JSON</button>
       <span class="hint" style="margin-left:8px">笔记只存在这台设备的浏览器里，换设备不会同步；导出后可自己备份或在别处导入。</span>
     </div>
+    <div id="annoBar" style="margin-top:10px;border-top:1px solid var(--line);padding-top:10px"></div>
   </div>
 
   <div class="panel">
@@ -133,19 +134,20 @@
 
 </div>
 
-<script src="data/activities.js?v=20260916d"></script>
-<script src="data/food.js?v=20260916d"></script>
-<script src="data/metro.js?v=20260916d"></script>
-<script src="assets/locate.js?v=20260916d"></script>
+<script src="data/activities.js?v=20260916m"></script>
+<script src="data/food.js?v=20260916m"></script>
+<script src="data/metro.js?v=20260916m"></script>
+<script src="assets/locate.js?v=20260916m"></script>
 <script>
   /**
-   * 想让访客用 GitHub 账号留言时，把 enabled 改成 true 并填好这三项：
-   *   repo   → NaphJohn/weekend-go
-   *   repoId / categoryId → 到 https://giscus.app 输入仓库名后自动生成
+   * 访客用 GitHub 账号留言（giscus）。
    * 前提：仓库 Settings → Features 勾选 Discussions，并安装 giscus GitHub App。
+   * ⚠️ category 必须和仓库里真实存在的讨论分类「同名」——仓库的讨论开在
+   *    Announcements 下，写成 General 会直接报 Discussion not found。
    */
-  window.GISCUS_CFG = { enabled: false, repo: 'NaphJohn/weekend-go', repoId: '', category: 'General', categoryId: '' };
+  window.GISCUS_CFG = { enabled: true, repo: 'NaphJohn/weekend-go', repoId: '', category: 'Announcements', categoryId: '' };
 </script>
-<script src="assets/app.js?v=20260916d"></script>
+<script src="assets/annotate.js?v=20260916m"></script>
+<script src="assets/app.js?v=20260916m"></script>
 </body>
 </html>

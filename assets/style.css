@@ -130,11 +130,6 @@ summary{cursor:pointer;font-size:13px;color:var(--blue);user-select:none;outline
   border:1px solid var(--line);border-radius:10px;padding:11px 14px;outline:none;color:var(--ink);
 }
 .loc-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,107,255,.10)}
-/* 中间点：填两个地点 → 用中点当参考点 */
-.mid-row{margin-top:8px}
-.mid-tag{font-size:13px;color:var(--sub);white-space:nowrap}
-.mid-row .loc-input{flex:1 1 120px;min-width:104px;padding:9px 12px}
-.mid-x{color:var(--sub);font-size:14px;font-weight:700;flex:0 0 auto}
 .loc-ok{font-size:13px;color:#0d8a63;font-weight:600}
 .loc-bad{font-size:13px;color:var(--amber)}
 .chip.sm{padding:4px 11px;font-size:12.5px}
@@ -187,46 +182,28 @@ summary{cursor:pointer;font-size:13px;color:var(--blue);user-select:none;outline
 
 .empty{text-align:center;color:var(--sub);padding:40px 0;font-size:14px}
 
+/* ===== 顶部导航（展览市集美食 / 看剧演出 互链）===== */
+.nav{display:flex;gap:8px;margin-bottom:14px}
+.nav a{
+  color:#fff;opacity:.82;text-decoration:none;font-size:13.5px;font-weight:600;
+  padding:6px 15px;border-radius:20px;background:rgba(255,255,255,.14);transition:all .15s;
+}
+.nav a:hover{opacity:1}
+.nav a.on{background:#fff;color:var(--blue);opacity:1}
+
+/* ===== 剧目页（shows.html）附加样式 ===== */
+.b-run{background:#e6f7ee;color:var(--green)}
+.b-tbd{background:#f0ecfb;color:var(--purple)}
+.pill-type{display:inline-block;font-size:11px;font-weight:700;color:var(--blue);background:var(--soft);border-radius:5px;padding:1px 8px}
+.week-panel{background:linear-gradient(120deg,#f2fbf6,#eef3ff);border-color:#d6e8dd}
+.week-item{padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px;line-height:1.5}
+.week-item:last-child{border-bottom:none}
+.week-meta{font-size:12.5px;color:var(--sub);margin-top:2px}
+.week-empty{font-size:13.5px;color:#4a5568}
+
 footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:30px;line-height:1.9}
 
 @media(max-width:560px){
   header h1{font-size:21px}
   .grid{grid-template-columns:1fr}
 }
-
-/* ===== 总览三块入口（剧 / 展览 / 周边游）===== */
-.hud{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:6px}
-.block{
-  display:flex;flex-direction:column;gap:8px;
-  background:var(--card);border:1px solid var(--line);border-radius:16px;
-  padding:20px 18px 18px;text-decoration:none;color:var(--ink);
-  transition:all .18s;position:relative;overflow:hidden;
-}
-.block:hover{transform:translateY(-3px);border-color:#c9d4ea;box-shadow:0 8px 22px rgba(47,107,255,.10)}
-.block-shows{border-top:4px solid var(--purple)}
-.block-exh{border-top:4px solid var(--blue)}
-.block-tour{border-top:4px solid var(--green)}
-.bk-go{position:absolute;right:16px;top:16px;font-size:13px;color:var(--blue);font-weight:700}
-.bk-ico{font-size:30px;line-height:1}
-.bk-title{font-size:18px;font-weight:800}
-.bk-desc{font-size:12.5px;color:var(--sub);line-height:1.5}
-.bk-stat{font-size:13px;color:#4a5568;margin-top:2px}
-.bk-stat b{font-size:16px;color:var(--ink);margin-right:2px}
-.hud-panel .panel-title{margin-bottom:12px}
-@media(max-width:680px){.hud{grid-template-columns:1fr}}
-
-/* ================= 打赏（请我喝杯咖啡） ================= */
-.reward{display:flex;gap:26px;justify-content:center;align-items:flex-start;flex-wrap:wrap;margin-top:6px}
-.reward-col{text-align:center}
-.reward-qr{width:168px;height:168px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:8px;box-sizing:border-box;overflow:hidden}
-.reward-qr img{width:100%;height:100%;object-fit:contain;display:block}
-.reward-col p{margin:8px 0 0;font-size:13.5px;font-weight:700;color:var(--ink)}
-.reward-note{text-align:center;font-size:12.5px;color:var(--sub);margin-top:14px;line-height:1.6}
-@media(max-width:680px){.reward-qr{width:138px;height:138px}}
-
-/* ================= 评论（Giscus） ================= */
-.giscus-hint{background:var(--soft);border:1px dashed var(--line);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--sub);line-height:1.7;margin-bottom:14px}
-.giscus-hint a{color:var(--blue)}
-.giscus-hint code{background:#fff;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:12px}
-.giscus-bad{background:#fff5f5;border:1px dashed #f0c2c0;border-radius:10px;padding:12px 14px;font-size:13px;color:var(--red);line-height:1.7;margin-bottom:14px}
-#giscusBox:empty{display:none}

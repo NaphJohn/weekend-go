@@ -1,7 +1,7 @@
 /**
  * 数据文件：剧目 / 演出（上海）。只改这里就能更新页面。
  * 字段说明见 README.md
- * verifiedAt: 2026-09-15
+ * verifiedAt: 2026-09-16
  *
  * type: musical 音乐剧 | opera 歌剧 | dance 舞剧/芭蕾 | theatre 话剧 | concert 音乐会 | resident 驻演/小剧场
  * 票价 price.text 为展示文案；min/max 用于「票价档」筛选（不确定的填 null）。

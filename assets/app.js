@@ -16,180 +16,21 @@
   var TYPE_TEXT = { exhibition: '展览', market: '市集', event: '活动/节庆', trip: '周边游', food: '美食' };
   var TRIPLEN_TEXT = { day: '当天往返', '2d': '2天1夜', '3d': '3天以上' };
 
-  /* ================= 地铁站索引 ================= */
-  var STATION = {};
-  METRO.stations.forEach(function (s) {
-    STATION[s[0]] = { x: s[1], y: s[2], lines: s[3], d: s[4] };
-  });
+  /* ================= 定位（共用 assets/locate.js） ================= */
+  var WG = window.WG || {};
 
-  // 卡片 → 最近地铁站：优先卡片自带 metro，其次场馆映射，最后按所在区中心兜底
-  // （区中心兜底保证「展览」这类没写场馆映射的卡片也能算出距离，不再整片空白）
-  function stationOf(a) {
-    if (a.metro) return a.metro;
-    if (METRO.venue[a.id]) return METRO.venue[a.id];
-    var d = a.district && METRO.district[a.district];
-    if (d && STATION[d]) return d;
-    return null;
-  }
-
-  // 两点直线距离（公里）。坐标为示意坐标，只用于「谁近谁远」的粗排
-  function kmBetween(n1, n2) {
-    var a = STATION[n1], b = STATION[n2];
-    if (!a || !b) return null;
-    var dx = a.x - b.x, dy = a.y - b.y;
-    return Math.sqrt(dx * dx + dy * dy) * METRO.unit / 1000;
-  }
-
-  // 任意坐标点 → 某座车站的直线距离（公里）
-  function kmToPoint(p, n) {
-    var b = n && STATION[n];
-    if (!p || !b) return null;
-    var dx = b.x - p.x, dy = b.y - p.y;
-    return Math.sqrt(dx * dx + dy * dy) * METRO.unit / 1000;
-  }
-
-  /**
-   * 当前「参考点」——所有卡片距离都从它算起，中间点优先。
-   *   中间点模式：两个地点坐标的算术平均（本坐标系是等比平面直角坐标，取平均即中点）
-   *   普通模式：定位到的那座地铁站
-   */
-  function refPoint() {
-    if (state.mid) return state.mid;
-    if (state.loc && state.loc.station && STATION[state.loc.station]) {
-      var s = STATION[state.loc.station];
-      return { x: s.x, y: s.y, label: state.loc.station };
-    }
-    return null;
-  }
-
-  // 距离标签里「距 XX」的文字：中间点模式要写清是哪两点的中点
-  function refLabel() {
-    if (state.mid) return '「' + esc(state.mid.a) + ' ↔ ' + esc(state.mid.b) + '」中间点';
-    if (state.loc && state.loc.station) return esc(state.loc.station);
-    return '';
-  }
-
-  /** 两个地点的中点：坐标取平均，并找出离中点最近的地铁站作为「大概在哪」的锚点 */
-  function midpointOf(ra, rb) {
-    if (!ra || !ra.station || !rb || !rb.station) return null;
-    var A = STATION[ra.station], B = STATION[rb.station];
-    if (!A || !B) return null;
-    var mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
-    var name = null, best = Infinity;
-    Object.keys(STATION).forEach(function (n) {
-      var s = STATION[n];
-      var d = Math.sqrt((s.x - mx) * (s.x - mx) + (s.y - my) * (s.y - my));
-      if (d < best) { best = d; name = n; }
-    });
-    return {
-      x: mx, y: my,
-      a: ra.station, b: rb.station,
-      near: name, nearKm: best === Infinity ? null : best * METRO.unit / 1000
-    };
-  }
-
+  function stationOf(a) { return a.metro || METRO.venue[a.id] || null; }
+  function stationInfo(name) { return WG.station ? WG.station(name) : null; }
+  function gradeOf(km) { return WG.grade ? WG.grade(km) : null; }
   function distOf(a) {
-    var p = refPoint();
-    if (!p) return null;
-    return kmToPoint(p, stationOf(a));
+    if (!state.loc || !state.loc.station) return null;
+    var st = stationOf(a);
+    if (!st) return null;
+    return WG.km ? WG.km(state.loc.station, st) : null;
   }
 
-  function gradeOf(km) {
-    if (km == null) return null;
-    if (km < 1.2) return { txt: '就在附近', sub: '步行或 1 站内', cls: 'd1' };
-    if (km < 3.5) return { txt: '很近', sub: '地铁约 15 分钟', cls: 'd2' };
-    if (km < 8) return { txt: '不远', sub: '地铁约 30 分钟', cls: 'd3' };
-    if (km < 16) return { txt: '跨区', sub: '地铁约 45 分钟', cls: 'd4' };
-    return { txt: '较远', sub: '地铁 1 小时起', cls: 'd5' };
-  }
-
-  /** 生成候选写法：原样 → 去「上海」前缀 / 「市」「地铁」「站」后缀，按优先级依次试 */
-  function locCandidates(raw) {
-    var out = [];
-    function push(v) { if (v && out.indexOf(v) < 0) out.push(v); }
-    var base = (raw || '').trim().replace(/\s+/g, '');
-    push(base);                                            // 「上海大学」「漕盈路站」先按原样试，避免把站名削掉
-    push(base.replace(/^上海市?/, ''));
-    push(base.replace(/市$/, ''));
-    push(base.replace(/^上海市?/, '').replace(/市$/, ''));
-    out.slice().forEach(function (v) { push(v.replace(/地铁/g, '')); });
-    out.slice().forEach(function (v) { if (/站$/.test(v) && v.length > 1) push(v.replace(/站$/, '')); });
-    return out;
-  }
-
-  /**
-   * 输入地点 → 最近地铁站。依次尝试：
-   *   1) 站名完全一致（「上海大学」「漕盈路站」都能对上）
-   *   2) 地标 / 道路 / 商圈关键词（取最长命中）
-   *   3) 输入里包含某个站名（如「五角场万达」→ 五角场）
-   *   4) 站名包含输入（如「漕河泾」→ 漕河泾开发区）
-   *   5) 只输区名（含「浦东新区」写法）
-   * 全都失败时返回 station:null + 明确提示，不再静默无反应。
-   */
-  function locate(raw) {
-    var tries = locCandidates(raw);
-    if (!tries.length) return null;
-
-    // 1) 正好是地铁站名
-    for (var i = 0; i < tries.length; i++) {
-      if (STATION[tries[i]]) return { station: tries[i], how: '定位到地铁站「' + tries[i] + '」' };
-    }
-
-    // 2) 地标 / 道路 / 商圈 关键词命中（取最长关键词）
-    var best = null, score = 0;
-    METRO.places.forEach(function (p) {
-      p[1].forEach(function (kw) {
-        tries.forEach(function (t) {
-          if (kw && t.indexOf(kw) >= 0 && kw.length > score) {
-            score = kw.length;
-            best = { station: p[0], how: '按「' + kw + '」定位到 ' + p[0] + '站' };
-          }
-        });
-      });
-    });
-    if (best) return best;
-
-    var names = Object.keys(STATION);
-
-    // 3) 输入里包含某个站名（如「五角场万达」→ 五角场），取最长的那个
-    var hit = null;
-    tries.forEach(function (t) {
-      names.forEach(function (n) {
-        if (n.length >= 2 && t.indexOf(n) >= 0 && (!hit || n.length > hit.length)) hit = n;
-      });
-    });
-    if (hit) return { station: hit, how: '匹配到地铁站「' + hit + '」' };
-
-    // 4) 站名部分包含输入（如「漕河泾」→ 漕河泾开发区）
-    var cand = null, diff = 1e9;
-    tries.forEach(function (t) {
-      if (t.length < 2) return;
-      names.forEach(function (n) {
-        if (n.indexOf(t) >= 0) {
-          var d = n.length - t.length;
-          if (d < diff) { diff = d; cand = n; }
-        }
-      });
-    });
-    if (cand) return { station: cand, how: '匹配到地铁站「' + cand + '」' };
-
-    // 5) 只输了区名（兼容「浦东新区」「徐汇区」这类写法）
-    var dqs = [];
-    tries.forEach(function (t) {
-      dqs.push(t, t.replace(/新区$/, ''), t.replace(/区$/, ''));
-    });
-    for (var j = 0; j < dqs.length; j++) {
-      var dq = dqs[j];
-      if (dq && METRO.district[dq] !== undefined) {
-        var st = METRO.district[dq];
-        if (st) return { station: st, how: '按「' + dq + '区」中心定位到 ' + st + '站' };
-        return { station: null, how: dq + ' 暂无地铁直达，试试附近的区' };
-      }
-    }
-
-    // 6) 没找到 —— 明确告诉用户怎么改，别静默
-    return { station: null, how: '没找到「' + (raw || '').trim() + '」，换个写法试试：地铁站名（漕盈路）/ 商圈（五角场）/ 道路（武康路）/ 区名（浦东）' };
-  }
+  /** 输入地点 → 最近地铁站（实现在 assets/locate.js，看剧页共用） */
+  function locate(raw) { return WG.locate ? WG.locate(raw) : null; }
 
   /* ================= 笔记 / 评论（localStorage） ================= */
   var NOTE_KEY = 'weekendgo_notes_v1';
@@ -224,8 +65,7 @@
     hideEnded: true,
     district: 'all',
     tripLen: 'all',
-    loc: null,      // {station, how} 单点定位（车站）
-    mid: null,      // {x,y,a,b,near,nearKm} 两地点中间点，优先于 loc
+    loc: null,      // {station, how}
     nearBy: false   // 就近优先
   };
 
@@ -249,12 +89,7 @@
 
   function match(a) {
     if (state.hideEnded && isEnded(a)) return false;
-    // city = 「市内」：展览 / 市集 / 活动 / 美食，把周边游排除掉（第二块入口用）
-    if (state.type === 'city') {
-      if (isTrip(a)) return false;
-    } else if (state.type !== 'all' && a.type !== state.type) {
-      return false;
-    }
+    if (state.type !== 'all' && a.type !== state.type) return false;
     if (state.onlyFree && !a.price.free) return false;
     if (state.onlyNoBooking && a.booking.required) return false;
     if (state.district !== 'all' && a.district !== state.district) return false;
@@ -321,7 +156,7 @@
         (a.booking.tip ? '<div class="tip">' + a.booking.tip + '</div>' : '') +
         (a.highlight ? '<div class="hl"><b>看点：</b>' + a.highlight + '</div>' : '') +
         (a.address ? '<div class="hl">地址：' + a.address + '</div>' : '') +
-        (stationOf(a) ? '<div class="hl">最近地铁：' + stationOf(a) + '站（' + (STATION[stationOf(a)] ? STATION[stationOf(a)].lines + ' 号线' : '') + '）</div>' : '') +
+        (stationOf(a) ? '<div class="hl">最近地铁：' + stationOf(a) + '站（' + (stationInfo(stationOf(a)) ? stationInfo(stationOf(a)).lines + ' 号线' : '') + '）</div>' : '') +
         '</div></details>';
     }
 
@@ -343,22 +178,12 @@
       '</div></details>';
   }
 
-  // 中点落在哪儿的白话说人话：离最近站很近才说「XX 附近」，否则别硬说成 XX 一带
-  function midAnchorText(m) {
-    if (!m.near) return '';
-    var km = m.nearKm == null ? null : m.nearKm;
-    if (km != null && km <= 1.5) return '大概在 <b>' + esc(m.near) + '</b> 附近（离该站约 ' + km.toFixed(1) + ' km）';
-    if (km != null) return '中间点附近没有地铁站，最近是 <b>' + esc(m.near) + '</b> 站（约 ' + km.toFixed(1) + ' km）';
-    return '大概在 <b>' + esc(m.near) + '</b> 一带';
-  }
-
   function distLine(a) {
-    if (isTrip(a)) return '';
-    if (!refPoint()) return '';
+    if (!state.loc || isTrip(a)) return '';
     var km = distOf(a);
     if (km == null) return '';
     var g = gradeOf(km);
-    return '<div class="dist ' + g.cls + '">📍 距 ' + refLabel() + ' 约 ' + km.toFixed(1) + ' 公里　<b>' + g.txt + '</b>　<span>' + g.sub + '</span></div>';
+    return '<div class="dist ' + g.cls + '">📍 距 ' + esc(state.loc.station) + ' 约 ' + km.toFixed(1) + ' 公里　<b>' + g.txt + '</b>　<span>' + g.sub + '</span></div>';
   }
 
   function cardHTML(a) {
@@ -405,8 +230,8 @@
       return (y.rating || 0) - (x.rating || 0);
     }
 
-    // 定位 + 就近优先：市内活动和美食混在一起，纯按距离排（中间点模式同样适用）
-    if (refPoint() && state.nearBy) {
+    // 定位 + 就近优先：市内活动和美食混在一起，纯按距离排
+    if (state.loc && state.nearBy) {
       var d1 = distOf(x), d2 = distOf(y);
       if (d1 != null && d2 != null && Math.abs(d1 - d2) > 0.2) return d1 - d2;
       if (d1 == null && d2 != null) return 1;
@@ -437,7 +262,6 @@
     DATA.forEach(function (a) {
       if (state.hideEnded && isEnded(a)) return;
       c[a.type] = (c[a.type] || 0) + 1;
-      if (!isTrip(a)) c.city = (c.city || 0) + 1;   // 市内（不含周边游）
       c.all++;
     });
     document.querySelectorAll('[data-cnt]').forEach(function (el) {
@@ -456,127 +280,41 @@
     var f = document.getElementById('s-food'); if (f) f.textContent = DATA.filter(isFood).length;
   }
 
-  /* ---------- 「你在哪」记忆：同一设备当天有效，切页面/板块不用重填 ---------- */
-  var LOC_KEY = 'weekendgo_loc_v1';
-  var LOC_TTL = 12 * 3600 * 1000;
-
-  function saveLoc(v) {
-    try { if (v) localStorage.setItem(LOC_KEY, JSON.stringify({ v: v, t: Date.now() })); } catch (e) {}
-  }
-  function readLoc() {
-    try {
-      var o = JSON.parse(localStorage.getItem(LOC_KEY) || 'null');
-      if (o && o.v && (Date.now() - o.t) < LOC_TTL) return o.v;
-    } catch (e) {}
-    return '';
-  }
-  function dropLoc() { try { localStorage.removeItem(LOC_KEY); } catch (e) {} }
-
-  /* 中间点的记忆：与单点分开存，换页 / 换板块都不丢，且不会互相覆盖 */
-  var LOC_MID_KEY = 'weekendgo_loc_mid_v1';
-  function saveLocMid(a, b) {
-    try { if (a && b) localStorage.setItem(LOC_MID_KEY, JSON.stringify({ a: a, b: b, t: Date.now() })); } catch (e) {}
-  }
-  function readLocMid() {
-    try {
-      var o = JSON.parse(localStorage.getItem(LOC_MID_KEY) || 'null');
-      if (o && o.a && o.b && (Date.now() - o.t) < LOC_TTL) return o;
-    } catch (e) {}
-    return null;
-  }
-  function dropLocMid() { try { localStorage.removeItem(LOC_MID_KEY); } catch (e) {} }
-
   /* ---------- 地点面板 ---------- */
-  function syncChip() {
-    var chip = document.getElementById('chipNear');
-    if (!chip) return;
-    var has = !!refPoint();
-    chip.style.display = has ? '' : 'none';
-    if (!has) { state.nearBy = false; chip.classList.remove('on'); }
-    chip.classList.toggle('on', has && state.nearBy);
-    chip.textContent = state.nearBy ? '📍 就近优先：开（点一下关掉）' : '📍 就近优先：关（点一下开启）';
-  }
-
   function renderLoc() {
     var box = document.getElementById('locResult');
-    if (!box) return;
-
-    // 中间点模式：写清是哪两点的中点，并给出「大概在哪一站附近」的白话锚点
-    if (state.mid) {
-      box.innerHTML = '<span class="loc-ok">✅ 中间点：' + esc(state.mid.a) + ' ↔ ' + esc(state.mid.b) +
-        (state.mid.near ? '　·　' + midAnchorText(state.mid) : '') +
-        '</span><span class="hint" style="margin-left:8px">已按「到中间点」的距离重排，下面每张卡片标了路程。</span>';
-      syncChip();
-      return;
-    }
-
+    var chip = document.getElementById('chipNear');
     if (!state.loc || !state.loc.station) {
       box.innerHTML = state.loc
         ? '<span class="loc-bad">' + esc(state.loc.how) + '</span>'
         : '<span class="hint">不填也能用，下面是全部内容。</span>';
-      syncChip();
+      if (chip) { chip.style.display = 'none'; state.nearBy = false; chip.classList.remove('on'); }
       return;
     }
-    var st = STATION[state.loc.station];
+    var st = stationInfo(state.loc.station);
     box.innerHTML = '<span class="loc-ok">✅ ' + esc(state.loc.how) +
       (st ? '　·　' + st.lines + ' 号线　·　' + st.d : '') + '</span>' +
       '<span class="hint" style="margin-left:8px">已按距离重排，下面每张卡片标了路程。</span>';
-    syncChip();
+    if (chip) {
+      chip.style.display = '';
+      chip.classList.toggle('on', state.nearBy);
+      chip.textContent = state.nearBy ? '📍 就近优先：开（点一下关掉）' : '📍 就近优先：关（点一下开启）';
+    }
   }
 
   function applyLoc() {
     var v = document.getElementById('locInput').value;
     var r = locate(v);
     state.loc = r;
-    state.mid = null;                    // 单点模式覆盖中间点
-    dropLocMid();
     state.nearBy = !!(r && r.station);
-    if (r && r.station) saveLoc(v);      // 记住地点，切到剧页 / 周边游也生效
     renderLoc();
     document.getElementById('pickResult').style.display = 'none';
     render();
   }
 
-  /** 两个地点 → 中间点；之后所有展览 / 美食的距离都改从中间点算 */
-  function applyMid() {
-    var ea = document.getElementById('locInputA'), eb = document.getElementById('locInputB');
-    var va = ((ea && ea.value) || '').trim();
-    var vb = ((eb && eb.value) || '').trim();
-    var ra = va ? locate(va) : null;
-    var rb = vb ? locate(vb) : null;
-    var bad = null;
-    if (!va) bad = '还差第一个地点';
-    else if (!ra || !ra.station) bad = '第一个地点 ' + (ra ? ra.how : '没找到');
-    else if (!vb) bad = '还差第二个地点';
-    else if (!rb || !rb.station) bad = '第二个地点 ' + (rb ? rb.how : '没找到');
-
-    if (bad) {
-      state.mid = null; state.loc = null; state.nearBy = false;
-      dropLocMid();
-      var box = document.getElementById('locResult');
-      if (box) box.innerHTML = '<span class="loc-bad">中间点没算出来 —— ' + esc(bad) + '</span>';
-      syncChip();
-      render();
-      return;
-    }
-
-    state.mid = midpointOf(ra, rb);
-    state.loc = null;                    // 中间点模式覆盖单点
-    dropLoc();
-    state.nearBy = true;
-    saveLocMid(va, vb);
-    renderLoc();
-    var pr = document.getElementById('pickResult'); if (pr) pr.style.display = 'none';
-    render();
-  }
-
   function clearLoc() {
-    ['locInput', 'locInputA', 'locInputB'].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) el.value = '';
-    });
-    state.loc = null; state.mid = null; state.nearBy = false;
-    dropLoc(); dropLocMid();
+    document.getElementById('locInput').value = '';
+    state.loc = null; state.nearBy = false;
     renderLoc();
     render();
   }
@@ -623,85 +361,34 @@
     document.body.removeChild(a); URL.revokeObjectURL(url);
   }
 
-  /* ---------- Giscus 评论（存在仓库的 GitHub Discussions 里） ---------- */
+  /* ---------- Giscus 全局讨论（可选） ---------- */
   function setupGiscus() {
     var cfg = window.GISCUS_CFG || {};
     var box = document.getElementById('giscusBox');
-    var hint = document.getElementById('giscusHint');
     if (!box) return;
-
-    if (!cfg.enabled || !cfg.repo) {
-      if (hint) hint.style.display = '';
-      box.innerHTML = '<div class="note-empty">评论区还没开：把 <code>window.GISCUS_CFG.enabled</code> 改成 true。</div>';
-      return;
+    if (cfg.enabled && cfg.repo) {
+      var s = document.createElement('script');
+      s.src = 'https://giscus.app/client.js';
+      s.setAttribute('data-repo', cfg.repo);
+      s.setAttribute('data-repo-id', cfg.repoId || '');
+      s.setAttribute('data-category', cfg.category || 'General');
+      s.setAttribute('data-category-id', cfg.categoryId || '');
+      s.setAttribute('data-mapping', 'pathname');
+      s.setAttribute('data-strict', '0');
+      s.setAttribute('data-reactions-enabled', '1');
+      s.setAttribute('data-emit-metadata', '0');
+      s.setAttribute('data-input-position', 'bottom');
+      s.setAttribute('data-theme', 'light');
+      s.setAttribute('data-lang', 'zh-CN');
+      s.setAttribute('crossorigin', 'anonymous');
+      s.async = true;
+      box.innerHTML = '';
+      box.appendChild(s);
+    } else {
+      box.innerHTML = '<div class="note-empty">全局讨论区还没接。想让访客用 GitHub 账号直接留言：' +
+        '① 仓库 Settings → 勾选 Discussions；② 到 giscus.app 授权并拿到 repo-id / category-id；' +
+        '③ 填进 index.html 里的 <code>GISCUS_CFG</code>，把 <code>enabled</code> 改成 true。</div>';
     }
-
-    var s = document.createElement('script');
-    s.src = 'https://giscus.app/client.js';
-    s.setAttribute('data-repo', cfg.repo);
-    if (cfg.repoId) s.setAttribute('data-repo-id', cfg.repoId);
-    if (cfg.category) s.setAttribute('data-category', cfg.category);
-    if (cfg.categoryId) s.setAttribute('data-category-id', cfg.categoryId);
-    s.setAttribute('data-mapping', 'pathname');
-    s.setAttribute('data-strict', '0');
-    s.setAttribute('data-reactions-enabled', '1');
-    s.setAttribute('data-emit-metadata', '0');
-    s.setAttribute('data-input-position', 'bottom');
-    s.setAttribute('data-theme', 'light');
-    s.setAttribute('data-lang', 'zh-CN');
-    s.setAttribute('crossorigin', 'anonymous');
-    s.async = true;
-    box.appendChild(s);
-
-    // 成功加载 → 收起配置提示；约 20 秒还没出 iframe 就保留提示（说明配置缺失）
-    var tries = 0;
-    var iv = setInterval(function () {
-      tries++;
-      if (document.querySelector('iframe.giscus-frame')) {
-        if (hint) hint.style.display = 'none';
-        clearInterval(iv);
-      } else if (tries > 40) { clearInterval(iv); }
-    }, 500);
-
-    // giscus 会把真实错误 postMessage 出来，按错误类型翻译成对应的可操作指引
-    window.addEventListener('message', function (ev) {
-      if (ev.origin !== 'https://giscus.app') return;
-      var d = ev.data && ev.data.giscus;
-      if (!d || !d.error) return;
-      if (!hint) return;
-      var err = String(d.error);
-      var advice;
-      if (/not installed/i.test(err)) {
-        // 仓库还没装 giscus App
-        advice = '这个仓库还没装 giscus App —— ' +
-          '<a href="https://github.com/apps/giscus/installations/new" target="_blank" rel="noopener noreferrer">点这里安装</a>' +
-          '（一下授权，免费），装完刷新本页即可，不用改代码。';
-      } else if (/discussion not found/i.test(err)) {
-        // 分类名对不上；或本页还没有讨论（发表第一条时 giscus 会自动建）
-        advice = '多半是 <code>window.GISCUS_CFG.category</code> 填的分类名和仓库里真实的' +
-          '分类对不上（搜不到就报这个）。到仓库 Discussions 里核对分类名；' +
-          '如果本页只是还没有讨论，直接在下面的框里发第一条即可，giscus 会自动建。';
-      } else {
-        advice = '核对：① 仓库 Settings 里 <b>Discussions</b> 是否勾选；' +
-          '② <code>category</code> 是否是该仓库真实存在的分类；③ 仓库是否 public。';
-      }
-      hint.className = 'giscus-bad';
-      hint.innerHTML = '评论区没加载成功：<code>' + err + '</code><br>' + advice;
-      hint.style.display = '';
-    });
-  }
-
-  /* ---------- 打赏：收款码没到位就把整块收起来，别留破图 ---------- */
-  function setupReward() {
-    var panel = document.getElementById('rewardPanel');
-    if (!panel) return;
-    var imgs = panel.querySelectorAll('img');
-    if (!imgs.length) { panel.style.display = 'none'; return; }
-    Array.prototype.forEach.call(imgs, function (im) {
-      function kill() { panel.style.display = 'none'; }
-      im.addEventListener('error', kill);
-      if (im.complete && im.naturalWidth === 0) kill();
-    });
   }
 
   /* ================= 帮我选一个 ================= */
@@ -720,8 +407,8 @@
         if (d <= 10) w += 2; else if (d <= 30) w += 1;
       }
       if (a.price.free) w += 1;
-      // 定位后：近的加权（中间点模式同样算）
-      if (refPoint()) {
+      // 定位后：近的加权
+      if (state.loc && state.loc.station) {
         var km = distOf(a);
         if (km != null) {
           if (km < 2) w += 4;
@@ -736,9 +423,9 @@
     var why = [];
     if (a.price.free) why.push('免费');
     if (!a.booking.required) why.push('不用预约，说走就走');
-    if (refPoint()) {
+    if (state.loc && state.loc.station) {
       var km2 = distOf(a);
-      if (km2 != null) why.push('离' + refLabel() + '约 ' + km2.toFixed(1) + ' 公里，' + (gradeOf(km2).txt));
+      if (km2 != null) why.push('离「' + state.loc.station + '」约 ' + km2.toFixed(1) + ' 公里，' + (gradeOf(km2).txt));
     }
     if (isTrip(a)) {
       if (a.tripLen === 'day') why.push('当天就能来回，不用请假');
@@ -814,21 +501,6 @@
     document.getElementById('locInput').addEventListener('keydown', function (e) {
       if (e.key === 'Enter') applyLoc();
     });
-
-    // 中间点：两个地点 + 回车也能算
-    var bm = document.getElementById('btnMid');
-    if (bm) bm.addEventListener('click', applyMid);
-    ['locInputA', 'locInputB'].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) el.addEventListener('keydown', function (e) { if (e.key === 'Enter') applyMid(); });
-    });
-
-    // 记住最后聚焦的是哪个地点输入框 —— 快捷站点芯片按它来填
-    var locFocus = 'locInput';
-    ['locInput', 'locInputA', 'locInputB'].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) el.addEventListener('focus', function () { locFocus = id; });
-    });
     var exp = document.getElementById('btnExport');
     if (exp) exp.addEventListener('click', exportNotes);
 
@@ -836,7 +508,7 @@
     var chipNear = document.getElementById('chipNear');
     if (chipNear) {
       chipNear.addEventListener('click', function () {
-        if (!refPoint()) return;
+        if (!state.loc || !state.loc.station) return;
         state.nearBy = !state.nearBy;
         chipNear.classList.toggle('on', state.nearBy);
         chipNear.textContent = state.nearBy ? '📍 就近优先：开（点一下关掉）' : '📍 就近优先：关（点一下开启）';
@@ -844,22 +516,14 @@
       });
     }
 
-    // 快捷站点：填进「最后点过的那一栏」；在中间点模式下填 A/B 并自动重算
+    // 快捷站点
     var qbox = document.getElementById('quickStations');
     if (qbox) {
       qbox.addEventListener('click', function (e) {
         var t = e.target.closest('[data-quick]');
         if (!t) return;
-        var name = t.getAttribute('data-quick');
-        var id = locFocus;
-        if (id !== 'locInputA' && id !== 'locInputB') id = 'locInput';
-        var el = document.getElementById(id);
-        if (!el) return;
-        el.value = name;
-        if (id === 'locInput') { applyLoc(); return; }
-        // 中间点模式：两个都填好了才算，否则等用户补另一个
-        var ea = document.getElementById('locInputA'), eb = document.getElementById('locInputB');
-        if (state.mid || ((ea && ea.value.trim()) && (eb && eb.value.trim()))) applyMid();
+        document.getElementById('locInput').value = t.getAttribute('data-quick');
+        applyLoc();
       });
     }
 
@@ -917,82 +581,13 @@
     }
   }
 
-  /* ---------- 深链：?jump=trip 等，直接筛出某类型并滚到列表 ---------- */
-  function applyJump() {
-    try {
-      var v = new URLSearchParams(location.search).get('jump');
-      if (!v) return;
-      var target = document.querySelector('.chip[data-group="type"][data-val="' + v + '"]');
-      if (target) {
-        target.click();
-        var g = document.getElementById('grid');
-        if (g && g.scrollIntoView) g.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    } catch (e) {}
-  }
-
-  /* ---------- 换页 / 换板块时，把「你在哪」一起带上（?here= 或 ?mid=A,B） ---------- */
-  function carryLoc() {
-    // a.block 是总览三块入口；.nav a 是页头互链（剧页 → 展览页这条路曾漏掉，导致定位丢失）
-    var links = document.querySelectorAll('a.block, .nav a, nav a');
-    Array.prototype.forEach.call(links, function (a) {
-      a.addEventListener('click', function (ev) {
-        var inp = document.getElementById('locInput');
-        var v = inp ? (inp.value || '').trim() : '';
-        var ea = document.getElementById('locInputA'), eb = document.getElementById('locInputB');
-        var va = ((ea && ea.value) || '').trim();
-        var vb = ((eb && eb.value) || '').trim();
-        var midOn = !!(state.mid && va && vb);         // 中间点模式下优先带 ?mid=
-        if (!midOn && !v) return;                      // 什么都没填就按原链接跳
-        try {
-          var u = new URL(a.getAttribute('href'), location.href);
-          if (midOn) { u.searchParams.set('mid', va + ',' + vb); u.searchParams.delete('here'); }
-          else { u.searchParams.set('here', v); u.searchParams.delete('mid'); }
-          a.setAttribute('href', u.toString());   // 链接本身也带上，方便「复制链接地址」/ 中键新窗口
-          ev.preventDefault();
-          location.href = u.toString();
-        } catch (e) {}
-      });
-    });
-  }
-
-  /** 从 ?mid=A,B 解析出两个地点（容忍全角逗号与多余空格） */
-  function parseMidParam(raw) {
-    if (!raw) return null;
-    var parts = String(raw).split(/[,，]/).map(function (s) { return s.trim(); }).filter(Boolean);
-    if (parts.length < 2) return null;
-    return { a: parts[0], b: parts.slice(1).join(',') };
-  }
-
   document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('verifiedAt').textContent = META.verifiedAt || '';
     renderQuick();
     renderStats();
     renderLoc();
     bind();
-    carryLoc();
     setupGiscus();
-    setupReward();
     render();
-    // 续上「你在哪」：URL 里 ?mid=（两地点中间点）/ ?here=（单点）最优先，其次本机记住的（当天有效）
-    try {
-      var q = new URLSearchParams(location.search);
-      var rmid = parseMidParam(q.get('mid'));
-      var h = q.get('here');
-      if (!rmid && !h) {                 // URL 没指定才读本机记忆
-        rmid = readLocMid();
-        if (!rmid) h = readLoc();
-      }
-      if (rmid) {
-        var ia = document.getElementById('locInputA'), ib = document.getElementById('locInputB');
-        if (ia) ia.value = rmid.a;
-        if (ib) ib.value = rmid.b;
-        applyMid();
-      } else if (h) {
-        var inp = document.getElementById('locInput');
-        if (inp) { inp.value = h; applyLoc(); }
-      }
-    } catch (e) {}
-    applyJump();
   });
 })();

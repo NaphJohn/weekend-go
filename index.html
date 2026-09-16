@@ -10,13 +10,17 @@
 <meta property="og:type" content="website">
 <!-- 每次改动都把 v= 后面的版本号 +1，避免浏览器/GitHub Pages 缓存导致看不到更新
      （GitHub Pages 对 HTML 和资源都返回 cache-control: max-age=600，最长 10 分钟才失效） -->
-<link rel="stylesheet" href="assets/style.css?v=20260916j">
+<link rel="stylesheet" href="assets/style.css?v=20260916c">
 <meta http-equiv="Cache-Control" content="max-age=0">
 </head>
 <body>
 
 <header>
   <div class="wrap">
+    <nav class="nav">
+      <a class="on" href="index.html">🎪 展览 · 市集 · 美食</a>
+      <a href="shows.html">🎭 看剧 · 演出</a>
+    </nav>
     <h1>周末去哪玩</h1>
     <div class="sub">上海展览 / 市集 / 节庆 / 美食 + 周边游决策器 —— 输入你在哪，就近给你排</div>
     <div class="stats">
@@ -33,34 +37,6 @@
 
 <div class="wrap">
 
-  <div class="panel hud-panel">
-    <div class="panel-title">先选板块 · 剧 / 展览 / 周边游 分开看</div>
-    <div class="hud">
-      <a class="block block-shows" href="shows.html">
-        <div class="bk-go">进入 →</div>
-        <div class="bk-ico">🎭</div>
-        <div class="bk-title">看剧 · 演出</div>
-        <div class="bk-desc">音乐剧 / 歌剧 / 舞剧 / 话剧 / 驻演小剧场</div>
-        <div class="bk-stat"><b id="hk-shows">-</b> 部在演中</div>
-      </a>
-      <a class="block block-exh" href="index.html?jump=city">
-        <div class="bk-go">只看市内 →</div>
-        <div class="bk-ico">🎪</div>
-        <div class="bk-title">展览 · 市集 · 美食</div>
-        <div class="bk-desc">展览 / 市集 / 节庆 / 美食街区，快结束的排前面（不含周边游）</div>
-        <div class="bk-stat"><b id="hk-exh">-</b> 个进行中</div>
-      </a>
-      <a class="block block-tour" href="index.html?jump=trip">
-        <div class="bk-go">只看周边游 →</div>
-        <div class="bk-ico">🚗</div>
-        <div class="bk-title">周边游</div>
-        <div class="bk-desc">古镇 / 自然 / 海滨 / 园林 / 山景，一日两日都行</div>
-        <div class="bk-stat"><b id="hk-trip">-</b> 个目的地</div>
-      </a>
-    </div>
-    <div class="hint" style="margin-top:10px">三个板块都能选「你在哪」（顶部定位），填了地点再点板块会自动带过去。点「周边游」只看周边游，点「展览 · 市集 · 美食」只看市内、把周边游排除掉。</div>
-  </div>
-
   <div class="panel">
     <div class="panel-title">① 你在哪？填个地点，就近给你排（可选）</div>
     <div class="loc-row">
@@ -68,19 +44,12 @@
       <button class="btn" id="btnLoc">定位</button>
       <button class="btn ghost" id="btnLocClear">清除</button>
     </div>
-    <div class="loc-row mid-row">
-      <span class="mid-tag">或者算两个人的<strong>中间点</strong>：</span>
-      <input id="locInputA" class="loc-input" type="text" placeholder="甲：张江">
-      <span class="mid-x">↔</span>
-      <input id="locInputB" class="loc-input" type="text" placeholder="乙：徐家汇">
-      <button class="btn" id="btnMid">算中间点</button>
-    </div>
     <div class="filters" id="quickStations" style="margin-top:8px"></div>
     <div id="locResult" style="margin-top:8px"></div>
     <div style="margin-top:8px">
       <span class="chip" id="chipNear" style="display:none">📍 就近优先（已开）</span>
     </div>
-    <div class="hint" style="margin-top:8px">支持道路名、商圈、景区、高校、地铁站名，也可以只输区名。路程按直线距离估算，只用来排先后。<br>两个人一起出门、或者先约在中间碰头，就填两个地点点「算中间点」，下面所有展览 / 市集 / 美食都会改按<strong>到中间点</strong>的距离排。</div>
+    <div class="hint" style="margin-top:8px">支持道路名、商圈、景区、高校、地铁站名，也可以只输区名。路程按直线距离估算，只用来排先后。</div>
   </div>
 
   <div class="panel">
@@ -96,7 +65,6 @@
     <div class="panel-title">③ 筛选</div>
     <div class="filters">
       <span class="chip on" data-group="type" data-val="all">全部 <b class="cnt" data-cnt="all">0</b></span>
-      <span class="chip" data-group="type" data-val="city">市内：展览/市集/美食 <b class="cnt" data-cnt="city">0</b></span>
       <span class="chip" data-group="type" data-val="exhibition">展览 <b class="cnt" data-cnt="exhibition">0</b></span>
       <span class="chip" data-group="type" data-val="market">市集 <b class="cnt" data-cnt="market">0</b></span>
       <span class="chip" data-group="type" data-val="event">活动/节庆 <b class="cnt" data-cnt="event">0</b></span>
@@ -155,27 +123,7 @@
 
   <div class="panel">
     <div class="panel-title">🗣 评论 / 讨论</div>
-    <div id="giscusHint" class="giscus-hint">
-      评论由 <a href="https://giscus.app" target="_blank" rel="noopener noreferrer">Giscus</a> 驱动，留言保存在本仓库的 GitHub Discussions 里，用 GitHub 账号登录即可发言。<br>
-      <b>如果这里一直是空白，只差一步：</b>给本仓库装上 <a href="https://github.com/apps/giscus/installations/new" target="_blank" rel="noopener noreferrer">giscus App</a>（点一下授权即可，免费）。装完后 <b>不用改任何代码</b>，刷新本页就会出现评论框。
-    </div>
     <div id="giscusBox"></div>
-  </div>
-
-  <div class="panel" id="rewardPanel">
-    <div class="panel-title">☕ 请我喝杯咖啡</div>
-    <div class="hint" style="margin-bottom:6px">这个站免费、没有广告，清单和票价也是一条条人工核对的。如果它帮你省下了刷帖的两小时，欢迎打赏支持一下 🙏</div>
-    <div class="reward">
-      <div class="reward-col">
-        <div class="reward-qr"><img src="assets/reward/wechat.jpg" alt="微信收款码" loading="lazy"></div>
-        <p>微信</p>
-      </div>
-      <div class="reward-col">
-        <div class="reward-qr"><img src="assets/reward/alipay.jpg" alt="支付宝收款码" loading="lazy"></div>
-        <p>支付宝</p>
-      </div>
-    </div>
-    <div class="reward-note">打赏与否都不影响使用，内容一样全部开放 🌱</div>
   </div>
 
   <footer>
@@ -185,51 +133,19 @@
 
 </div>
 
-<script src="data/shows.js?v=20260916j"></script>
-<script src="data/activities.js?v=20260916j"></script>
-<script src="data/food.js?v=20260916j"></script>
-<script src="data/metro.js?v=20260916j"></script>
+<script src="data/activities.js?v=20260916c"></script>
+<script src="data/food.js?v=20260916c"></script>
+<script src="data/metro.js?v=20260916c"></script>
+<script src="assets/locate.js?v=20260916c"></script>
 <script>
   /**
-   * 想让访客用 GitHub 账号留言时的配置，已填好可直接用：
+   * 想让访客用 GitHub 账号留言时，把 enabled 改成 true 并填好这三项：
    *   repo   → NaphJohn/weekend-go
-   *   repoId → 仓库的 node_id（R_kgDOUY4zNw）
-   *   category → 本仓库 Discussions 里的分类名，必须是「真实存在」的那个。
-   *              本站的讨论建在 Announcements 分类下；写成别的名字会报
-   *              「Discussion not found」——这一项填错是最常见的坑。
-   *   categoryId → 可选。只填 category 名就能用；填了 ID 更稳。
-   * 前提：仓库是 public、Settings 里勾了 Discussions、且已安装 giscus GitHub App。
+   *   repoId / categoryId → 到 https://giscus.app 输入仓库名后自动生成
+   * 前提：仓库 Settings → Features 勾选 Discussions，并安装 giscus GitHub App。
    */
-  window.GISCUS_CFG = {
-    enabled: true,
-    repo: 'NaphJohn/weekend-go',
-    repoId: 'R_kgDOUY4zNw',
-    category: 'Announcements',
-    categoryId: ''
-  };
+  window.GISCUS_CFG = { enabled: false, repo: 'NaphJohn/weekend-go', repoId: '', category: 'General', categoryId: '' };
 </script>
-<script src="assets/app.js?v=20260916j"></script>
-<script>
-  /* 总览三块：实时数量（剧在演 / 展览进行中 / 周边游） */
-  (function () {
-    try {
-      var TODAY = new Date(); TODAY.setHours(0, 0, 0, 0);
-      function dl(end) { var p = end.split('-'); return Math.round((new Date(+p[0], +p[1] - 1, +p[2]) - TODAY) / 86400000); }
-      var SH = window.SHOWS || [];
-      function stOf(s) {
-        if (!s.start || !s.end) return 'tbd';
-        var p = s.start.split('-'), st = new Date(+p[0], +p[1] - 1, +p[2]);
-        var q = s.end.split('-'), en = new Date(+q[0], +q[1] - 1, +q[2]);
-        if (en < TODAY) return 'ended'; if (st <= TODAY) return 'running'; return 'upcoming';
-      }
-      var run = SH.filter(function (s) { return stOf(s) === 'running'; }).length;
-      var AC = window.ACTIVITIES || [];
-      var live = AC.filter(function (a) { return a.type !== 'trip' && a.type !== 'food' && dl(a.end) >= 0; }).length;
-      var trip = AC.filter(function (a) { return a.type === 'trip'; }).length;
-      function set(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
-      set('hk-shows', run); set('hk-exh', live); set('hk-trip', trip);
-    } catch (e) {}
-  })();
-</script>
+<script src="assets/app.js?v=20260916c"></script>
 </body>
 </html>

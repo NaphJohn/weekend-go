@@ -22,7 +22,15 @@
     STATION[s[0]] = { x: s[1], y: s[2], lines: s[3], d: s[4] };
   });
 
-  function stationOf(a) { return a.metro || METRO.venue[a.id] || null; }
+  // 卡片 → 最近地铁站：优先卡片自带 metro，其次场馆映射，最后按所在区中心兜底
+  // （区中心兜底保证「展览」这类没写场馆映射的卡片也能算出距离，不再整片空白）
+  function stationOf(a) {
+    if (a.metro) return a.metro;
+    if (METRO.venue[a.id]) return METRO.venue[a.id];
+    var d = a.district && METRO.district[a.district];
+    if (d && STATION[d]) return d;
+    return null;
+  }
 
   // 两点直线距离（公里）。坐标为示意坐标，只用于「谁近谁远」的粗排
   function kmBetween(n1, n2) {
@@ -46,46 +54,92 @@
     return { txt: '较远', sub: '地铁 1 小时起', cls: 'd5' };
   }
 
-  /** 输入地点 → 最近地铁站 */
+  /** 生成候选写法：原样 → 去「上海」前缀 / 「市」「地铁」「站」后缀，按优先级依次试 */
+  function locCandidates(raw) {
+    var out = [];
+    function push(v) { if (v && out.indexOf(v) < 0) out.push(v); }
+    var base = (raw || '').trim().replace(/\s+/g, '');
+    push(base);                                            // 「上海大学」「漕盈路站」先按原样试，避免把站名削掉
+    push(base.replace(/^上海市?/, ''));
+    push(base.replace(/市$/, ''));
+    push(base.replace(/^上海市?/, '').replace(/市$/, ''));
+    out.slice().forEach(function (v) { push(v.replace(/地铁/g, '')); });
+    out.slice().forEach(function (v) { if (/站$/.test(v) && v.length > 1) push(v.replace(/站$/, '')); });
+    return out;
+  }
+
+  /**
+   * 输入地点 → 最近地铁站。依次尝试：
+   *   1) 站名完全一致（「上海大学」「漕盈路站」都能对上）
+   *   2) 地标 / 道路 / 商圈关键词（取最长命中）
+   *   3) 输入里包含某个站名（如「五角场万达」→ 五角场）
+   *   4) 站名包含输入（如「漕河泾」→ 漕河泾开发区）
+   *   5) 只输区名（含「浦东新区」写法）
+   * 全都失败时返回 station:null + 明确提示，不再静默无反应。
+   */
   function locate(raw) {
-    var q0 = (raw || '').trim();
-    if (!q0) return null;
-    var q = q0.replace(/\s+/g, '').replace(/^上海市?/, '').replace(/市$/, '');
-    if (!q) return null;
+    var tries = locCandidates(raw);
+    if (!tries.length) return null;
 
     // 1) 正好是地铁站名
-    if (STATION[q]) return { station: q, how: '定位到地铁站「' + q + '」' };
+    for (var i = 0; i < tries.length; i++) {
+      if (STATION[tries[i]]) return { station: tries[i], how: '定位到地铁站「' + tries[i] + '」' };
+    }
 
     // 2) 地标 / 道路 / 商圈 关键词命中（取最长关键词）
     var best = null, score = 0;
     METRO.places.forEach(function (p) {
       p[1].forEach(function (kw) {
-        if (q.indexOf(kw) >= 0 && kw.length > score) {
-          score = kw.length;
-          best = { station: p[0], how: '按「' + kw + '」定位到 ' + p[0] + '站' };
-        }
+        tries.forEach(function (t) {
+          if (kw && t.indexOf(kw) >= 0 && kw.length > score) {
+            score = kw.length;
+            best = { station: p[0], how: '按「' + kw + '」定位到 ' + p[0] + '站' };
+          }
+        });
       });
     });
     if (best) return best;
 
-    // 3) 地铁站名部分匹配
+    var names = Object.keys(STATION);
+
+    // 3) 输入里包含某个站名（如「五角场万达」→ 五角场），取最长的那个
+    var hit = null;
+    tries.forEach(function (t) {
+      names.forEach(function (n) {
+        if (n.length >= 2 && t.indexOf(n) >= 0 && (!hit || n.length > hit.length)) hit = n;
+      });
+    });
+    if (hit) return { station: hit, how: '匹配到地铁站「' + hit + '」' };
+
+    // 4) 站名部分包含输入（如「漕河泾」→ 漕河泾开发区）
     var cand = null, diff = 1e9;
-    Object.keys(STATION).forEach(function (n) {
-      if (q.length >= 2 && n.indexOf(q) >= 0) {
-        var d = n.length - q.length;
-        if (d < diff) { diff = d; cand = n; }
-      }
+    tries.forEach(function (t) {
+      if (t.length < 2) return;
+      names.forEach(function (n) {
+        if (n.indexOf(t) >= 0) {
+          var d = n.length - t.length;
+          if (d < diff) { diff = d; cand = n; }
+        }
+      });
     });
     if (cand) return { station: cand, how: '匹配到地铁站「' + cand + '」' };
 
-    // 4) 只输了区名
-    var dq = q.replace(/区$/, '');
-    if (METRO.district[dq] !== undefined) {
-      var st = METRO.district[dq];
-      if (st) return { station: st, how: '按「' + dq + '区」中心定位到 ' + st + '站' };
-      return { station: null, how: dq + ' 暂无地铁直达，试试附近的区' };
+    // 5) 只输了区名（兼容「浦东新区」「徐汇区」这类写法）
+    var dqs = [];
+    tries.forEach(function (t) {
+      dqs.push(t, t.replace(/新区$/, ''), t.replace(/区$/, ''));
+    });
+    for (var j = 0; j < dqs.length; j++) {
+      var dq = dqs[j];
+      if (dq && METRO.district[dq] !== undefined) {
+        var st = METRO.district[dq];
+        if (st) return { station: st, how: '按「' + dq + '区」中心定位到 ' + st + '站' };
+        return { station: null, how: dq + ' 暂无地铁直达，试试附近的区' };
+      }
     }
-    return null;
+
+    // 6) 没找到 —— 明确告诉用户怎么改，别静默
+    return { station: null, how: '没找到「' + (raw || '').trim() + '」，换个写法试试：地铁站名（漕盈路）/ 商圈（五角场）/ 道路（武康路）/ 区名（浦东）' };
   }
 
   /* ================= 笔记 / 评论（localStorage） ================= */
@@ -145,7 +199,12 @@
 
   function match(a) {
     if (state.hideEnded && isEnded(a)) return false;
-    if (state.type !== 'all' && a.type !== state.type) return false;
+    // city = 「市内」：展览 / 市集 / 活动 / 美食，把周边游排除掉（第二块入口用）
+    if (state.type === 'city') {
+      if (isTrip(a)) return false;
+    } else if (state.type !== 'all' && a.type !== state.type) {
+      return false;
+    }
     if (state.onlyFree && !a.price.free) return false;
     if (state.onlyNoBooking && a.booking.required) return false;
     if (state.district !== 'all' && a.district !== state.district) return false;
@@ -318,6 +377,7 @@
     DATA.forEach(function (a) {
       if (state.hideEnded && isEnded(a)) return;
       c[a.type] = (c[a.type] || 0) + 1;
+      if (!isTrip(a)) c.city = (c.city || 0) + 1;   // 市内（不含周边游）
       c.all++;
     });
     document.querySelectorAll('[data-cnt]').forEach(function (el) {
@@ -651,14 +711,42 @@
     } catch (e) {}
   }
 
+  /* ---------- 总览三块互跳时，把「你在哪」一起带上（?here=） ---------- */
+  function carryLoc() {
+    var blocks = document.querySelectorAll('a.block');
+    if (!blocks.length) return;
+    Array.prototype.forEach.call(blocks, function (a) {
+      a.addEventListener('click', function (ev) {
+        var inp = document.getElementById('locInput');
+        var v = inp ? (inp.value || '').trim() : '';
+        if (!v) return;                       // 没填地点就按原链接跳
+        try {
+          var u = new URL(a.getAttribute('href'), location.href);
+          u.searchParams.set('here', v);
+          ev.preventDefault();
+          location.href = u.toString();
+        } catch (e) {}
+      });
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('verifiedAt').textContent = META.verifiedAt || '';
     renderQuick();
     renderStats();
     renderLoc();
     bind();
+    carryLoc();
     setupGiscus();
     render();
+    // 从别的板块带 ?here= 进来 → 续上「你在哪」
+    try {
+      var h = new URLSearchParams(location.search).get('here');
+      if (h) {
+        var inp = document.getElementById('locInput');
+        if (inp) { inp.value = h; applyLoc(); }
+      }
+    } catch (e) {}
     applyJump();
   });
 })();

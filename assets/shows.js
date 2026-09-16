@@ -43,31 +43,75 @@
     if (km < 16) return { txt: '跨区', sub: '地铁约 45 分钟', cls: 'd4' };
     return { txt: '较远', sub: '地铁 1 小时起', cls: 'd5' };
   }
+  /** 生成候选写法：原样 → 去「上海」前缀 / 「市」「地铁」「站」后缀（与展览页同一套规则） */
+  function locCandidates(raw) {
+    var out = [];
+    function push(v) { if (v && out.indexOf(v) < 0) out.push(v); }
+    var base = (raw || '').trim().replace(/\s+/g, '');
+    push(base);
+    push(base.replace(/^上海市?/, ''));
+    push(base.replace(/市$/, ''));
+    push(base.replace(/^上海市?/, '').replace(/市$/, ''));
+    out.slice().forEach(function (v) { push(v.replace(/地铁/g, '')); });
+    out.slice().forEach(function (v) { if (/站$/.test(v) && v.length > 1) push(v.replace(/站$/, '')); });
+    return out;
+  }
+  /** 输入地点 → 最近地铁站（与展览页同一套规则） */
   function locate(raw) {
-    var q0 = (raw || '').trim();
-    if (!q0) return null;
-    var q = q0.replace(/\s+/g, '').replace(/^上海市?/, '').replace(/市$/, '');
-    if (!q) return null;
-    if (STATION[q]) return { station: q, how: '定位到地铁站「' + q + '」' };
+    var tries = locCandidates(raw);
+    if (!tries.length) return null;
+
+    for (var i = 0; i < tries.length; i++) {
+      if (STATION[tries[i]]) return { station: tries[i], how: '定位到地铁站「' + tries[i] + '」' };
+    }
+
     var best = null, score = 0;
     METRO.places.forEach(function (p) {
       p[1].forEach(function (kw) {
-        if (q.indexOf(kw) >= 0 && kw.length > score) { score = kw.length; best = { station: p[0], how: '按「' + kw + '」定位到 ' + p[0] + '站' }; }
+        tries.forEach(function (t) {
+          if (kw && t.indexOf(kw) >= 0 && kw.length > score) {
+            score = kw.length;
+            best = { station: p[0], how: '按「' + kw + '」定位到 ' + p[0] + '站' };
+          }
+        });
       });
     });
     if (best) return best;
+
+    var names = Object.keys(STATION);
+
+    var hit = null;
+    tries.forEach(function (t) {
+      names.forEach(function (n) {
+        if (n.length >= 2 && t.indexOf(n) >= 0 && (!hit || n.length > hit.length)) hit = n;
+      });
+    });
+    if (hit) return { station: hit, how: '匹配到地铁站「' + hit + '」' };
+
     var cand = null, diff = 1e9;
-    Object.keys(STATION).forEach(function (n) {
-      if (q.length >= 2 && n.indexOf(q) >= 0) { var d = n.length - q.length; if (d < diff) { diff = d; cand = n; } }
+    tries.forEach(function (t) {
+      if (t.length < 2) return;
+      names.forEach(function (n) {
+        if (n.indexOf(t) >= 0) {
+          var d = n.length - t.length;
+          if (d < diff) { diff = d; cand = n; }
+        }
+      });
     });
     if (cand) return { station: cand, how: '匹配到地铁站「' + cand + '」' };
-    var dq = q.replace(/区$/, '');
-    if (METRO.district[dq] !== undefined) {
-      var st = METRO.district[dq];
-      if (st) return { station: st, how: '按「' + dq + '区」中心定位到 ' + st + '站' };
-      return { station: null, how: dq + ' 暂无地铁直达，试试附近的区' };
+
+    var dqs = [];
+    tries.forEach(function (t) { dqs.push(t, t.replace(/新区$/, ''), t.replace(/区$/, '')); });
+    for (var j = 0; j < dqs.length; j++) {
+      var dq = dqs[j];
+      if (dq && METRO.district[dq] !== undefined) {
+        var st = METRO.district[dq];
+        if (st) return { station: st, how: '按「' + dq + '区」中心定位到 ' + st + '站' };
+        return { station: null, how: dq + ' 暂无地铁直达，试试附近的区' };
+      }
     }
-    return null;
+
+    return { station: null, how: '没找到「' + (raw || '').trim() + '」，换个写法试试：地铁站名（漕盈路）/ 商圈（五角场）/ 道路（武康路）/ 区名（浦东）' };
   }
   function distLineShow(a) {
     if (!state.loc) return '';
@@ -305,14 +349,16 @@
   }
 
   function bind() {
-    document.querySelectorAll('.chip').forEach(function (el) {
+    // 只绑真正带 data-group 的筛选芯片；快捷站点 / 「就近优先」芯片由各自的处理函数负责
+    document.querySelectorAll('.chip[data-group]').forEach(function (el) {
       el.addEventListener('click', function () {
         var g = el.getAttribute('data-group');
         var v = el.getAttribute('data-val');
+        if (!g) return;
         document.querySelectorAll('.chip[data-group="' + g + '"]').forEach(function (o) { o.classList.remove('on'); });
         el.classList.add('on');
         state[g] = v;
-        document.getElementById('pickResult').style.display = 'none';
+        var pr = document.getElementById('pickResult'); if (pr) pr.style.display = 'none';
         render();
       });
     });

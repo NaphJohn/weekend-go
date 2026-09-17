@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <!-- 每次改动都把 v= 后面的版本号 +1，避免浏览器/GitHub Pages 缓存导致看不到更新
      （GitHub Pages 对 HTML 和资源都返回 cache-control: max-age=600，最长 10 分钟才失效） -->
-<link rel="stylesheet" href="assets/style.css?v=20260916p">
+<link rel="stylesheet" href="assets/style.css?v=20260917a">
 <meta http-equiv="Cache-Control" content="max-age=0">
 </head>
 <body>
@@ -75,12 +75,18 @@
       <button class="btn" id="btnLoc">定位</button>
       <button class="btn ghost" id="btnLocClear">清除</button>
     </div>
+    <div class="loc-row" style="margin-top:8px">
+      <input id="locInputA" class="loc-input half" type="text" placeholder="中间点 A：一个人在哪，例如 漕盈路">
+      <span class="loc-tilde">↔</span>
+      <input id="locInputB" class="loc-input half" type="text" placeholder="中间点 B：另一个人在哪，例如 张江路">
+      <button class="btn" id="btnMid">算中间点</button>
+    </div>
     <div class="filters" id="quickStations" style="margin-top:8px"></div>
     <div id="locResult" style="margin-top:8px"></div>
     <div style="margin-top:8px">
       <span class="chip" id="chipNear" style="display:none">📍 就近优先（已开）</span>
     </div>
-    <div class="hint" style="margin-top:8px">支持道路名、商圈、景区、高校、地铁站名，也可以只输区名。路程按直线距离估算，只用来排先后。</div>
+    <div class="hint" style="margin-top:8px">支持道路名、商圈、景区、高校、地铁站名，也可以只输区名。<b>两个人一起出门？</b>上面第二行各填一个地点，点「算中间点」，全部内容会改按「到两人中间点」的距离排。路程按直线距离估算，只用来排先后。</div>
   </div>
 
   <div class="panel">
@@ -165,11 +171,11 @@
 
 </div>
 
-<script src="data/activities.js?v=20260916p"></script>
-<script src="data/food.js?v=20260916p"></script>
-<script src="data/metro.js?v=20260916p"></script>
-<script src="data/shows.js?v=20260916p"></script>
-<script src="assets/locate.js?v=20260916p"></script>
+<script src="data/activities.js?v=20260917a"></script>
+<script src="data/food.js?v=20260917a"></script>
+<script src="data/metro.js?v=20260917a"></script>
+<script src="data/shows.js?v=20260917a"></script>
+<script src="assets/locate.js?v=20260917a"></script>
 <script>
   /**
    * 访客用 GitHub 账号留言（giscus）。
@@ -179,8 +185,8 @@
    */
   window.GISCUS_CFG = { enabled: true, repo: 'NaphJohn/weekend-go', repoId: 'R_kgDOUY4zNw', category: 'Announcements', categoryId: '' };
 </script>
-<script src="assets/annotate.js?v=20260916p"></script>
-<script src="assets/app.js?v=20260916p"></script>
+<script src="assets/annotate.js?v=20260917a"></script>
+<script src="assets/app.js?v=20260917a"></script>
 <script>
   /* 总览三块的实时数量：在演剧目 / 市内进行中 / 周边游目的地 */
   (function () {

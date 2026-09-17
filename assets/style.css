@@ -134,6 +134,10 @@ summary{cursor:pointer;font-size:13px;color:var(--blue);user-select:none;outline
 .loc-bad{font-size:13px;color:var(--amber)}
 .chip.sm{padding:4px 11px;font-size:12.5px}
 
+/* 「中间点」那一行：地点 A ↔ 地点 B */
+.loc-input.half{flex:1 1 170px;min-width:130px}
+.loc-tilde{color:var(--sub);font-weight:700;font-size:15px;flex:0 0 auto}
+
 /* 路程标签 */
 .dist{font-size:12.5px;border-radius:8px;padding:5px 10px;margin-top:2px;display:inline-block}
 .dist span{color:var(--sub)}

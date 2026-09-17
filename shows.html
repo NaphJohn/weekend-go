@@ -8,7 +8,7 @@
 <meta property="og:title" content="上海看剧 · 每周在演清单">
 <meta property="og:description" content="上海演出/剧目结构化清单：本周在演、即将开演，场次时间 + 票价 + 购票渠道一目了然。">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="assets/style.css?v=20260916p">
+<link rel="stylesheet" href="assets/style.css?v=20260917a">
 </head>
 <body>
 
@@ -40,12 +40,18 @@
       <button class="btn" id="btnLoc">定位</button>
       <button class="btn ghost" id="btnLocClear">清除</button>
     </div>
+    <div class="loc-row" style="margin-top:8px">
+      <input id="locInputA" class="loc-input half" type="text" placeholder="中间点 A：一个人在哪，例如 漕盈路">
+      <span class="loc-tilde">↔</span>
+      <input id="locInputB" class="loc-input half" type="text" placeholder="中间点 B：另一个人在哪，例如 张江路">
+      <button class="btn" id="btnMid">算中间点</button>
+    </div>
     <div class="filters" id="quickStations" style="margin-top:8px"></div>
     <div id="locResult" style="margin-top:8px"></div>
     <div style="margin-top:8px">
       <span class="chip" id="chipNear" style="display:none">📍 就近优先</span>
     </div>
-    <div class="hint" style="margin-top:8px">剧场位置集中在人民广场 / 陕西南路一带，定位后能看出哪些顺路。路程按直线距离估算。</div>
+    <div class="hint" style="margin-top:8px">剧场位置集中在人民广场 / 陕西南路一带，定位后能看出哪些顺路。<b>两个人碰头？</b>第二行各填一个地点，点「算中间点」，会改按到中间点的距离排。路程按直线距离估算。</div>
   </div>
 
   <div class="panel week-panel">
@@ -110,9 +116,9 @@
 
 </div>
 
-<script src="data/metro.js?v=20260916p"></script>
-<script src="assets/locate.js?v=20260916p"></script>
-<script src="data/shows.js?v=20260916p"></script>
+<script src="data/metro.js?v=20260917a"></script>
+<script src="assets/locate.js?v=20260917a"></script>
+<script src="data/shows.js?v=20260917a"></script>
 <script>
   /**
    * 访客用 GitHub 账号留言（giscus）。
@@ -161,7 +167,7 @@
     });
   })();
 </script>
-<script src="assets/annotate.js?v=20260916p"></script>
-<script src="assets/shows.js?v=20260916p"></script>
+<script src="assets/annotate.js?v=20260917a"></script>
+<script src="assets/shows.js?v=20260917a"></script>
 </body>
 </html>

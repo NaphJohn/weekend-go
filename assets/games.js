@@ -208,6 +208,60 @@
     }).join('');
   }
 
+  /* ===== 具体桌游吧 =====
+     conf:'high' → 有词条/商家页可交叉；'mid' → 仅地图平台或聚合站收录，必须电话确认。
+     ⚠️ 别把这里的店写成「推荐」——它只是「先打电话」的起点。 */
+  function confBadge(c) {
+    return c === 'mid'
+      ? '<span class="badge b-d3">🟡 地址来自地图平台</span>'
+      : '<span class="badge b-d1">✅ 有词条 / 商家页</span>';
+  }
+
+  function vLine(k, val, lead) {
+    if (!val || val === '—') return '';
+    return '<div class="v-line"><span class="v-k">' + k + '</span><span class="v-v">' +
+      (lead ? '<b>' + esc(lead) + '</b>' + esc(val) : esc(val)) + '</span></div>';
+  }
+
+  function renderVenues() {
+    var box = document.getElementById('venues');
+    if (!box || !META.venues) return;
+    box.innerHTML = META.venues.map(function (v) {
+      var tags = (v.tags || []).map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join('');
+      return '<div class="venue-card">' +
+        '<div class="v-head"><b>' + esc(v.name) + '</b>' + confBadge(v.conf) + '</div>' +
+        (v.area ? '<div class="v-area">' + esc(v.area) + '</div>' : '') +
+        vLine('📍 地址', v.addr) +
+        vLine('🚇 最近地铁', v.metroNote, v.metro ? v.metro + ' — ' : '') +
+        vLine('💰 计费', v.price) +
+        vLine('🕐 营业', v.hours) +
+        vLine('☎️ 电话', v.phone) +
+        (v.note ? '<div class="v-note">' + esc(v.note) + '</div>' : '') +
+        (tags ? '<div class="tags">' + tags + '</div>' : '') +
+        '</div>';
+    }).join('');
+  }
+
+  function renderFree() {
+    function cards(id, rows) {
+      var box = document.getElementById(id);
+      if (!box || !rows) return;
+      box.innerHTML = rows.map(function (r) {
+        return '<div class="scene-card"><b>' + esc(r.k) + '</b>　<span style="color:var(--green);font-weight:700">' +
+          esc(r.v) + '</span><br><span style="color:var(--sub)">' + esc(r.d) + '</span></div>';
+      }).join('');
+    }
+    function list(id, rows) {
+      var box = document.getElementById(id);
+      if (!box || !rows) return;
+      box.innerHTML = rows.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('');
+    }
+    cards('freeHow', META.freeHow);
+    cards('freeSpots', META.freeSpots);
+    list('freeAlt', META.freeAlt);
+    list('freeCare', META.freeCare);
+  }
+
   function bind() {
     document.querySelectorAll('.chip[data-group]').forEach(function (el) {
       el.addEventListener('click', function () {
@@ -240,6 +294,8 @@
     if (b && META.note) b.innerHTML = '⚠️ ' + META.note;
     renderFeeRef();
     renderPlatforms();
+    renderVenues();
+    renderFree();
     renderStats();
     renderCounts();
     bind();

@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>上海周末桌游 · 狼人杀/阿瓦隆/血染钟楼 选游戏参考</title>
-<meta name="description" content="上海周末桌游选游戏参考：狼人杀、阿瓦隆、血染钟楼、一夜终极狼人、行动代号、只言片语、璀璨宝石、卡坦岛等 30 款，标清人数、时长、要不要人主持、要不要买一盒，附玩之前速查、按场景抄答案、桌游吧计费口径与选店避坑清单。">
+<meta name="description" content="上海周末桌游选游戏参考：狼人杀、阿瓦隆、血染钟楼、一夜终极狼人、行动代号、只言片语、璀璨宝石、卡坦岛等 30 款，标清人数、时长、要不要人主持、要不要买一盒；另附上海桌游吧具体门店（含最近地铁站）、免费 / 最低价玩法怎么找、玩之前速查与选店避坑清单。">
 <meta property="og:title" content="上海周末桌游 · 选游戏参考">
 <meta property="og:description" content="30 款聚会桌游：人数 / 时长 / 上手难度 / 要不要人主持 / 要不要买一盒，一目了然。">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="assets/style.css?v=20260921c">
+<link rel="stylesheet" href="assets/style.css?v=20260921d">
 </head>
 <body>
 
@@ -45,7 +45,8 @@
     <div id="metaNote" class="hint"></div>
     <div class="hint" style="margin-top:8px">
       <b>想知道「今晚这一群人到底能开哪一款」</b>：先按人数和「要不要人主持」筛一圈 —— 这两条最容易把游戏挡在门外。
-      再用上面那个「帮我选一个」随机抽一个。想看进店怎么算钱、怎么挑店，往下翻到「大概多少钱」和「选桌游吧避坑清单」。
+      再用上面那个「帮我选一个」随机抽一个。<br>
+      <b>想知道去哪儿玩、花多少钱</b>：往下翻「大概多少钱」看计费口径 →「具体桌游吧」看已核门店和最近地铁站 →「免费 / 最低价怎么玩」看不花钱的路子 → 最后读一遍「选桌游吧避坑清单」。
     </div>
   </div>
 
@@ -166,6 +167,45 @@
   </div>
 
   <div class="panel">
+    <div class="panel-title">🏠 具体桌游吧（含最近地铁站 · 核对于 2026-09-21）</div>
+    <div class="hint" style="margin-bottom:12px">
+      ⚠️ 这不是「上海最好桌游吧」榜单 —— 只是几条<b>出发前先打电话核一次</b>的线索。桌游吧搬店、闭店、改名都很快，价格和营业时间一律以商家当期公示为准。
+      标 <b>🟡 地址来自地图平台</b> 的几家只有地图平台或聚合站收录、找不到可交叉的商家页，去之前务必先电话确认还在不在。
+    </div>
+    <div class="venue-grid" id="venues"></div>
+    <div class="hint" style="margin-top:12px">
+      <b>怎么用它</b>：先看最近地铁站在不在你的动线上，再打那个电话问三件事 —— 「今天几点到几点有空位」「按什么计费、有没有封顶」「游戏库实拍发我看一下」。电话里能问清的，别到了现场再说。
+    </div>
+    <div class="hint" style="margin-top:8px">
+      🧭 <b>本页故意不写「哪家最好」</b>：桌游吧的体验七成取决于「那天店里人多不多、有没有人给你讲规则」，这两件事跟店名关系不大，只跟时段和你打的那个电话有关系。
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🆓 免费 / 最低价怎么玩（先学会「找」，再谈去哪家）</div>
+    <div class="hint" style="margin-bottom:12px">
+      免费的桌游局几乎都不是「一家店」，而是<b>公共文化服务里的一类活动</b> —— 每个月都在换。所以这里给的是找法，不是会过期的场次表。
+    </div>
+
+    <div><b style="font-size:13.5px">🎯 四个免费入口（按「稳不稳」排）</b>
+      <div class="scene-grid" id="freeHow" style="margin-top:8px"></div>
+    </div>
+
+    <div style="margin-top:14px"><b style="font-size:13.5px">📍 几个长期存在的免费 / 低价据点</b>
+      <div class="scene-grid" id="freeSpots" style="margin-top:8px"></div>
+    </div>
+
+    <div style="margin-top:14px"><b style="font-size:13.5px">💡 不想花钱的四条替代打法</b>
+      <ul class="free-list" id="freeAlt"></ul>
+    </div>
+
+    <div class="free-care">
+      <div class="fc-h">⚠️ 免费 / 低价的三个坑</div>
+      <ul class="free-list" id="freeCare" style="margin-left:20px;color:#7a5310"></ul>
+    </div>
+  </div>
+
+  <div class="panel">
     <div class="panel-title">🛡️ 选桌游吧避坑清单（比选哪家店更重要）</div>
     <table class="mini-tbl">
       <tr><th>1. 先问计费方式</th><td>按人头畅玩 / 按小时 / 包场，三种价格差很多。一定要追问「有没有封顶」和「超时怎么加钱」。</td></tr>
@@ -177,7 +217,7 @@
       <tr><th>7. 提前 1–2 天预约</th><td>周五晚、周六下午最难订。超过 10 人的局建议直接打电话确认包间，别指望线上一定能订到。</td></tr>
       <tr><th>8. 别只看评分</th><td>桌游吧刷分比较常见。重点看「游戏库」「讲解」相关的具体评价，而不是总分高低。</td></tr>
     </table>
-    <div class="hint" style="margin-top:10px">本页不提供店家排名与联系方式 —— 门店变动太快、口径差异也大，一条能写清的清单比一份会过期的名单有用。</div>
+    <div class="hint" style="margin-top:10px">这八条比「去哪家店」更值得记 —— 店面会换、店名会改，问对问题这件事不会过期。上面那份门店名单只是<b>先打电话</b>的起点，不排名、不构成推荐。</div>
   </div>
 
   <div class="panel">
@@ -194,12 +234,13 @@
   <footer>
     游戏信息来自发行方资料、维基与公开桌游社区，人工核对整理，<b>不是排行榜、也不构成推荐</b>。<br>
     ⚠️ 同一款游戏加扩展、换人数、换板子，人数与时长都会变；计费区间为行业通行口径，实际以店家当期报价为准。<br>
-    想加新游戏？直接改 <code>data/games.js</code>，提个 PR 或本地改完推送即可。
+    ⚠️ 门店地址、最近地铁站、电话与营业时间核对于 <b>2026-09-21</b>，来源为公开词条 / 平台商家页 / 地图平台。桌游吧搬店、闭店、改名都很快 —— <b>出发前请务必用地图 App 或电话再核一次</b>。<br>
+    想加新游戏？直接改 <code>data/games.js</code>；想补一家店？在 <code>GAMES_META.venues</code> 里加一条，写清地址、最近地铁站和核对日期即可。
   </footer>
 
 </div>
 
-<script src="data/games.js?v=20260921c"></script>
+<script src="data/games.js?v=20260921d"></script>
 <script>
   /**
    * 访客用 GitHub 账号留言（giscus）。
@@ -247,7 +288,7 @@
     });
   })();
 </script>
-<script src="assets/annotate.js?v=20260921c"></script>
-<script src="assets/games.js?v=20260921c"></script>
+<script src="assets/annotate.js?v=20260921d"></script>
+<script src="assets/games.js?v=20260921d"></script>
 </body>
 </html>

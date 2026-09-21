@@ -9,6 +9,15 @@
 两类数据的排序逻辑不同：**市内活动按剩余天数排**（快结束的在前，避免错过），
 **周边游常年可去**，所以沉底并按推荐度排。
 
+除首页外还有四个独立板块页，共用同一套 CSS 与原生的筛选 / 排序 / 「帮我选一个」交互：
+
+| 板块 | 页面 | 数据 |
+|---|---|---|
+| 🎭 看剧 · 演出 | `shows.html` | `data/shows.js`（档期 / 场次 / 票价 / 购票渠道） |
+| 🕵️ 剧本杀 | `scripts.html` | `data/scripts.js`（35 本：经典本 + 新本，人数/时长/难度/发行方式） |
+| 🎲 桌游 · 狼人杀/阿瓦隆 | `boardgames.html` | `data/games.js`（30 款：要不要人主持 / 要不要买一盒） |
+| 🎪🚗 市内 · 周边游 | `index.html` | `data/activities.js` + `data/food.js` + `data/metro.js` |
+
 零依赖、零构建：`index.html` + 一个数据文件 + 一点原生 JS，GitHub Pages 直接托管。
 
 ## 描述语备选（GitHub About / 分享卡片用）
@@ -120,6 +129,41 @@ window.SCRIPTS_META = { verifiedAt: '2026-09-21', city: '上海', note: '…口�
 - **数据纪律（重要）**：人数 / 时长 / 难度照抄公开榜单聚合时必须标 `conf: 'mid'`，页面会显示 🟡 并提示「以店家当期本单为准」；**不要编造发行方、价格和门店排名**。价格只给行业通行区间（`priceRef`），不写某家店报价。
 - 加完记得把 `index.html` / `shows.html` / `scripts.html` 里 `?v=` 一起 +1（缓存），并确认 `index.html` 的 `.hud` 里 `#hk-scripts` 能取到 `window.SCRIPTS.length`。
 
+## 桌游板块（`boardgames.html` + `data/games.js`）
+
+第 5 个板块：**聚会桌游 / 桌上游戏选游戏参考**（不是排行榜）。数据在 `data/games.js`，页面是 `boardgames.html`，渲染引擎 `assets/games.js`。和剧本杀页是同级子板块 —— 两页顶部有 `.subtabs` 互跳，导航栏里各占一格。
+
+```js
+window.GAMES = [{
+  id: 'avalon',                     // 唯一 id，同时是划词批注的锚点
+  name: '阿瓦隆',
+  en: 'The Resistance: Avalon',     // 英文名，卡片标题右侧小字；没有就写 '—'
+  cat: 'social',                    // 主类型，用于筛选：social 社交推理 / party 欢乐破冰
+                                    //   strategy 策略经营 | card 卡牌对战
+  genres: ['身份推理', '阵营对抗'],   // 展示用类型标签
+  players: '5–10 人（7–8 人最佳）',   // 展示文案
+  pmin: 5, pmax: 10,                // 人数区间，用于「4 人以内 / 能开 6–8 人 / 9 人以上」
+  duration: '约 30–50 分钟 / 局',
+  dmin: 0.5, dmax: 0.85,            // 时长区间（**小时**），用于「半小时内 / 半小时–1.5 小时 / 1.5 小时以上」
+  diff: 3,                          // 上手难度 1–5（1 一学就会、5 硬核）
+  gm: 'none',                       // 'none' 不用人主持 | 'needed' 必须有人当主持（上帝 / 说书人）
+  kit: 'buy',                       // 'buy' 要有一盒 | 'free' 不用买（扑克 / 纸笔 / 手机）
+  year: '2012', designer: 'Don Eskridge / Indie Boards & Cards',
+  highlight: '这游戏在玩什么（卡片展开区第一段）',
+  forWho: '适合谁玩',
+  note: '玩之前要知道 / 注意点',
+  tags: ['不用主持', '无淘汰'],
+  conf: 'high'                      // 'high' | 'mid'，mid 会在卡片上标「🟡 口径待核」
+}];
+window.GAMES_META = { verifiedAt: '2026-09-21', city: '上海', note: '…口径声明…', feeRef: [{k,v,d}], platforms: [{k,v,d,url}] };
+```
+
+- 两个**最实用**的字段是 `gm` 和 `kit`：它们直接决定「今晚这一群人能不能开起来」。筛选芯片里专门给了「主持不限 / 不用人主持 / 需要有人主持」，卡片上也用徽章标出来。
+- 其余筛选：类型 / 人数 / 时长 / 上手难度；排序：推荐排序（**= 数组收录顺序**，同类里越靠前越常被提起）/ 需要人数从少到多 / 时长从短到长 / 难度升降。
+- 「帮我选一个」= 在当前筛选结果里按「不用人主持 + 不用买 + 半小时能打完」加权随机。
+- **数据纪律**：人数 / 时长一律取发行方 / 维基 / 公开桌游社区的通行口径，**不写门店名、地址、电话、人均实价**。计费只给行业通行区间（`feeRef`：按人头畅玩 / 按小时 / 包场 / 加个带玩的人），页面明确标「非某家门店报价」。`platforms` 里的外链必须是实测 200 的官网。
+- 加完记得把四个 HTML 里 `?v=` 一起 +1，并确认 `index.html` 的 `.hud` 里 `#hk-games` 能取到 `window.GAMES.length`。
+
 ## 怎么加一个周边游（`type: 'trip'`）
 
 周边游**没有展期**，所以 `start` / `end` 留空，改用下面这批字段：
@@ -162,6 +206,8 @@ window.SCRIPTS_META = { verifiedAt: '2026-09-21', city: '上海', note: '…口�
 ## 在线地址
 
 👉 **https://naphjohn.github.io/weekend-go/**
+
+子页：[/shows.html](https://naphjohn.github.io/weekend-go/shows.html) · [/scripts.html](https://naphjohn.github.io/weekend-go/scripts.html) · [/boardgames.html](https://naphjohn.github.io/weekend-go/boardgames.html)
 
 ## 部署
 

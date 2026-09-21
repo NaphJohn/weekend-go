@@ -295,8 +295,9 @@
     if (!bar) return;
     var n = countAll();
     bar.innerHTML = '';
+    // ⚠️ 提示文案必须对「展览 / 剧 / 剧本杀 / 桌游」四类卡片都成立 —— 别写死具体例子
     bar.appendChild(mk('span', 'hint', n ? ('共 ' + n + ' 条批注。划卡片上任意一句话就能加，点划线的地方可以改或删。')
-                                     : '还没有批注。用鼠标划选卡片上任意一句话（比如「携程 / 美团 / 景区现场」），松手后点「加批注」。'));
+                                     : '还没有批注。用鼠标划选卡片上任意一句话，松手后点「加批注」。'));
     if (!n) return;
     var ops = mk('div', 'anno-bar-ops');
     var bExp = mk('button', 'mini', '导出');

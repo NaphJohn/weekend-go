@@ -200,7 +200,7 @@ details.guide summary{color:var(--purple);font-weight:600}
 
 .empty{text-align:center;color:var(--sub);padding:40px 0;font-size:14px}
 
-/* ===== 顶部导航（市内 / 周边游 / 看剧 / 剧本杀 互链）===== */
+/* ===== 顶部导航（市内 / 周边游 / 看剧 / 剧本杀 / 桌游 互链）===== */
 .nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .nav a{
   color:#fff;opacity:.82;text-decoration:none;font-size:13.5px;font-weight:600;
@@ -239,6 +239,27 @@ details.guide summary{color:var(--purple);font-weight:600}
 .scene-card{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.75;color:#41506a}
 .scene-card b{color:#3a2f66}
 .block-scripts{border-top:4px solid var(--amber)}
+
+/* ===== 桌游页（boardgames.html / data/games.js）===== */
+.card-game{border-color:#dbe9ff;background:linear-gradient(180deg,#fafdff,#ffffff)}
+.card-game h3{color:#1f3d6b}
+.en-name{font-size:11.5px;font-weight:400;color:var(--sub);margin-left:6px;letter-spacing:.2px}
+.pill-gm{display:inline-block;font-size:11px;font-weight:700;border-radius:5px;padding:1px 8px}
+.pill-gm-none{background:#e6f7f0;color:var(--green)}
+.pill-gm-need{background:#fdf3e3;color:var(--amber)}
+.pill-free{display:inline-block;font-size:11px;font-weight:700;border-radius:5px;padding:1px 8px;background:#f0ecfb;color:var(--purple)}
+.block-games{border-top:4px solid #2b7de9}
+
+/* ===== 同级子板块切换条（剧本杀 ⇄ 桌游）===== */
+.subtabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.subtabs a,.subtabs span{
+  font-size:13.5px;font-weight:700;padding:7px 16px;border-radius:20px;
+  text-decoration:none;color:var(--sub);background:#fff;border:1px solid var(--line);transition:all .15s;
+}
+.subtabs a:hover{border-color:#c9d4ea;color:var(--ink)}
+.subtabs .on{background:var(--blue);border-color:var(--blue);color:#fff}
+.scene-card a{color:var(--blue);font-weight:700;text-decoration:none}
+.scene-card a:hover{text-decoration:underline}
 
 footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:30px;line-height:1.9}
 
@@ -279,7 +300,8 @@ mark.anno:hover{background:#ffe066}
 .anno-bar-ops{display:flex;gap:8px;margin-top:8px}
 
 /* ===== 板块：市内 / 周边游 / 看剧 / 剧本杀（四块入口）===== */
-.hud{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:14px;margin-bottom:6px}
+/* minmax 别加大：加到 5 块（看剧/剧本杀/桌游/市内/周边游）后 205px 会挤成 4+1 两行 */
+.hud{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:6px}
 .block{
   display:flex;flex-direction:column;gap:8px;
   background:var(--card);border:1px solid var(--line);border-radius:16px;

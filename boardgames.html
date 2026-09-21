@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上海周末桌游 · 狼人杀/阿瓦隆/血染钟楼 选游戏参考</title>
+<meta name="description" content="上海周末桌游选游戏参考：狼人杀、阿瓦隆、血染钟楼、一夜终极狼人、行动代号、只言片语、璀璨宝石、卡坦岛等 30 款，标清人数、时长、要不要人主持、要不要买一盒，附玩之前速查、按场景抄答案、桌游吧计费口径与选店避坑清单。">
+<meta property="og:title" content="上海周末桌游 · 选游戏参考">
+<meta property="og:description" content="30 款聚会桌游：人数 / 时长 / 上手难度 / 要不要人主持 / 要不要买一盒，一目了然。">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/style.css?v=20260921c">
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav class="nav">
+      <a href="index.html?jump=city">🎪 市内 · 展览市集美食</a>
+      <a href="index.html?jump=trip">🚗 周边游</a>
+      <a href="shows.html">🎭 看剧 · 演出</a>
+      <a href="scripts.html">🕵️ 剧本杀</a>
+      <a class="on" href="boardgames.html">🎲 桌游</a>
+    </nav>
+    <h1>上海周末桌游 · 选游戏参考</h1>
+    <div class="sub">狼人杀 / 阿瓦隆 / 血染钟楼 / 行动代号 / 卡坦岛… —— 一群人今晚到底开哪一款，先看这一页</div>
+    <div class="stats">
+      <div class="stat"><b id="s-total">-</b>款收录</div>
+      <div class="stat"><b id="s-noGm">-</b>款不用人主持</div>
+      <div class="stat"><b id="s-free">-</b>款不用买</div>
+      <div class="stat"><b id="s-quick">-</b>款 30 分钟内一局</div>
+    </div>
+    <div class="meta">数据核对于 <span id="verifiedAt"></span>　·　同一款游戏加扩展、换人数、换板子，人数与时长都会变，以店家当期实际为准</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="subtabs">
+    <a href="scripts.html">🕵️ 剧本杀本 · 35 本选本参考</a>
+    <span class="on">🎲 聚会桌游 · 30 款选游戏参考</span>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🤝 怎么用这一页</div>
+    <div id="metaNote" class="hint"></div>
+    <div class="hint" style="margin-top:8px">
+      <b>想知道「今晚这一群人到底能开哪一款」</b>：先按人数和「要不要人主持」筛一圈 —— 这两条最容易把游戏挡在门外。
+      再用上面那个「帮我选一个」随机抽一个。想看进店怎么算钱、怎么挑店，往下翻到「大概多少钱」和「选桌游吧避坑清单」。
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">懒得挑？让它替你决定</div>
+    <div class="decide-row">
+      <button class="btn" id="btnDecide">帮我选一个游戏</button>
+      <span class="hint">在当前筛选结果里，按「不用人主持 + 不用买 + 半小时能打完」加权随机，再点一次换一个</span>
+    </div>
+    <div id="pickResult"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">筛选</div>
+    <div class="filters">
+      <span class="chip on" data-group="cat" data-val="all">全部类型 <b class="cnt" data-cnt="cat:all">0</b></span>
+      <span class="chip" data-group="cat" data-val="social">社交推理 / 阵营 <b class="cnt" data-cnt="cat:social">0</b></span>
+      <span class="chip" data-group="cat" data-val="party">欢乐破冰 <b class="cnt" data-cnt="cat:party">0</b></span>
+      <span class="chip" data-group="cat" data-val="strategy">策略经营 <b class="cnt" data-cnt="cat:strategy">0</b></span>
+      <span class="chip" data-group="cat" data-val="card">卡牌对战 <b class="cnt" data-cnt="cat:card">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="people" data-val="all">人数不限 <b class="cnt" data-cnt="people:all">0</b></span>
+      <span class="chip" data-group="people" data-val="s">4 人以内 <b class="cnt" data-cnt="people:s">0</b></span>
+      <span class="chip" data-group="people" data-val="m">能开 6–8 人 <b class="cnt" data-cnt="people:m">0</b></span>
+      <span class="chip" data-group="people" data-val="l">9 人以上 <b class="cnt" data-cnt="people:l">0</b></span>
+      <span class="chip on" data-group="time" data-val="all">时长不限 <b class="cnt" data-cnt="time:all">0</b></span>
+      <span class="chip" data-group="time" data-val="short">半小时内一局 <b class="cnt" data-cnt="time:short">0</b></span>
+      <span class="chip" data-group="time" data-val="mid">半小时–1.5 小时 <b class="cnt" data-cnt="time:mid">0</b></span>
+      <span class="chip" data-group="time" data-val="long">1.5 小时以上 <b class="cnt" data-cnt="time:long">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="diff" data-val="all">上手难度不限 <b class="cnt" data-cnt="diff:all">0</b></span>
+      <span class="chip" data-group="diff" data-val="e">一学就会（1–2） <b class="cnt" data-cnt="diff:e">0</b></span>
+      <span class="chip" data-group="diff" data-val="m">要学一会（3） <b class="cnt" data-cnt="diff:m">0</b></span>
+      <span class="chip" data-group="diff" data-val="h">偏硬核（4–5） <b class="cnt" data-cnt="diff:h">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="gm" data-val="all">主持不限 <b class="cnt" data-cnt="gm:all">0</b></span>
+      <span class="chip" data-group="gm" data-val="none">不用人主持 <b class="cnt" data-cnt="gm:none">0</b></span>
+      <span class="chip" data-group="gm" data-val="needed">需要有人主持 <b class="cnt" data-cnt="gm:needed">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="hint" style="align-self:center;margin-right:2px">排序：</span>
+      <span class="chip on" data-sort="rec">推荐排序</span>
+      <span class="chip" data-sort="people-asc">需要人数从少到多</span>
+      <span class="chip" data-sort="time-asc">时长从短到长</span>
+      <span class="chip" data-sort="diff-asc">难度从低到高</span>
+      <span class="chip" data-sort="diff-desc">难度从高到低</span>
+    </div>
+    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果　·　标 <b>🟡 口径待核</b> 的条目来自单一来源，玩之前最好和店家核对一下</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🚪 玩之前速查 · 桌上游戏术语（第一次进桌游吧先看这个）</div>
+    <table class="mini-tbl">
+      <tr><th>德式 vs 美式</th><td><b>德式（欧式）</b>：重资源与策略、随机性小，赢在算计，比如《卡坦岛》《璀璨宝石》。<b>美式</b>：重主题和剧情、骰子随机大，赢在代入感。第一次买桌游，德式更不容易踩雷。</td></tr>
+      <tr><th>重策 / 中策 / 轻策</th><td>按规则复杂度和单局时长分档。<b>轻策</b> = 规则 5 分钟讲完、半小时能打完（璀璨宝石、花砖物语）；<b>重策</b> = 光讲规则就要半小时（农场主、卡坦岛也偏重）。</td></tr>
+      <tr><th>要不要人主持</th><td>狼人杀要一个「上帝」，血染钟楼要一个「说书人」—— 这两个人整局不参与游戏，只负责控流程。选游戏前先确认队伍里有人愿意干这活。阿瓦隆、行动代号、璀璨宝石都不需要。</td></tr>
+      <tr><th>淘汰制 / 无淘汰</th><td><b>淘汰制</b>（狼人杀、爆炸猫）出局的人只能坐着干等，这是聚会最大的体验杀手。<b>无淘汰</b>（阿瓦隆、只言片语、血染钟楼）出局也照玩。人数刚好卡在边缘时，优先选无淘汰的。</td></tr>
+      <tr><th>贴脸</th><td>在身份游戏里用「我要是坏人我就怎样怎样」这类非逻辑手段强制别人站边。它会直接毁掉一局逻辑游戏，开局前最好约定禁止。</td></tr>
+      <tr><th>查杀 / 金水</th><td>狼人杀术语：<b>查杀</b> = 预言家验到某人是坏人；<b>金水</b> = 验到好人。听不懂这些完全没关系，直接说「我是好人，过」，没人会怪你。</td></tr>
+      <tr><th>梅林 / 派西维尔</th><td>阿瓦隆术语：<b>梅林</b> 能看到所有坏人（莫德雷德除外），但必须藏住自己，因为坏人最后有机会刺杀他；<b>派西维尔</b> 能看到梅林和莫甘娜，但分不清谁是谁。</td></tr>
+      <tr><th>说书人</th><td>血染钟楼的主持人。他不只是控流程，还能决定给你什么信息 —— 甚至故意给你错误信息。所以全局体验高低，几乎完全取决于说书人水平。</td></tr>
+      <tr><th>畅玩 / 包场 / 开台费</th><td>桌游吧的三种计费方式。坐下之前一定要问清三件事：有没有<b>封顶</b>、<b>超时</b>怎么算、<b>桌游使用费</b>是否已经包含在包场价里。</td></tr>
+      <tr><th>一次性游戏</th><td>像《大搜查》这种，玩过一次就知道答案了。别买二手，桌游吧一般也不外借 —— 想玩就在店里当场玩完。</td></tr>
+    </table>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="panel" style="margin-top:20px">
+    <div class="panel-title">🎯 按场景选 · 直接抄答案</div>
+    <div class="scene-grid">
+      <div class="scene-card">
+        <b>第一次玩 / 全场都是新手</b><br>
+        《行动代号》→《只言片语》→《谁是卧底》。人够多（6 人以上）就直接上《阿瓦隆》，规则讲一遍就能开。<br>
+        <span style="color:var(--sub)">别第一局就开《血染钟楼》，光讲规则就能劝退一半人。</span>
+      </div>
+      <div class="scene-card">
+        <b>人特别多（10 人以上）</b><br>
+        《狼人杀》要有人当上帝、《血染钟楼》要有人当说书人 —— 先确认有人愿意，否则退到《谁是卧底》《天黑请闭眼》。<br>
+        <span style="color:var(--sub)">10 人以上最怕冷场，一定要选「每个人每轮都有话说」的那类。</span>
+      </div>
+      <div class="scene-card">
+        <b>公司团建 / 同事还没混熟</b><br>
+        先用《行动代号》《你画我猜》《德国心脏病》破冰，玩开了再上《阿瓦隆》《三国杀》。<br>
+        <span style="color:var(--sub)">人多的局值得加钱请店里的人讲规则，省下半小时的混乱。</span>
+      </div>
+      <div class="scene-card">
+        <b>只有 3–5 个人</b><br>
+        《璀璨宝石》《花砖物语》《富饶之城》都行；喜欢对抗就《卡坦岛》（3–4 人最平衡）、《妙探寻凶》。<br>
+        <span style="color:var(--sub)">人少别硬开狼人杀，逻辑局人不够就变成抿人游戏了。</span>
+      </div>
+      <div class="scene-card">
+        <b>两个人 / 情侣</b><br>
+        《情书》《璀璨宝石》《花砖物语》《UNO》《爆炸猫》；想一起动脑而不是互坑，就《大搜查》。<br>
+        <span style="color:var(--sub)">注意《卡坦岛》《爆炸猫》都有 2 人规则，但体验不如 3 人以上。</span>
+      </div>
+      <div class="scene-card">
+        <b>想认真玩一下午</b><br>
+        《血染钟楼》（要有人当说书人）或《农场主》《卡坦岛》《七大奇迹》。<br>
+        <span style="color:var(--sub)">提前留 2 小时以上，别排在晚上还有别的安排的日子。</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">💰 大概多少钱（桌游吧计费通行口径，非某家门店报价）</div>
+    <div class="scene-grid" id="feeRef"></div>
+    <div class="hint" style="margin-top:10px">同一条路隔两家店价格就能差一倍。进店前电话问清三件事：<b>计费起点</b>（是不是等人齐才开始算）、<b>超时规则</b>（按人头还是按房间加收）、<b>附加费用</b>（饮料、零食、桌游使用费）。问清楚能省不少钱。</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🖥 不想出门 / 想先试玩再买</div>
+    <div class="scene-grid" id="platforms"></div>
+    <div class="hint" style="margin-top:10px">先在网上试玩一局，再决定要不要买一盒回家 —— 尤其是重策类（卡坦岛、农场主），试过才知道自己那一桌人能不能坐得住。</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🛡️ 选桌游吧避坑清单（比选哪家店更重要）</div>
+    <table class="mini-tbl">
+      <tr><th>1. 先问计费方式</th><td>按人头畅玩 / 按小时 / 包场，三种价格差很多。一定要追问「有没有封顶」和「超时怎么加钱」。</td></tr>
+      <tr><th>2. 问清楚有没有附加费</th><td>有些店的包场价不含桌游使用费，坐下才被告知要加钱。饮料、零食是否另计也要问。</td></tr>
+      <tr><th>3. 问有没有人讲规则</th><td>有的店叫「助教」或「游戏导师」。新手多的局，花几十块钱让人讲解，比所有人现场翻说明书强得多。</td></tr>
+      <tr><th>4. 要游戏库实拍</th><td>「我们有 300 款」不算数 —— 看照片里有没有你想玩的那几盒。想玩重策，重点看有没有卡坦岛、七大奇迹这类。</td></tr>
+      <tr><th>5. 确认人数上限和桌子</th><td>10 人以上先确认坐得下；想玩版图类（卡坦岛）要确认有 1.2 米以上的长桌，放不下就没法玩。</td></tr>
+      <tr><th>6. 问能不能自带游戏</th><td>有的店不让自带，或者要收开台费。自己买了新游戏想现场开，先问清楚。</td></tr>
+      <tr><th>7. 提前 1–2 天预约</th><td>周五晚、周六下午最难订。超过 10 人的局建议直接打电话确认包间，别指望线上一定能订到。</td></tr>
+      <tr><th>8. 别只看评分</th><td>桌游吧刷分比较常见。重点看「游戏库」「讲解」相关的具体评价，而不是总分高低。</td></tr>
+    </table>
+    <div class="hint" style="margin-top:10px">本页不提供店家排名与联系方式 —— 门店变动太快、口径差异也大，一条能写清的清单比一份会过期的名单有用。</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">✍️ 划词批注</div>
+    <div id="annoBar"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🗣 评论 / 讨论</div>
+    <div class="hint" style="margin-bottom:10px">和首页共用同一个留言区（讨论 #1）。想补新游戏？直接说名字 + 人数 + 时长 + 要不要人主持就行。</div>
+    <div id="giscusBox"></div>
+  </div>
+
+  <footer>
+    游戏信息来自发行方资料、维基与公开桌游社区，人工核对整理，<b>不是排行榜、也不构成推荐</b>。<br>
+    ⚠️ 同一款游戏加扩展、换人数、换板子，人数与时长都会变；计费区间为行业通行口径，实际以店家当期报价为准。<br>
+    想加新游戏？直接改 <code>data/games.js</code>，提个 PR 或本地改完推送即可。
+  </footer>
+
+</div>
+
+<script src="data/games.js?v=20260921c"></script>
+<script>
+  /**
+   * 访客用 GitHub 账号留言（giscus）。
+   * ⚠️ category 必须和仓库里真实存在的讨论分类「同名」——仓库讨论开在
+   *    Announcements 下，写成 General 会直接报 Discussion not found。
+   * ⚠️ repoId 不能留空，否则同样查不到讨论。
+   * 这一页还没有自己的讨论帖，所以用 mapping:'number' 直接指向讨论 #1，
+   *   和首页共用同一个留言区。
+   */
+  window.GISCUS_CFG = {
+    enabled: true, repo: 'NaphJohn/weekend-go', repoId: 'R_kgDOUY4zNw',
+    category: 'Announcements', categoryId: '', mapping: 'number', term: '1'
+  };
+  (function () {
+    var cfg = window.GISCUS_CFG || {}, box = document.getElementById('giscusBox');
+    if (!box || !cfg.enabled || !cfg.repo) return;
+    var s = document.createElement('script');
+    s.src = 'https://giscus.app/client.js';
+    s.setAttribute('data-repo', cfg.repo);
+    s.setAttribute('data-repo-id', cfg.repoId || '');
+    s.setAttribute('data-category', cfg.category || 'Announcements');
+    s.setAttribute('data-category-id', cfg.categoryId || '');
+    s.setAttribute('data-mapping', cfg.mapping || 'pathname');
+    s.setAttribute('data-term', cfg.term || '');
+    s.setAttribute('data-strict', '0');
+    s.setAttribute('data-reactions-enabled', '1');
+    s.setAttribute('data-emit-metadata', '0');
+    s.setAttribute('data-input-position', 'bottom');
+    s.setAttribute('data-theme', 'light');
+    s.setAttribute('data-lang', 'zh-CN');
+    s.setAttribute('crossorigin', 'anonymous');
+    s.async = true;
+    box.appendChild(s);
+    window.addEventListener('message', function (ev) {
+      if (!ev || !ev.data || ev.origin !== 'https://giscus.app') return;
+      var d = ev.data.giscus || ev.data;
+      if (!d || !d.error || box.querySelector('.giscus-bad')) return;
+      var msg = String(d.error);
+      var tip = /not installed/i.test(msg)
+        ? 'giscus GitHub App 还没装。到 https://github.com/apps/giscus 安装并对 NaphJohn/weekend-go 授权。'
+        : /Discussion not found/i.test(msg)
+          ? '讨论没找到：多半是 category 和仓库真实分类不同名（本仓库讨论在 <b>Announcements</b> 下）。'
+          : msg;
+      box.insertAdjacentHTML('afterbegin', '<div class="giscus-bad">⚠️ 评论区暂时加载不出来：' + tip + '</div>');
+    });
+  })();
+</script>
+<script src="assets/annotate.js?v=20260921c"></script>
+<script src="assets/games.js?v=20260921c"></script>
+</body>
+</html>

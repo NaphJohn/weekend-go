@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上海剧本杀 · 经典本 + 2026 新本选本参考</title>
+<meta name="description" content="上海剧本杀选本参考：持斧奥夫、周公游记、年轮、虚构推理、漓川怪谈簿等公认经典硬核/情感本，加上 2026 新本榜单，附人数、时长、难度、适合谁、上车前科普与选店避坑清单。">
+<meta property="og:title" content="上海剧本杀 · 选本参考">
+<meta property="og:description" content="经典本 + 2026 新本：人数 / 时长 / 难度 / 适合谁一目了然，附术语速查与选店避坑清单。">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/style.css?v=20260921b">
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav class="nav">
+      <a href="index.html?jump=city">🎪 市内 · 展览市集美食</a>
+      <a href="index.html?jump=trip">🚗 周边游</a>
+      <a href="shows.html">🎭 看剧 · 演出</a>
+      <a class="on" href="scripts.html">🕵️ 剧本杀</a>
+    </nav>
+    <h1>上海剧本杀 · 选本参考</h1>
+    <div class="sub">公认经典本 + 2026 新本 —— 人数 / 时长 / 难度 / 适合谁，挑本之前先看这一页</div>
+    <div class="stats">
+      <div class="stat"><b id="s-total">-</b>本收录</div>
+      <div class="stat"><b id="s-classic">-</b>本经典本</div>
+      <div class="stat"><b id="s-new">-</b>本 2026 新本</div>
+      <div class="stat"><b id="s-newbie">-</b>本新手可玩</div>
+    </div>
+    <div class="meta">数据核对于 <span id="verifiedAt"></span>　·　同一本在不同店家 / 不同版本口径会有出入，请以店家当期本单为准</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="panel">
+    <div class="panel-title">🤝 怎么用这一页</div>
+    <div id="metaNote" class="hint"></div>
+    <div class="hint" style="margin-top:8px">
+      <b>想知道「和朋友玩的这一场到底选哪本」</b>：先按人数和难度筛一圈，再用上面那个「帮我选一个本」随机抽一个。
+      想看店家怎么挑、价格大概多少，往下翻到「选店避坑清单」。
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">懒得挑？让它替你决定</div>
+    <div class="decide-row">
+      <button class="btn" id="btnDecide">帮我选一个本</button>
+      <span class="hint">在当前筛选结果里按「经典本 + 口径可靠 + 好凑局」加权随机，再点一次换一个</span>
+    </div>
+    <div id="pickResult"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">筛选</div>
+    <div class="filters">
+      <span class="chip on" data-group="genre" data-val="all">全部类型 <b class="cnt" data-cnt="genre:all">0</b></span>
+      <span class="chip" data-group="genre" data-val="hard">硬核推理 <b class="cnt" data-cnt="genre:hard">0</b></span>
+      <span class="chip" data-group="genre" data-val="bian">变格科幻 <b class="cnt" data-cnt="genre:bian">0</b></span>
+      <span class="chip" data-group="genre" data-val="horror">恐怖惊悚 <b class="cnt" data-cnt="genre:horror">0</b></span>
+      <span class="chip" data-group="genre" data-val="emo">情感沉浸 <b class="cnt" data-cnt="genre:emo">0</b></span>
+      <span class="chip" data-group="genre" data-val="fun">机制欢乐 <b class="cnt" data-cnt="genre:fun">0</b></span>
+      <span class="chip" data-group="genre" data-val="guofeng">古风家国 <b class="cnt" data-cnt="genre:guofeng">0</b></span>
+      <span class="chip" data-group="genre" data-val="newbie">新手友好 <b class="cnt" data-cnt="genre:newbie">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="diff" data-val="all">难度不限 <b class="cnt" data-cnt="diff:all">0</b></span>
+      <span class="chip" data-group="diff" data-val="d1">新手（1–2） <b class="cnt" data-cnt="diff:d1">0</b></span>
+      <span class="chip" data-group="diff" data-val="d2">进阶（3） <b class="cnt" data-cnt="diff:d2">0</b></span>
+      <span class="chip" data-group="diff" data-val="d3">硬核（4） <b class="cnt" data-cnt="diff:d3">0</b></span>
+      <span class="chip" data-group="diff" data-val="d4">地狱（5） <b class="cnt" data-cnt="diff:d4">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="people" data-val="all">人数不限 <b class="cnt" data-cnt="people:all">0</b></span>
+      <span class="chip" data-group="people" data-val="small">5 人及以下 <b class="cnt" data-cnt="people:small">0</b></span>
+      <span class="chip" data-group="people" data-val="mid">能开 6 人 <b class="cnt" data-cnt="people:mid">0</b></span>
+      <span class="chip" data-group="people" data-val="big">7 人及以上 <b class="cnt" data-cnt="people:big">0</b></span>
+      <span class="chip on" data-group="time" data-val="all">时长不限 <b class="cnt" data-cnt="time:all">0</b></span>
+      <span class="chip" data-group="time" data-val="short">4.5 小时内 <b class="cnt" data-cnt="time:short">0</b></span>
+      <span class="chip" data-group="time" data-val="mid">4–5.5 小时 <b class="cnt" data-cnt="time:mid">0</b></span>
+      <span class="chip" data-group="time" data-val="long">5 小时以上 <b class="cnt" data-cnt="time:long">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="cat" data-val="all">经典 + 新本 <b class="cnt" data-cnt="cat:all">0</b></span>
+      <span class="chip" data-group="cat" data-val="classic">只看经典本 <b class="cnt" data-cnt="cat:classic">0</b></span>
+      <span class="chip" data-group="cat" data-val="new">只看 2026 新本 <b class="cnt" data-cnt="cat:new">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="hint" style="align-self:center;margin-right:2px">排序：</span>
+      <span class="chip on" data-sort="rec">推荐排序</span>
+      <span class="chip" data-sort="diff-asc">难度从低到高</span>
+      <span class="chip" data-sort="diff-desc">难度从高到低</span>
+      <span class="chip" data-sort="time-asc">时长从短到长</span>
+    </div>
+    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果　·　标 <b>🟡 榜单口径</b> 的本，人数/时长/难度主要来自公开榜单聚合，上车前务必和店家核对</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🚪 上车前科普 · 术语速查（第一次玩先看这个）</div>
+    <table class="mini-tbl">
+      <tr><th>本格 / 变格</th><td><b>本格</b>：诡计在现实里能实现，符合科学逻辑。<b>变格</b>：有超自然设定（魂穿、时间循环、灵异），推理要在剧本给的规则里做。<b>新本格</b>：先给你一套世界观，再在这套规则里玩本格。</td></tr>
+      <tr><th>盲凶本</th><td>凶手自己也<b>不知道</b>自己是凶手，需要和大家一起盘。好处是凶手零压力、不用演，玩家体验更平均 —— 新手第一次玩优先选这类。</td></tr>
+      <tr><th>盒装 / 城限 / 独家</th><td>发行方式。盒装 = 谁都能买、哪家店都能开；城限 = 一个城市限定几家店；独家 = 一个城市只有一家店能开。后面两种更贵、演绎要求更高。</td></tr>
+      <tr><th>DM / 扶车</th><td>DM 就是主持人。DM 愿意适当提示叫「扶车」——<b>硬核本不扶车才好玩</b>，情感本则很吃 DM 的演绎和控场。</td></tr>
+      <tr><th>盲开 / 双开</th><td>体验杀手。盲开 = DM 没提前读组织者手册就上；双开 = 同一个 DM 同时带两场，中途一定会走神。进店直接问这两个。</td></tr>
+      <tr><th>掉线 / 坐牢</th><td>掉线 = 玩家跟不上思路开始摸鱼；坐牢 = 全车卡住推不动、干等。多半是人数/难度没匹配好或者角色分配不合适。</td></tr>
+      <tr><th>边缘位</th><td>某个角色戏份和信息量明显少于别人。7 人版比 6 人版更容易多出边缘位 —— 能凑 6 人就别硬开 7 人。</td></tr>
+      <tr><th>反串</th><td>玩异性角色。情感本基本都明令禁止反串，强行反串会明显掉沉浸感。</td></tr>
+      <tr><th>跳车</th><td>临开本前有人退出。推理本大多 6–7 人，少一个人整车都受影响，提前把人数钉死。</td></tr>
+    </table>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="panel" style="margin-top:20px">
+    <div class="panel-title">🎯 按场景选 · 直接抄答案</div>
+    <div class="scene-grid">
+      <div class="scene-card">
+        <b>第一次玩 / 带完全没玩过的人</b><br>
+        《第七号嫌疑人》（盲凶、凶手零压力）→《孽岛疑云》（5 人、重还原）→ 想综合度高一点就《漓川怪谈簿》。<br>
+        <span style="color:var(--sub)">别一上来就冲《持斧奥夫》，容易全车掉线。</span>
+      </div>
+      <div class="scene-card">
+        <b>两个人的时候 / 情侣约会</b><br>
+        选<b>带官方 CP 位</b>的情感本，提前跟 DM 说要 CP 角色；暧昧期可以选微恐本。<br>
+        <span style="color:var(--sub)">避开全员反目的阵营本、以及狗血三角恋/第三者线的本。</span>
+      </div>
+      <div class="scene-card">
+        <b>公司团建 / 人多热闹</b><br>
+        欢乐机制本，人数弹性越大越好：4 小时内、不用分幕读的「通读本」最省事。<br>
+        <span style="color:var(--sub)">硬核本和小众文艺情感本容易冷场，团建别选。</span>
+      </div>
+      <div class="scene-card">
+        <b>硬核局（全是老手）</b><br>
+        按《持斧奥夫》→《周公游记》→《虚构推理》的顺序刷；想吃新鲜的再上 2026 的《八十七仙图》《幻想诸因》。<br>
+        <span style="color:var(--sub)">建议整车至少 4 个老手，预留一整个下午。</span>
+      </div>
+      <div class="scene-card">
+        <b>想被感动一次</b><br>
+        古风家国看《金陵有座东君书院》；民国文笔流看《永不褪色的山楂林》；想要稳稳的温情就《小吊梨汤》《就像水消失在水中》。<br>
+        <span style="color:var(--sub)">情感本一定要熟人局，拼车遇到社恐会互相尬住。</span>
+      </div>
+      <div class="scene-card">
+        <b>就是想解压、不想动脑</b><br>
+        《超级灵魂画手》（破冰快、3–4 小时）、《以太乐园》（机制构筑、可改骰面）、《怪谈事务所：灵界》。<br>
+        <span style="color:var(--sub)">别选需要记大量线索、盘复杂人物关系的本，会越玩越累。</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">💰 大概多少钱（行业通行口径，非某家门店报价）</div>
+    <div class="scene-grid" id="priceRef"></div>
+    <div class="hint" style="margin-top:10px">同一本在不同城市、不同门店会差 10%–20%；实景搜证还会叠加场地和 NPC 成本。低于上面区间很多的多半是盗版本 / 内容不全，慎选。</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🛡️ 选店避坑清单（比选哪家店更重要）</div>
+    <table class="mini-tbl">
+      <tr><th>1. 问「盲开 / 双开」</th><td>DM 有没有提前读组织者手册？会不会同一时间带两场？这两个直接决定这一场的下限。</td></tr>
+      <tr><th>2. 要本单截图</th><td>让店家发<b>当期本单</b>，确认有没有你想打的那几本。很多店只有情感本，硬核本库存是空的。</td></tr>
+      <tr><th>3. 问 DM 带本风格</th><td>直接问「会不会扶车」「允不允许玩家自己推」。硬核本被过度提示就废了。</td></tr>
+      <tr><th>4. 人数先钉死</th><td>临时跳车会毁车。拼车提前确认人数、角色分配，以及能不能换本。</td></tr>
+      <tr><th>5. 时间留够</th><td>硬核本预留一整个下午或晚上，别排在有事的日子。中途离场比迟到更毁体验。</td></tr>
+      <tr><th>6. 情感本要 CP 位</th><td>提前告知 DM 安排 CP 角色，并说明不要虐恋 / 第三者线，否则容易玩到不愉快。</td></tr>
+      <tr><th>7. 恐怖本问清楚</th><td>有没有 NPC 惊吓、有没有单独去做单线任务的环节。怕吓的选白天场。</td></tr>
+      <tr><th>8. 实景看面积</th><td>实景搜证很吃场地。3–4 人小团 100㎡ 左右够用，5 人以上尽量选大店，不然搜证空间挤。</td></tr>
+    </table>
+    <div class="hint" style="margin-top:10px">本页不提供店家排名与联系方式 —— 门店变动太快、口径差异也大，一条能写清的清单比一份会过期的名单有用。</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">✍️ 划词批注</div>
+    <div id="annoBar"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🗣 评论 / 讨论</div>
+    <div class="hint" style="margin-bottom:10px">和首页共用同一个留言区（讨论 #1）。想补新本？直接说本名 + 人数 + 时长 + 难度就行。</div>
+    <div id="giscusBox"></div>
+  </div>
+
+  <footer>
+    剧本信息来自公开榜单、发行方资料与玩家测评，人工核对整理，<b>不是排行榜、也不构成推荐</b>。<br>
+    ⚠️ 同一本在不同店家 / 不同版本的人数、时长、难度口径会有出入，价格与库存随时变化，以店家当期本单为准。<br>
+    想加新本？直接改 <code>data/scripts.js</code>，提个 PR 或本地改完推送即可。
+  </footer>
+
+</div>
+
+<script src="data/scripts.js?v=20260921b"></script>
+<script>
+  /**
+   * 访客用 GitHub 账号留言（giscus）。
+   * ⚠️ category 必须和仓库里真实存在的讨论分类「同名」——仓库讨论开在
+   *    Announcements 下，写成 General 会直接报 Discussion not found。
+   * ⚠️ repoId 不能留空，否则同样查不到讨论。
+   * 这一页还没有自己的讨论帖，所以用 mapping:'number' 直接指向讨论 #1，
+   *   和首页共用同一个留言区。
+   */
+  window.GISCUS_CFG = {
+    enabled: true, repo: 'NaphJohn/weekend-go', repoId: 'R_kgDOUY4zNw',
+    category: 'Announcements', categoryId: '', mapping: 'number', term: '1'
+  };
+  (function () {
+    var cfg = window.GISCUS_CFG || {}, box = document.getElementById('giscusBox');
+    if (!box || !cfg.enabled || !cfg.repo) return;
+    var s = document.createElement('script');
+    s.src = 'https://giscus.app/client.js';
+    s.setAttribute('data-repo', cfg.repo);
+    s.setAttribute('data-repo-id', cfg.repoId || '');
+    s.setAttribute('data-category', cfg.category || 'Announcements');
+    s.setAttribute('data-category-id', cfg.categoryId || '');
+    s.setAttribute('data-mapping', cfg.mapping || 'pathname');
+    s.setAttribute('data-term', cfg.term || '');
+    s.setAttribute('data-strict', '0');
+    s.setAttribute('data-reactions-enabled', '1');
+    s.setAttribute('data-emit-metadata', '0');
+    s.setAttribute('data-input-position', 'bottom');
+    s.setAttribute('data-theme', 'light');
+    s.setAttribute('data-lang', 'zh-CN');
+    s.setAttribute('crossorigin', 'anonymous');
+    s.async = true;
+    box.appendChild(s);
+    window.addEventListener('message', function (ev) {
+      if (!ev || !ev.data || ev.origin !== 'https://giscus.app') return;
+      var d = ev.data.giscus || ev.data;
+      if (!d || !d.error || box.querySelector('.giscus-bad')) return;
+      var msg = String(d.error);
+      var tip = /not installed/i.test(msg)
+        ? 'giscus GitHub App 还没装。到 https://github.com/apps/giscus 安装并对 NaphJohn/weekend-go 授权。'
+        : /Discussion not found/i.test(msg)
+          ? '讨论没找到：多半是 category 和仓库真实分类不同名（本仓库讨论在 <b>Announcements</b> 下）。'
+          : msg;
+      box.insertAdjacentHTML('afterbegin', '<div class="giscus-bad">⚠️ 评论区暂时加载不出来：' + tip + '</div>');
+    });
+  })();
+</script>
+<script src="assets/annotate.js?v=20260921b"></script>
+<script src="assets/scripts.js?v=20260921b"></script>
+</body>
+</html>

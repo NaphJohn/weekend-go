@@ -87,6 +87,39 @@ window.GUIDES = {
 - **内容只做观前科普 + 选书建议，不替代官方展讯**；票价、档期以卡片与官方为准，别在这里写死。
 - 加完记得把 `index.html` / `shows.html` 里 `data/guides.js` 的 `?v=` 一起 +1（缓存）。
 
+## 剧本杀板块（`scripts.html` + `data/scripts.js`）
+
+第 4 个板块：**选本参考**（不是排行榜）。数据全在 `data/scripts.js`，页面是 `scripts.html`，渲染引擎 `assets/scripts.js`。
+
+```js
+window.SCRIPTS = [{
+  id: 'chifu-aofu',                 // 唯一 id，同时是划词批注的锚点
+  name: '持斧奥夫',
+  cat: 'classic',                   // 'classic' 公认经典 | 'new' 2026 新本（榜单口径）
+  genre: 'hard',                    // 主类型，用于筛选：hard 硬核推理 | bian 变格科幻
+                                    //   horror 恐怖惊悚 | emo 情感沉浸 | fun 机制欢乐
+                                    //   guofeng 古风家国 | newbie 新手友好
+  genres: ['硬核', '本格', '还原'],   // 展示用类型标签
+  players: '6 人（4 男 2 女）',       // 展示文案
+  pmin: 5, pmax: 7,                 // 人数区间，用于「5 人及以下 / 能开 6 人 / 7 人及以上」筛选
+  duration: '5–6 小时',
+  dmin: 5, dmax: 6,                 // 时长区间（小时），用于「4.5 小时内 / 4–5.5 小时 / 5 小时以上」
+  diff: 5,                          // 难度 1–5
+  year: '2021', mode: '城限', publisher: 'LARP',   // 都可留空
+  highlight: '这本是什么（卡片展开区第一段）',
+  forWho: '适合谁打',
+  note: '上车前要知道 / 注意点',
+  tags: ['叙诡天花板', '硬核必玩'],
+  conf: 'high'                      // 'high' | 'mid'，mid 会在卡片上标「🟡 榜单口径」
+}];
+window.SCRIPTS_META = { verifiedAt: '2026-09-21', city: '上海', note: '…口径声明…', priceRef: [{k,v,d}] };
+```
+
+- 筛选维度：类型 / 难度 / 人数 / 时长 / 经典或新本；排序：推荐排序（经典本优先 → 难度高在前）/ 难度升降 / 时长升。
+- 「帮我选一个本」= 在当前筛选结果里按「经典本 + 口径可靠 + 好凑局」加权随机。
+- **数据纪律（重要）**：人数 / 时长 / 难度照抄公开榜单聚合时必须标 `conf: 'mid'`，页面会显示 🟡 并提示「以店家当期本单为准」；**不要编造发行方、价格和门店排名**。价格只给行业通行区间（`priceRef`），不写某家店报价。
+- 加完记得把 `index.html` / `shows.html` / `scripts.html` 里 `?v=` 一起 +1（缓存），并确认 `index.html` 的 `.hud` 里 `#hk-scripts` 能取到 `window.SCRIPTS.length`。
+
 ## 怎么加一个周边游（`type: 'trip'`）
 
 周边游**没有展期**，所以 `start` / `end` 留空，改用下面这批字段：

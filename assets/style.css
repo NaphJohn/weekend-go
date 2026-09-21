@@ -200,8 +200,8 @@ details.guide summary{color:var(--purple);font-weight:600}
 
 .empty{text-align:center;color:var(--sub);padding:40px 0;font-size:14px}
 
-/* ===== 顶部导航（展览市集美食 / 看剧演出 互链）===== */
-.nav{display:flex;gap:8px;margin-bottom:14px}
+/* ===== 顶部导航（市内 / 周边游 / 看剧 / 剧本杀 互链）===== */
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .nav a{
   color:#fff;opacity:.82;text-decoration:none;font-size:13.5px;font-weight:600;
   padding:6px 15px;border-radius:20px;background:rgba(255,255,255,.14);transition:all .15s;
@@ -218,6 +218,27 @@ details.guide summary{color:var(--purple);font-weight:600}
 .week-item:last-child{border-bottom:none}
 .week-meta{font-size:12.5px;color:var(--sub);margin-top:2px}
 .week-empty{font-size:13.5px;color:#4a5568}
+
+/* ===== 剧本杀页（scripts.html / data/scripts.js）===== */
+.b-d1{background:#e6f7f0;color:var(--green)}
+.b-d2{background:#eaf6ff;color:#1a6fc4}
+.b-d3{background:#fdf3e3;color:var(--amber)}
+.b-d4{background:#fdeceb;color:var(--red)}
+.card-script{border-color:#e6e0fb;background:linear-gradient(180deg,#fdfcff,#ffffff)}
+.card-script h3{color:#3a2f66}
+.pill-new{background:#fdeceb;color:var(--red)}
+.stars{letter-spacing:1.5px;color:var(--amber);font-weight:700}
+.stars i{color:#d9dde5;font-style:normal}
+.mini-tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+.mini-tbl th,.mini-tbl td{border-bottom:1px dashed var(--line);padding:8px 10px;text-align:left;vertical-align:top;line-height:1.7}
+.mini-tbl tr:last-child th,.mini-tbl tr:last-child td{border-bottom:none}
+.mini-tbl th{color:var(--purple);font-weight:700;font-size:12.5px;width:126px;white-space:nowrap}
+.mini-tbl td{color:#41506a}
+.mini-tbl td b{color:var(--ink)}
+.scene-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.scene-card{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.75;color:#41506a}
+.scene-card b{color:#3a2f66}
+.block-scripts{border-top:4px solid var(--amber)}
 
 footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:30px;line-height:1.9}
 
@@ -257,8 +278,8 @@ mark.anno:hover{background:#ffe066}
 .anno-del{color:var(--red)}
 .anno-bar-ops{display:flex;gap:8px;margin-top:8px}
 
-/* ===== 板块：市内 / 周边游（三块入口 + 板块内视图） ===== */
-.hud{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:6px}
+/* ===== 板块：市内 / 周边游 / 看剧 / 剧本杀（四块入口）===== */
+.hud{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:14px;margin-bottom:6px}
 .block{
   display:flex;flex-direction:column;gap:8px;
   background:var(--card);border:1px solid var(--line);border-radius:16px;

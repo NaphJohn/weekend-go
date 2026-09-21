@@ -161,6 +161,23 @@
     return out;
   }
 
+  // 看演出前科普：读 data/guides.js（按 id 命中），没有就不渲染
+  function guideHTML(s) {
+    var g = window.GUIDES && window.GUIDES[s.id];
+    if (!g) return '';
+    var books = (g.books || []).map(function (b) { return '<li>' + b + '</li>'; }).join('');
+    var links = (g.links || []).map(function (l) {
+      return '<a href="' + l.u + '" target="_blank" rel="noopener noreferrer">' + l.t + '</a>';
+    }).join('');
+    return '<details class="guide"><summary>📚 看演出前科普 · 讲什么 / 先补什么 / 适合谁</summary>' +
+      '<div class="guide-body">' +
+      (g.intro ? '<div class="g-sec">🧭 讲什么</div><p class="g-intro">' + g.intro + '</p>' : '') +
+      (books ? '<div class="g-sec">📖 看前先补什么</div><ul class="g-books">' + books + '</ul>' : '') +
+      (g.audience ? '<div class="g-sec">👀 适合谁看</div><p class="g-aud">' + g.audience + '</p>' : '') +
+      (links ? '<div class="g-links">🔗 延伸阅读：' + links + '</div>' : '') +
+      '</div></details>';
+  }
+
   function cardHTML(s) {
     var b = badgeOf(s);
     var tags = (s.tags || []).map(function (t) { return '<span class="tag">' + t + '</span>'; }).join('');
@@ -175,6 +192,7 @@
       (s.duration ? '<div class="meta-line">⏱ ' + s.duration + '　<span style="color:var(--sub)">· ' + (s.platform || '') + '</span></div>' : '') +
       distLine(s) +
       '<div class="tags">' + tags + '</div>' +
+      guideHTML(s) +
       '<details><summary>展开：怎么买票 / 值不值得看</summary><div class="detail">' +
       detailHTML(s) +
       '</div></details>' +

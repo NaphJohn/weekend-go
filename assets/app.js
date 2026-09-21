@@ -216,6 +216,23 @@
       '</div></details>';
   }
 
+  // 看展前科普：读 data/guides.js（按 id 命中），没有就不渲染
+  function guideHTML(a) {
+    var g = window.GUIDES && window.GUIDES[a.id];
+    if (!g) return '';
+    var books = (g.books || []).map(function (b) { return '<li>' + b + '</li>'; }).join('');
+    var links = (g.links || []).map(function (l) {
+      return '<a href="' + l.u + '" target="_blank" rel="noopener noreferrer">' + l.t + '</a>';
+    }).join('');
+    return '<details class="guide"><summary>📚 看展前科普 · 看什么 / 先补什么 / 适合谁</summary>' +
+      '<div class="guide-body">' +
+      (g.intro ? '<div class="g-sec">🧭 这是什么</div><p class="g-intro">' + g.intro + '</p>' : '') +
+      (books ? '<div class="g-sec">📖 看前先补什么</div><ul class="g-books">' + books + '</ul>' : '') +
+      (g.audience ? '<div class="g-sec">👀 适合谁看</div><p class="g-aud">' + g.audience + '</p>' : '') +
+      (links ? '<div class="g-links">🔗 延伸阅读：' + links + '</div>' : '') +
+      '</div></details>';
+  }
+
   function distLine(a) {
     if (!state.ref || isTrip(a)) return '';
     var km = distOf(a);
@@ -255,6 +272,7 @@
       '<div class="price">' + price + '</div>' +
       '<div class="book">' + bookLine(a) + '</div>' +
       '<div class="tags">' + tags + '</div>' +
+      guideHTML(a) +
       detailHTML(a) +
       noteHTML(a) +
       '</div>';

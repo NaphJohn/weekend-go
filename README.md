@@ -66,6 +66,27 @@ python3 -m http.server 8000
 
 `rating` 越高越容易被随机选中；剩余 ≤10 天、免费的项目也会加权。
 
+## 看展 / 看演出前科普（`data/guides.js`）
+
+给展览 / 演出卡片加一个可折叠的「📚 看展前科普」块，回答三个问题：**看什么、先补什么、适合谁**。按 **活动 id** 索引，与 `activities.js` / `shows.js` 里的 `id` 一一对应；**只给 cultural 类（展览 / 演出）写就行**，市集 / 周边游不写也不会报错（没有对应条目就不渲染）。
+
+```js
+window.GUIDES = {
+  'world-tree': {                       // = activities.js / shows.js 里的 id
+    intro: '内容速览：这是什么、能看到什么。',   // 一到两三句
+    books: [                            // 看前先补什么（书 / 纪录片 / 音乐选段），每项一句话
+      '《枪炮、病菌与钢铁》贾雷德·戴蒙德 —— 为什么值得先读'
+    ],
+    audience: '适合：…… 不太适合：……',       // 帮读者判断要不要去
+    links: [{ t: '上海博物馆官网', u: 'https://www.shanghaimuseum.net/' }]  // 可选
+  }
+};
+```
+
+- 卡片展开区里会在「看点 / 怎么预约」之上插入这块科普，渲染逻辑在 `assets/app.js`（`guideHTML`）与 `assets/shows.js`（`guideHTML`）。
+- **内容只做观前科普 + 选书建议，不替代官方展讯**；票价、档期以卡片与官方为准，别在这里写死。
+- 加完记得把 `index.html` / `shows.html` 里 `data/guides.js` 的 `?v=` 一起 +1（缓存）。
+
 ## 怎么加一个周边游（`type: 'trip'`）
 
 周边游**没有展期**，所以 `start` / `end` 留空，改用下面这批字段：

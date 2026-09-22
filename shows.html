@@ -8,7 +8,7 @@
 <meta property="og:title" content="上海看剧 · 每周在演清单">
 <meta property="og:description" content="上海演出/剧目结构化清单：本周在演、即将开演，场次时间 + 票价 + 购票渠道一目了然。">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="assets/style.css?v=20260921d">
+<link rel="stylesheet" href="assets/style.css?v=20260922a">
 </head>
 <body>
 
@@ -118,23 +118,28 @@
 
 </div>
 
-<script src="data/metro.js?v=20260921d"></script>
-<script src="assets/locate.js?v=20260921d"></script>
-<script src="data/shows.js?v=20260921d"></script>
-<script src="data/guides.js?v=20260921d"></script>
+<script src="data/metro.js?v=20260922a"></script>
+<script src="assets/locate.js?v=20260922a"></script>
+<script src="data/shows.js?v=20260922a"></script>
+<script src="data/guides.js?v=20260922a"></script>
 <script>
   /**
    * 访客用 GitHub 账号留言（giscus）。
    * ⚠️ category 必须和仓库里真实存在的讨论分类「同名」——仓库讨论开在
    *    Announcements 下，写成 General 会直接报 Discussion not found。
    * ⚠️ repoId 不能留空，否则同样查不到讨论。
-   * 这一页还没有自己的讨论帖，所以用 mapping:'number' 直接指向讨论 #1，
-   *   和首页共用同一个留言区（以后想分开，在仓库 Discussions 新建一个，
-   *   把 mapping 改回 'pathname' 即可）。
+   * 四个页面共用同一个留言区（index / shows / scripts / boardgames），指向仓库里
+   *   唯一那个讨论的完整标题（见下方 term），与访问 URL 无关。
+   *   以后想让每页各有一帖：在仓库 Discussions 各新建一个，把 mapping 改回 'pathname'，
+   *   并保证访客从带斜杠的目录地址进入（/weekend-go/ 与 /weekend-go/index.html 不是一个 term）。
    */
   window.GISCUS_CFG = {
     enabled: true, repo: 'NaphJohn/weekend-go', repoId: 'R_kgDOUY4zNw',
-    category: 'Announcements', categoryId: '', mapping: 'number', term: '1'
+    category: 'Announcements', categoryId: '',
+    // 全站共用一个讨论帖：仓库里唯一一个讨论 #1「Welcome to weekend-go Discussions!」。
+    // ⚠️ 别用 mapping:'number', term:'1'（本仓库实测报 Discussion not found），
+    //    也别用 pathname（/weekend-go/ 与 /weekend-go/index.html 搜到的东西不一样）。
+    mapping: 'specific', term: 'Welcome to weekend-go Discussions!'
   };
   (function () {
     var cfg = window.GISCUS_CFG || {}, box = document.getElementById('giscusBox');
@@ -164,13 +169,13 @@
       var tip = /not installed/i.test(msg)
         ? 'giscus GitHub App 还没装。到 https://github.com/apps/giscus 安装并对 NaphJohn/weekend-go 授权。'
         : /Discussion not found/i.test(msg)
-          ? '讨论没找到：多半是 category 和仓库真实分类不同名（本仓库讨论在 <b>Announcements</b> 下）。'
+          ? '讨论没找到：全站评论区共用一个讨论帖，<code>GISCUS_CFG</code> 的 mapping/term 必须指向仓库里真实存在的讨论（当前是 #1「Welcome to weekend-go Discussions!」、分类 <b>Announcements</b>），四个页面要一致。若该讨论确实不存在，直接发第一条留言会自动创建。'
           : msg;
       box.insertAdjacentHTML('afterbegin', '<div class="giscus-bad">⚠️ 评论区暂时加载不出来：' + tip + '</div>');
     });
   })();
 </script>
-<script src="assets/annotate.js?v=20260921d"></script>
-<script src="assets/shows.js?v=20260921d"></script>
+<script src="assets/annotate.js?v=20260922a"></script>
+<script src="assets/shows.js?v=20260922a"></script>
 </body>
 </html>

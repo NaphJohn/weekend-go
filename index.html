@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <!-- 每次改动都把 v= 后面的版本号 +1，避免浏览器/GitHub Pages 缓存导致看不到更新
      （GitHub Pages 对 HTML 和资源都返回 cache-control: max-age=600，最长 10 分钟才失效） -->
-<link rel="stylesheet" href="assets/style.css?v=20260921d">
+<link rel="stylesheet" href="assets/style.css?v=20260922a">
 <meta http-equiv="Cache-Control" content="max-age=0">
 </head>
 <body>
@@ -187,14 +187,14 @@
 
 </div>
 
-<script src="data/activities.js?v=20260921d"></script>
-<script src="data/food.js?v=20260921d"></script>
-<script src="data/metro.js?v=20260921d"></script>
-<script src="data/shows.js?v=20260921d"></script>
-<script src="data/guides.js?v=20260921d"></script>
-<script src="data/scripts.js?v=20260921d"></script>
-<script src="data/games.js?v=20260921d"></script>
-<script src="assets/locate.js?v=20260921d"></script>
+<script src="data/activities.js?v=20260922a"></script>
+<script src="data/food.js?v=20260922a"></script>
+<script src="data/metro.js?v=20260922a"></script>
+<script src="data/shows.js?v=20260922a"></script>
+<script src="data/guides.js?v=20260922a"></script>
+<script src="data/scripts.js?v=20260922a"></script>
+<script src="data/games.js?v=20260922a"></script>
+<script src="assets/locate.js?v=20260922a"></script>
 <script>
   /**
    * 访客用 GitHub 账号留言（giscus）。
@@ -202,10 +202,23 @@
    * ⚠️ category 必须和仓库里真实存在的讨论分类「同名」——仓库的讨论开在
    *    Announcements 下，写成 General 会直接报 Discussion not found。
    */
-  window.GISCUS_CFG = { enabled: true, repo: 'NaphJohn/weekend-go', repoId: 'R_kgDOUY4zNw', category: 'Announcements', categoryId: '' };
+  /**
+   * 访客用 GitHub 账号留言（giscus）。
+   * 全站四个页面共用同一个讨论帖（仓库里唯一一个讨论：
+   *   #1「Welcome to weekend-go Discussions!」，分类 Announcements）。
+   * ⚠️ 用 mapping:'specific' + 该讨论的「完整标题」最稳：
+   *    - pathname 映射依赖 URL 形状（/weekend-go/ 与 /weekend-go/index.html 是两个 term，
+   *      后者搜不到 → Discussion not found）；
+   *    - number 映射（term:'1'）在本仓库实测不可用，同样报 Discussion not found。
+   */
+  window.GISCUS_CFG = {
+    enabled: true, repo: 'NaphJohn/weekend-go', repoId: 'R_kgDOUY4zNw',
+    category: 'Announcements', categoryId: '',
+    mapping: 'specific', term: 'Welcome to weekend-go Discussions!'
+  };
 </script>
-<script src="assets/annotate.js?v=20260921d"></script>
-<script src="assets/app.js?v=20260921d"></script>
+<script src="assets/annotate.js?v=20260922a"></script>
+<script src="assets/app.js?v=20260922a"></script>
 <script>
   /* 总览三块的实时数量：在演剧目 / 市内进行中 / 周边游目的地 */
   (function () {

@@ -633,7 +633,8 @@
       s.setAttribute('data-repo-id', cfg.repoId || '');
       s.setAttribute('data-category', cfg.category || 'General');
       s.setAttribute('data-category-id', cfg.categoryId || '');
-      s.setAttribute('data-mapping', 'pathname');
+      s.setAttribute('data-mapping', cfg.mapping || 'pathname');
+      if (cfg.term) s.setAttribute('data-term', cfg.term);
       s.setAttribute('data-strict', '0');
       s.setAttribute('data-reactions-enabled', '1');
       s.setAttribute('data-emit-metadata', '0');
@@ -656,7 +657,7 @@
         var tip = /not installed/i.test(msg)
           ? 'giscus GitHub App 还没装。到 https://github.com/apps/giscus 安装，并对 NaphJohn/weekend-go 授权。'
           : /Discussion not found/i.test(msg)
-            ? '讨论没找到：多半是 index.html 里 GISCUS_CFG.category 和仓库里真实分类不同名（本仓库的讨论开在 <b>Announcements</b> 下）。改成同名即可；若这一页确实还没有讨论，发第一条留言会自动创建。'
+            ? '讨论没找到：全站评论区共用一个讨论帖，<code>GISCUS_CFG</code> 的 mapping/term 必须指向仓库里真实存在的讨论（当前是 #1「Welcome to weekend-go Discussions!」、分类 <b>Announcements</b>），四个页面要一致。若该讨论确实不存在，直接发第一条留言会自动创建。'
             : msg;
         box.insertAdjacentHTML('afterbegin', '<div class="giscus-bad">⚠️ 评论区暂时加载不出来：' + tip + '</div>');
       });

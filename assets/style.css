@@ -250,6 +250,11 @@ details.guide summary{color:var(--purple);font-weight:600}
 .pill-free{display:inline-block;font-size:11px;font-weight:700;border-radius:5px;padding:1px 8px;background:#f0ecfb;color:var(--purple)}
 .block-games{border-top:4px solid #2b7de9}
 
+/* ===== 常年去处页（venues.html / data/venues.js）===== */
+.card-venue{border-color:#d5ece7;background:linear-gradient(180deg,#f9fdfc,#ffffff)}
+.card-venue h3{color:#0f5f57}
+.block-venues{border-top:4px solid #0f9b8e}
+
 /* 具体桌游吧卡片（data/games.js → META.venues） */
 .venue-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
 .venue-card{
@@ -322,9 +327,12 @@ mark.anno:hover{background:#ffe066}
 .anno-del{color:var(--red)}
 .anno-bar-ops{display:flex;gap:8px;margin-top:8px}
 
-/* ===== 板块：市内 / 周边游 / 看剧 / 剧本杀（四块入口）===== */
-/* minmax 别加大：加到 5 块（看剧/剧本杀/桌游/市内/周边游）后 205px 会挤成 4+1 两行 */
-.hud{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:6px}
+/* ===== 板块：市内 / 周边游 / 看剧 / 剧本杀 / 桌游 / 常年去处（六块入口）===== */
+/* ⚠️ minmax 是算出来的，别乱改：容器约 1050px。
+   190px → 排得下 5 列 → 6 块会变成「5 + 1 只孤儿」，很难看；
+   260px → 只排得下 3 列 → 6 块正好 3 + 3；
+   300px 以上在窄一点的笔记本上会掉成 2 列。加板块数时回来重算一次。 */
+.hud{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:6px}
 .block{
   display:flex;flex-direction:column;gap:8px;
   background:var(--card);border:1px solid var(--line);border-radius:16px;

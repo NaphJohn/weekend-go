@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上海常年免费去处 · 博物馆/图书馆/公园/古镇 常设场馆清单</title>
+<meta name="description" content="上海常年能去的常设场馆清单：博物馆、美术馆、图书馆、书院、公园、寺庙教堂、古镇、郊野登山、文艺街区共 57 处，逐个核实门票、开放时间、闭馆日与预约要求 —— 哪些真免费、哪些是「伪免费」，周一哪些地方关门，一次说清。">
+<meta property="og:title" content="上海常年免费去处 · 常设场馆清单">
+<meta property="og:description" content="57 处常设场馆，逐个核过门票 / 开放时间 / 闭馆日 / 要不要预约。含「网上免费清单里最常见的 10 个错」。">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/style.css?v=20260922b">
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav class="nav">
+      <a href="index.html?jump=city">🎪 市内 · 展览市集美食</a>
+      <a href="index.html?jump=trip">🚗 周边游</a>
+      <a href="shows.html">🎭 看剧 · 演出</a>
+      <a href="scripts.html">🕵️ 剧本杀</a>
+      <a href="boardgames.html">🎲 桌游</a>
+      <a class="on" href="venues.html">📍 常年去处</a>
+    </nav>
+    <h1>上海常年免费去处 · 常设场馆清单</h1>
+    <div class="sub">博物馆 / 图书馆 / 公园 / 寺庙教堂 / 古镇 / 郊野 / 文艺街区 —— 不挑档期，全年任何一天都能去的那一类</div>
+    <div class="stats">
+      <div class="stat"><b id="s-total">-</b>处收录</div>
+      <div class="stat"><b id="s-free">-</b>处免费</div>
+      <div class="stat"><b id="s-nobook">-</b>处免预约</div>
+      <div class="stat"><b id="s-open">-</b>处没有闭馆日</div>
+    </div>
+    <div class="meta">门票 / 开放时间 / 闭馆日核对于 <span id="verifiedAt"></span>　·　标 🟡 的条目只有单一来源，出发前先打一个电话</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="panel">
+    <div class="panel-title">🤝 这一页和首页有什么区别</div>
+    <div id="metaNote" class="hint"></div>
+    <div class="hint" style="margin-top:8px">
+      <b>首页</b>回答「<b>这周末</b>有什么」—— 展览、市集、节庆，都有档期、过几天就没了。<br>
+      <b>这一页</b>回答「<b>随便哪天</b>想去哪儿」—— 图书馆、常设博物馆、公园、古镇，全年都在，不挑日子。<br>
+      两边内容不重合，也不互相替代。
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">📖 怎么用这一页（<b id="metaTotal">-</b> 处场馆，看这四条就够）</div>
+    <div class="scene-grid" id="howTo"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">⚠️ 网上「免费清单」里最常见的 10 个错（这些别当免费）</div>
+    <div class="hint" style="margin-bottom:12px">
+      这一页的起点是一篇被转了四千多次的「上海免费去处」笔记。<b>逐条核完发现它至少错了 4 处</b>，
+      所以下面先把「看着免费、其实要钱」的挑出来单列 —— 这部分比场馆清单本身更值得看。
+    </div>
+    <div class="scene-grid" id="notFree"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">① 你在哪？填个地点，按远近给你排（可选）</div>
+    <div class="loc-row">
+      <input id="locInput" class="loc-input" type="text" placeholder="例如：张江路 / 徐家汇 / 静安寺 / 上海昆虫博物馆 / 和平书院">
+      <button class="btn" id="btnLoc">定位</button>
+      <button class="btn ghost" id="btnLocClear">清除</button>
+    </div>
+    <div class="filters" id="quickStations" style="margin-top:8px"></div>
+    <div id="locResult" style="margin-top:8px"></div>
+    <div style="margin-top:8px">
+      <span class="chip" id="chipNear" style="display:none">📍 就近优先（已开）</span>
+    </div>
+    <div class="hint" style="margin-top:8px">
+      场馆名、路名、商圈名、地铁站名都能填，也可以直接填场馆全名。<b>定位后会自动切到「离我最近」排序</b>，同类里离你近的排前面。
+      这个定位和首页共用，填一次两边都认。路程按直线距离估算，只用来排先后。
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">② 懒得挑？让它替你决定</div>
+    <div class="decide-row">
+      <button class="btn" id="btnDecide">帮我选一个去处</button>
+      <span class="hint">在当前筛选里按「免费 + 不用预约 + 信息确定」加权随机，再点一次换一个</span>
+    </div>
+    <div id="pickResult"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">③ 筛选</div>
+    <div class="filters">
+      <span class="chip on" data-group="cat" data-val="all">全部类型 <b class="cnt" data-cnt="cat:all">0</b></span>
+      <span class="chip" data-group="cat" data-val="museum">博物馆 / 美术馆 <b class="cnt" data-cnt="cat:museum">0</b></span>
+      <span class="chip" data-group="cat" data-val="library">图书馆 / 书院 <b class="cnt" data-cnt="cat:library">0</b></span>
+      <span class="chip" data-group="cat" data-val="park">公园 <b class="cnt" data-cnt="cat:park">0</b></span>
+      <span class="chip" data-group="cat" data-val="temple">寺庙 / 教堂 <b class="cnt" data-cnt="cat:temple">0</b></span>
+      <span class="chip" data-group="cat" data-val="town">古镇 / 老街 <b class="cnt" data-cnt="cat:town">0</b></span>
+      <span class="chip" data-group="cat" data-val="hill">登山 / 郊野 <b class="cnt" data-cnt="cat:hill">0</b></span>
+      <span class="chip" data-group="cat" data-val="street">文艺街区 <b class="cnt" data-cnt="cat:street">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="free" data-val="all">门票不限 <b class="cnt" data-cnt="free:all">0</b></span>
+      <span class="chip" data-group="free" data-val="free">🆓 只看免费 <b class="cnt" data-cnt="free:free">0</b></span>
+      <span class="chip" data-group="free" data-val="paid">🎫 只看收费 <b class="cnt" data-cnt="free:paid">0</b></span>
+      <span class="chip" data-group="book" data-val="nobook">不用预约 <b class="cnt" data-cnt="book:nobook">0</b></span>
+      <span class="chip" data-group="conf" data-val="high">✅ 只看已核实 <b class="cnt" data-cnt="conf:high">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="hint" style="align-self:center;margin-right:2px">排序：</span>
+      <span class="chip on" data-sort="rec">推荐排序</span>
+      <span class="chip" data-sort="dist" style="display:none">📏 离我最近</span>
+      <span class="chip" data-sort="free-first">免费优先</span>
+    </div>
+    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果　·　<b>门票不等于值不值</b>：自然博物馆 ¥30、上海科技馆 ¥45、昆虫博物馆 ¥15 都是公认值得的，标出来只是不想让你以为能免费进。</div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="panel" style="margin-top:20px">
+    <div class="panel-title">🎟 免费场馆怎么进（比「免费」两个字更重要）</div>
+    <div class="scene-grid" id="freeHow"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🛡️ 不白跑的五条</div>
+    <ul class="free-list" id="care"></ul>
+    <div class="free-care">
+      <div class="fc-h">⚠️ 三个最容易白跑的情形</div>
+      <ul class="free-list" style="margin-left:20px;color:#7a5310">
+        <li><b>周一去博物馆 / 美术馆</b> —— 大概率关着门。图书馆不一样，多数是「周一只上午闭馆」，下午能进。这两件事写成同一句「周一闭馆」是网上最多人踩的坑。</li>
+        <li><b>把「免费」当成「不用预约」</b> —— 双子山、顾村公园都免费，但都要预约时段；震旦博物馆不免费，反而随时能进。</li>
+        <li><b>把古镇的「免费」当成整镇免费</b> —— 免费的是街区，古猗园 ¥12、檀园 ¥18、朱家角联票 ¥60、枫泾通票 ¥42 都是另算的。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">✍️ 划词批注</div>
+    <div id="annoBar"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🗣 评论 / 讨论</div>
+    <div class="hint" style="margin-bottom:10px">和首页共用同一个留言区（讨论 #1）。知道哪家信息过期了、或者想补一处场馆，直接留言：名字 + 现在收不收费 + 周几关门就行。</div>
+    <div id="giscusBox"></div>
+  </div>
+
+  <footer>
+    门票、开放时间、闭馆日、预约要求核对于 <b>2026-09-22</b>，来源为各馆官网 / 上海市文旅局《2026 年上海市公共图书馆名录》/ 市、区政府网站 / 场馆官方公众号。<br>
+    ⚠️ 这三件事恰恰是最容易变的 —— 大展期间会涨价、法会期间会调门票、寒暑假会改时间。<b>出发前请用馆方公众号或电话再核一次</b>。<br>
+    ⚠️ 本页只标「收不收费、哪天关门、要不要预约」，<b>不排名、不构成推荐</b>；收费也不等于不值得去。<br>
+    想补一处场馆？在 <code>data/venues.js</code> 里加一条，写清 <code>free / fee / hours / closed / book / conf</code> 六个字段即可。
+  </footer>
+
+</div>
+
+<script src="data/metro.js?v=20260922b"></script>
+<script src="data/venues.js?v=20260922b"></script>
+<script src="assets/locate.js?v=20260922b"></script>
+<script>
+  /**
+   * 访客用 GitHub 账号留言（giscus）。
+   * 全站五个页面共用同一个讨论帖（仓库里唯一一个讨论：
+   *   #1「Welcome to weekend-go Discussions!」，分类 Announcements）。
+   * ⚠️ 用 mapping:'specific' + 该讨论的「完整标题」最稳：
+   *    - pathname 映射依赖 URL 形状（/weekend-go/ 与 /weekend-go/venues.html 是两个 term，
+   *      后者搜不到 → Discussion not found）；
+   *    - number 映射（term:'1'）在本仓库实测不可用，同样报 Discussion not found。
+   */
+  window.GISCUS_CFG = {
+    enabled: true, repo: 'NaphJohn/weekend-go', repoId: 'R_kgDOUY4zNw',
+    category: 'Announcements', categoryId: '',
+    mapping: 'specific', term: 'Welcome to weekend-go Discussions!'
+  };
+  (function () {
+    var cfg = window.GISCUS_CFG || {}, box = document.getElementById('giscusBox');
+    if (!box || !cfg.enabled || !cfg.repo) return;
+    var s = document.createElement('script');
+    s.src = 'https://giscus.app/client.js';
+    s.setAttribute('data-repo', cfg.repo);
+    s.setAttribute('data-repo-id', cfg.repoId || '');
+    s.setAttribute('data-category', cfg.category || 'Announcements');
+    s.setAttribute('data-category-id', cfg.categoryId || '');
+    s.setAttribute('data-mapping', cfg.mapping || 'pathname');
+    s.setAttribute('data-term', cfg.term || '');
+    s.setAttribute('data-strict', '0');
+    s.setAttribute('data-reactions-enabled', '1');
+    s.setAttribute('data-emit-metadata', '0');
+    s.setAttribute('data-input-position', 'bottom');
+    s.setAttribute('data-theme', 'light');
+    s.setAttribute('data-lang', 'zh-CN');
+    s.setAttribute('crossorigin', 'anonymous');
+    s.async = true;
+    box.appendChild(s);
+    window.addEventListener('message', function (ev) {
+      if (!ev || !ev.data || ev.origin !== 'https://giscus.app') return;
+      var d = ev.data.giscus || ev.data;
+      if (!d || !d.error || box.querySelector('.giscus-bad')) return;
+      var msg = String(d.error);
+      var tip = /not installed/i.test(msg)
+        ? 'giscus GitHub App 还没装。到 https://github.com/apps/giscus 安装并对 NaphJohn/weekend-go 授权。'
+        : /Discussion not found/i.test(msg)
+          ? '讨论没找到：全站评论区共用一个讨论帖，<code>GISCUS_CFG</code> 的 mapping/term 必须指向仓库里真实存在的讨论（当前是 #1「Welcome to weekend-go Discussions!」、分类 <b>Announcements</b>），五个页面要一致。若该讨论确实不存在，直接发第一条留言会自动创建。'
+          : msg;
+      box.insertAdjacentHTML('afterbegin', '<div class="giscus-bad">⚠️ 评论区暂时加载不出来：' + tip + '</div>');
+    });
+  })();
+</script>
+<script src="assets/annotate.js?v=20260922b"></script>
+<script src="assets/venues.js?v=20260922b"></script>
+</body>
+</html>

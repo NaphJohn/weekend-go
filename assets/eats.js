@@ -25,7 +25,7 @@
                'kaorou', 'hancan', 'dongnanya', 'xican', 'miandian', 'vegetarian', 'qita'];
   var PRICE_TEXT = { p50: '人均 ¥50 以内', p100: '人均 ¥50–100', p200: '人均 ¥100–200', p300: '人均 ¥200 以上' };
 
-  var state = { cuisine: 'all', price: 'all', rank: 'all', sort: 'rec' };
+  var state = { cuisine: 'all', sub: 'all', price: 'all', rank: 'all', sort: 'rec' };
   var located = null;
   var distCache = {};
 
@@ -51,7 +51,9 @@
     return km;
   }
 
-  function match(v) {
+  /* 不含「细分」的那部分筛选 —— 细分芯片的计数必须用它，
+     否则计数会随「当前选中哪个细分」而变，芯片数量自己跳。 */
+  function matchBase(v) {
     if (state.cuisine !== 'all' && v.cuisine !== state.cuisine) return false;
     if (state.rank === 'long' && v.rankYear < 5) return false;
     if (state.rank === 'new' && v.rankYear !== 1) return false;
@@ -65,6 +67,26 @@
     return true;
   }
 
+  function match(v) {
+    if (state.sub !== 'all' && v.sub !== state.sub) return false;
+    return matchBase(v);
+  }
+
+  /* 「最值得去」的排序规则 —— 故意不用加权公式（权重是拍的，说不清）。
+     分档 → 上榜久 → 收录久，三步都是必吃榜页面的公开字段，读者能拿卡面数字自己核对。
+     ⚠️ 这是本站的排序口径，不是官方排名，页面已写明。 */
+  function byRec(a, b) {
+    var ba = Math.round(a.score * 10), bb = Math.round(b.score * 10);
+    if (ba !== bb) return bb - ba;                                   // ① 评分档位（4.9 / 4.8…）
+    if ((b.rankYear || 0) !== (a.rankYear || 0)) {                   // ② 连续上榜年数
+      return (b.rankYear || 0) - (a.rankYear || 0);
+    }
+    if ((b.includeYear || 0) !== (a.includeYear || 0)) {              // ③ 收录年数
+      return (b.includeYear || 0) - (a.includeYear || 0);
+    }
+    return idxOf(a) - idxOf(b);                                       // ④ 兜底：数据里的顺序
+  }
+
   function sortFn(a, b) {
     if (state.sort === 'dist' && located) {
       var da = distOf(a), db = distOf(b);
@@ -76,8 +98,8 @@
     }
     if (state.sort === 'cheap') return a.price - b.price || b.score - a.score;
     if (state.sort === 'long') return b.includeYear - a.includeYear || b.score - a.score;
-    /* rec：评分优先，同分看上榜年数 */
-    return b.score - a.score || b.rankYear - a.rankYear || idxOf(a) - idxOf(b);
+    /* rec：与推荐框同一把尺子（评分档位 → 连续上榜 → 收录年数），保证「推荐前 3」＝网格前 3 */
+    return byRec(a, b);
   }
 
   function scoreStar(s) {
@@ -113,8 +135,8 @@
     return '<div class="card card-eat" data-id="' + esc(v.id) + '">' +
       '<div class="top"><h3>' + esc(v.name) + '</h3>' + scoreBadge(v) + '</div>' +
       '<div class="meta-line">' +
-        '<span class="pill-type">' + esc(CN[v.cuisine] || v.cat) + '</span> ' +
-        (v.cat !== (CN[v.cuisine] || '') ? '<span class="en-name">' + esc(v.cat) + '</span> ' : '') +
+        '<span class="pill-type">' + esc(v.sub || v.cat) + '</span> ' +
+        (v.cat !== (v.sub || '') ? '<span class="en-name">' + esc(v.cat) + '</span> ' : '') +
         rankBadge(v) +
       '</div>' +
       '<div class="meta-line">' + scoreStar(v.score) + ' <span style="color:var(--sub)">大众点评公开分</span>　·　💰 人均约 <b>¥' + v.price + '</b></div>' +
@@ -126,6 +148,87 @@
       '</div>';
   }
 
+  /* ===== 「最值得去」推荐框 ===== */
+  function topPickCard(v, rank) {
+    var addr = esc(v.area || '—') + (v.metro ? '（近 ' + esc(v.metro) + ' 站）' : '');
+    var d = distOf(v);
+    if (located && d != null) addr += '　·　📍 ' + d.toFixed(1) + ' km';
+    var why = '平台公开分 <b>' + v.score.toFixed(1) + '</b>';
+    why += '　·　' + (v.rankText ? esc(v.rankText) : '上榜年数未标注');
+    why += '　·　收录 <b>' + v.includeYear + '</b> 年';
+    return '<div class="tp-card' + (rank === 1 ? ' tp-first' : '') + '">' +
+      '<div class="tp-rank">' + rank + '</div>' +
+      '<div class="tp-body">' +
+        '<div class="tp-name">' + esc(v.name) + '　' + scoreBadge(v) +
+          (rank === 1 ? ' <span class="badge b-d1">🏆 本次首选</span>' : '') + '</div>' +
+        '<div class="tp-meta"><span class="pill-type">' + esc(v.sub || v.cat) + '</span>　' + addr +
+          '　·　💰 人均约 <b>¥' + v.price + '</b></div>' +
+        (v.must && v.must.length ? '<div class="tp-meta">🍽 招牌：<b>' + esc(v.must.join('、')) + '</b></div>' : '') +
+        '<div class="tp-why">为什么排第 ' + rank + '：' + why + '</div>' +
+        (v.reason ? '<div class="tp-reason">' + esc(v.reason) + '</div>' : '') +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderTop() {
+    var box = document.getElementById('topPicks');
+    if (!box) return;
+    var list = DATA.filter(match).sort(byRec);
+    var scope = document.getElementById('topScope');
+    if (scope) {
+      scope.textContent = state.cuisine === 'all'
+        ? '全部菜系'
+        : (CN[state.cuisine] || '') + (state.sub !== 'all' ? ' · ' + state.sub : '');
+    }
+    var num = document.getElementById('topTotal');
+    if (num) num.textContent = list.length;
+    if (!list.length) {
+      box.innerHTML = '<div class="empty">这个组合下没有收录的店 —— 把人均或「连续上榜」放宽一点试试。</div>';
+      return;
+    }
+    box.innerHTML = list.slice(0, 3).map(function (v, i) { return topPickCard(v, i + 1); }).join('');
+  }
+
+  /* ===== 二级细分芯片 =====
+     选了菜系才出现。大类里只有一种细分时（例如东南亚只有泰国菜），
+     仍然给一个「全部<菜系>」芯片 + 在上面写清「这一类只收录到这一种」，不假装有得选。 */
+  function renderSubChips() {
+    var wrap = document.getElementById('subRow');
+    var box = document.getElementById('subChips');
+    var note = document.getElementById('subNote');
+    if (!wrap || !box) return;
+    if (state.cuisine === 'all') {
+      wrap.style.display = 'none';
+      box.innerHTML = '';
+      if (note) { note.style.display = 'none'; note.innerHTML = ''; }
+      return;
+    }
+    wrap.style.display = '';
+    var base = DATA.filter(matchBase);
+    var g = {};
+    base.forEach(function (v) { var k = v.sub || v.cat; g[k] = (g[k] || 0) + 1; });
+    var keys = Object.keys(g).sort(function (a, b) { return g[b] - g[a] || (a < b ? -1 : 1); });
+    var html = '<span class="chip' + (state.sub === 'all' ? ' on' : '') + '" data-sub="all">全部' +
+      esc(CN[state.cuisine] || '') + ' <b class="cnt">' + base.length + '</b></span>';
+    keys.forEach(function (k) {
+      html += '<span class="chip' + (state.sub === k ? ' on' : '') + '" data-sub="' + esc(k) + '">' +
+        esc(k) + ' <b class="cnt">' + g[k] + '</b></span>';
+    });
+    box.innerHTML = html;
+    if (note) {
+      /* 优先显示「这一类覆盖偏薄」的警告（有就直说），否则退回讲清细分口径是怎么归的 */
+      var thin = (META.thinSub && META.thinSub[state.cuisine]) || '';
+      if (thin) {
+        note.className = 'hint sub-note warn';
+        note.innerHTML = '⚠️ ' + esc(thin);
+      } else {
+        note.className = 'hint sub-note';
+        note.innerHTML = esc(META.subNote || '');
+      }
+      note.style.display = (thin || META.subNote) ? '' : 'none';
+    }
+  }
+
   function render() {
     var list = DATA.filter(match).sort(sortFn);
     var grid = document.getElementById('grid');
@@ -135,6 +238,7 @@
       : '<div class="empty">这个组合下没有收录的店 —— 把人均或「连续上榜」放宽一点试试。</div>';
     var c = document.getElementById('count');
     if (c) c.textContent = list.length;
+    renderTop();
     highlightGuide();
     if (window.Annotate) window.Annotate.apply();
   }
@@ -256,6 +360,9 @@
     if (c && META.care) c.innerHTML = META.care.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('');
     var hn = document.getElementById('honorsNote');
     if (hn && META.honorsNote) hn.textContent = META.honorsNote;
+    /* 「最值得去」的排序公式直接摊在推荐框上面，不藏权重 */
+    var th = document.getElementById('topHow');
+    if (th) th.innerHTML = '规则很简单，<b>没有加权公式</b>：' + esc(META.topHow || '');
     honorTable();
   }
   /* 选了菜系，把对应的「怎么点」卡片高亮 */
@@ -368,10 +475,23 @@
         document.querySelectorAll('.chip[data-group="' + g + '"]').forEach(function (o) { o.classList.remove('on'); });
         el.classList.add('on');
         state[g] = val;
+        /* 换了菜系，二级细分必须归零，否则会残留上一个菜系的 sub（列表直接空） */
+        if (g === 'cuisine') { state.sub = 'all'; renderSubChips(); }
+        else if (g === 'price' || g === 'rank') { renderSubChips(); }
         var pr = document.getElementById('pickResult'); if (pr) pr.style.display = 'none';
         render();
         if (g === 'cuisine' && val !== 'all') scrollGuide();
       });
+    });
+    /* 二级细分芯片：动态生成，走事件委托，别在 renderSubChips 里逐个绑 */
+    var subBox = document.getElementById('subChips');
+    if (subBox) subBox.addEventListener('click', function (ev) {
+      var el = ev.target.closest ? ev.target.closest('[data-sub]') : null;
+      if (!el) return;
+      state.sub = el.getAttribute('data-sub');
+      renderSubChips();
+      var pr = document.getElementById('pickResult'); if (pr) pr.style.display = 'none';
+      render();
     });
     document.querySelectorAll('.chip[data-sort]').forEach(function (el) {
       el.addEventListener('click', function () {
@@ -393,6 +513,7 @@
     renderMetaBlocks();
     renderStats();
     renderCounts();
+    renderSubChips();
     bindFilters();
     bindLoc();
     render();

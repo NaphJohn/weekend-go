@@ -261,6 +261,44 @@ details.guide summary{color:var(--purple);font-weight:600}
 }
 .guide-cuisine.now b{color:#8a4520}
 
+/* 二级细分行：选了菜系才出现 */
+.sub-note{margin-top:8px;line-height:1.7}
+.sub-note.warn{
+  background:#fff7e8;border:1px solid #f0dcb4;border-radius:10px;
+  padding:10px 12px;color:#7a5410;
+}
+.chip .cnt{font-weight:700;opacity:.72}
+
+/* 「最值得去」推荐框 */
+.panel-top{border-top:4px solid #d9762b;background:linear-gradient(180deg,#fffaf5,#ffffff)}
+.panel-top .panel-title{margin-bottom:8px}
+.tp-scope{font-size:13px;font-weight:600;color:#8a4520}
+.tp-list{display:flex;flex-direction:column;gap:10px}
+.tp-card{
+  display:flex;gap:12px;align-items:flex-start;
+  background:#fff;border:1px solid #f0e2d5;border-radius:14px;padding:14px 16px;
+}
+.tp-card.tp-first{border-color:#e8bf98;box-shadow:0 0 0 3px rgba(217,118,43,.09)}
+.tp-rank{
+  flex:0 0 30px;height:30px;line-height:30px;text-align:center;
+  border-radius:50%;background:#f4e6da;color:#8a4520;font-weight:800;font-size:14px;
+}
+.tp-first .tp-rank{background:#d9762b;color:#fff}
+.tp-body{flex:1;min-width:0}
+.tp-name{font-size:15px;font-weight:800;color:var(--ink);line-height:1.5}
+.tp-meta{font-size:12.5px;color:var(--sub);line-height:1.75;margin-top:3px}
+.tp-meta b{color:var(--ink)}
+.tp-why{
+  font-size:12.5px;color:#6b5a4b;line-height:1.7;margin-top:6px;
+  background:#fdf6ef;border-radius:8px;padding:6px 9px;
+}
+.tp-why b{color:#8a4520}
+.tp-reason{font-size:12.5px;color:var(--sub);line-height:1.7;margin-top:5px}
+@media (max-width:560px){
+  .tp-card{padding:12px}
+  .tp-rank{flex-basis:26px;height:26px;line-height:26px;font-size:13px}
+}
+
 /* ===== 常年去处页（venues.html / data/venues.js）===== */
 .card-venue{border-color:#d5ece7;background:linear-gradient(180deg,#f9fdfc,#ffffff)}
 .card-venue h3{color:#0f5f57}

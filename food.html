@@ -8,7 +8,7 @@
 <meta property="og:title" content="上海美食按菜系挑 · 评分与人均对照">
 <meta property="og:description" content="14 个菜系、140 家上榜店，带平台公开评分 / 人均 / 招牌菜 / 上榜年数。另附米其林 & 黑珍珠名单，以及「评分怎么读」。">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="assets/style.css?v=20260923a">
+<link rel="stylesheet" href="assets/style.css?v=20260923b">
 </head>
 <body>
 
@@ -54,7 +54,7 @@
   </div>
 
   <div class="panel">
-    <div class="panel-title">📖 四步挑到一家（<b id="metaTotal">-</b> 家，都在公开榜单上）</div>
+    <div class="panel-title">📖 五步挑到一家（<b id="metaTotal">-</b> 家，都在公开榜单上）</div>
     <div class="scene-grid" id="howTo"></div>
   </div>
 
@@ -76,17 +76,8 @@
     </div>
   </div>
 
-  <div class="panel">
-    <div class="panel-title">② 懒得挑？让它替你决定</div>
-    <div class="decide-row">
-      <button class="btn" id="btnDecide">帮我选一家</button>
-      <span class="hint">在当前筛选里按「评分高 + 连续上榜久 + 收录年数长」加权随机，再点一次换一家</span>
-    </div>
-    <div id="pickResult"></div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-title">③ 按菜系筛（点一个，下面「怎么点」会跟着高亮）</div>
+    <div class="panel">
+    <div class="panel-title">① 先选大类，再选细分（选了菜系，「怎么点」那张卡会跟着高亮）</div>
     <div class="filters">
       <span class="chip on" data-group="cuisine" data-val="all">全部菜系 <b class="cnt" data-cnt="cuisine:all">0</b></span>
       <span class="chip" data-group="cuisine" data-val="benbang">本帮·上海菜 <b class="cnt" data-cnt="cuisine:benbang">0</b></span>
@@ -103,6 +94,11 @@
       <span class="chip" data-group="cuisine" data-val="miandian">面点·小吃 <b class="cnt" data-cnt="cuisine:miandian">0</b></span>
       <span class="chip" data-group="cuisine" data-val="vegetarian">素食 <b class="cnt" data-cnt="cuisine:vegetarian">0</b></span>
       <span class="chip" data-group="cuisine" data-val="qita">其他各地菜 <b class="cnt" data-cnt="cuisine:qita">0</b></span>
+    </div>
+    <div id="subRow" style="display:none;margin-top:10px">
+      <div class="hint" style="margin-bottom:6px">↳ <b>再选细分</b>：这一大类里还能怎么分（括号里是该细分的收录家数）</div>
+      <div class="filters" id="subChips"></div>
+      <div class="hint sub-note" id="subNote" style="display:none"></div>
     </div>
     <div class="filters" style="margin-top:10px">
       <span class="chip on" data-group="price" data-val="all">人均不限 <b class="cnt" data-cnt="price:all">0</b></span>
@@ -121,10 +117,25 @@
       <span class="chip" data-sort="cheap">人均从低到高</span>
       <span class="chip" data-sort="long">收录最久优先</span>
     </div>
-    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果　·　<b>评分是第三方平台的公开分，不是本站打的标签</b>；星级换算只是为了看得快，请以数字为准。</div>
+    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果　·　<b>评分是第三方平台的公开分，不是本站打的标签</b>；星级换算只是为了看得快，请以数字为准。<br>选了大类以后，下面会出现<b>二级细分</b>（例如「东南亚菜」→「泰国菜」）；某一类只收录到一种时会直接说明，不会让你白点。</div>
+  </div>
+
+  <div class="panel panel-top">
+    <div class="panel-title">② 🏆 最值得去　<span class="tp-scope">当前范围：<b id="topScope">全部菜系</b></span>　<span class="hint">（从 <b id="topTotal">-</b> 家里排出来）</span></div>
+    <div class="hint" id="topHow" style="margin-bottom:12px"></div>
+    <div class="tp-list" id="topPicks"></div>
   </div>
 
   <div class="grid" id="grid"></div>
+
+<div class="panel">
+    <div class="panel-title">③ 还是选不出来？让它给你随机挑一家</div>
+    <div class="decide-row">
+      <button class="btn" id="btnDecide">帮我选一家</button>
+      <span class="hint">和上面的「最值得去」不一样：这里是<b>加权随机</b>（评分 / 上榜 / 收录年数越高的越容易被抽到），再点一次就换一家 —— 适合「都行，你定」的时候</span>
+    </div>
+    <div id="pickResult"></div>
+  </div>
 
   <div class="panel" style="margin-top:20px">
     <div class="panel-title">🍽 各菜系怎么点 · 去哪片吃 · 注意什么</div>
@@ -174,9 +185,9 @@
 
 </div>
 
-<script src="data/metro.js?v=20260923a"></script>
-<script src="data/eats.js?v=20260923a"></script>
-<script src="assets/locate.js?v=20260923a"></script>
+<script src="data/metro.js?v=20260923b"></script>
+<script src="data/eats.js?v=20260923b"></script>
+<script src="assets/locate.js?v=20260923b"></script>
 <script>
   /**
    * 访客用 GitHub 账号留言（giscus）。
@@ -223,7 +234,7 @@
     });
   })();
 </script>
-<script src="assets/annotate.js?v=20260923a"></script>
-<script src="assets/eats.js?v=20260923a"></script>
+<script src="assets/annotate.js?v=20260923b"></script>
+<script src="assets/eats.js?v=20260923b"></script>
 </body>
 </html>

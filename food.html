@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上海美食按菜系挑 · 本帮/粤菜/川菜/日料/韩餐 评分与人均对照</title>
+<meta name="description" content="上海美食按菜系挑：本帮上海菜、江浙杭帮、粤菜潮汕、川菜、湘菜、火锅、日料、韩餐、东南亚、西餐、烤肉、面点小吃、素食 —— 每家带大众点评公开评分、人均、榜单招牌菜与连续上榜年数，并说明「评分怎么读、差评怎么看」。">
+<meta property="og:title" content="上海美食按菜系挑 · 评分与人均对照">
+<meta property="og:description" content="14 个菜系、140 家上榜店，带平台公开评分 / 人均 / 招牌菜 / 上榜年数。另附米其林 & 黑珍珠名单，以及「评分怎么读」。">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/style.css?v=20260923a">
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav class="nav">
+      <a href="index.html?jump=city">🎪 市内 · 展览市集</a>
+      <a href="index.html?jump=trip">🚗 周边游</a>
+      <a href="shows.html">🎭 看剧 · 演出</a>
+      <a href="scripts.html">🕵️ 剧本杀</a>
+      <a href="boardgames.html">🎲 桌游</a>
+      <a href="venues.html">📍 常年去处</a>
+      <a class="on" href="food.html">🍜 美食 · 按菜系</a>
+    </nav>
+    <h1>上海美食 · 按菜系挑</h1>
+    <div class="sub">本帮上海菜 / 江浙杭帮 / 粤菜潮汕 / 川菜 / 湘菜 / 火锅 / 日料 / 韩餐 / 东南亚 / 西餐 / 烤肉 / 面点小吃 / 素食 —— 按菜系筛，带上平台公开评分与人均</div>
+    <div class="stats">
+      <div class="stat"><b id="s-total">-</b>家收录</div>
+      <div class="stat"><b id="s-cuisine">-</b>个菜系</div>
+      <div class="stat"><b id="s-long">-</b>家连续上榜 5 年以上</div>
+      <div class="stat"><b id="s-cheap">-</b>家人均 ¥100 以内</div>
+    </div>
+    <div class="meta">评分 / 人均 / 招牌菜取自大众点评「必吃榜」公开榜单页，快照日期 <span id="scoreDate"></span>　·　榜单核对于 <span id="verifiedAt"></span></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="subtabs">
+    <a href="index.html?jump=city">🎪 市内 · 展览市集</a>
+    <a href="venues.html">📍 常年去处</a>
+    <span class="on">🍜 美食 · 按菜系</span>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🤝 这一页和首页「美食」有什么区别</div>
+    <div id="metaNote" class="hint"></div>
+    <div class="hint" style="margin-top:8px">
+      <b>首页的美食</b>是「<b>美食街 / 商圈</b>」—— 云南南路、黄河路、虹泉路这种，回答的是「<b>去哪一片逛吃</b>」，不绑具体店。<br>
+      <b>这一页</b>是「<b>具体一家店</b>」—— 按菜系挑，每家带平台公开评分、人均、招牌菜、连续上榜年数，回答的是「<b>今晚吃哪一家</b>」。<br>
+      两边不重合：想逛街吃小吃看首页，想坐下来点菜看这一页。
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">📖 四步挑到一家（<b id="metaTotal">-</b> 家，都在公开榜单上）</div>
+    <div class="scene-grid" id="howTo"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🧭 你在哪？填个地点，按远近给你排（可选）</div>
+    <div class="loc-row">
+      <input id="locInput" class="loc-input" type="text" placeholder="例如：张江路 / 徐家汇 / 静安寺 / 五角场 / 虹泉路">
+      <button class="btn" id="btnLoc">定位</button>
+      <button class="btn ghost" id="btnLocClear">清除</button>
+    </div>
+    <div class="filters" id="quickStations" style="margin-top:8px"></div>
+    <div id="locResult" style="margin-top:8px"></div>
+    <div style="margin-top:8px">
+      <span class="chip" id="chipNear" style="display:none">📍 就近优先（已开）</span>
+    </div>
+    <div class="hint" style="margin-top:8px">
+      地铁站名、商圈名、路名都能填。<b>定位后自动切到「离我最近」排序</b>。距离按商圈对应的地铁站直线估算，只用来排先后，不代表真实路程。
+      这个定位和首页、剧页共用，填一次大家都认。
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">② 懒得挑？让它替你决定</div>
+    <div class="decide-row">
+      <button class="btn" id="btnDecide">帮我选一家</button>
+      <span class="hint">在当前筛选里按「评分高 + 连续上榜久 + 收录年数长」加权随机，再点一次换一家</span>
+    </div>
+    <div id="pickResult"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">③ 按菜系筛（点一个，下面「怎么点」会跟着高亮）</div>
+    <div class="filters">
+      <span class="chip on" data-group="cuisine" data-val="all">全部菜系 <b class="cnt" data-cnt="cuisine:all">0</b></span>
+      <span class="chip" data-group="cuisine" data-val="benbang">本帮·上海菜 <b class="cnt" data-cnt="cuisine:benbang">0</b></span>
+      <span class="chip" data-group="cuisine" data-val="jiangzhe">江浙·杭帮 <b class="cnt" data-cnt="cuisine:jiangzhe">0</b></span>
+      <span class="chip" data-group="cuisine" data-val="yue">粤菜·潮汕 <b class="cnt" data-cnt="cuisine:yue">0</b></span>
+      <span class="chip" data-group="cuisine" data-val="chuan">川菜 <b class="cnt" data-cnt="cuisine:chuan">0</b></span>
+      <span class="chip" data-group="cuisine" data-val="xiang">湘菜 <b class="cnt" data-cnt="cuisine:xiang">0</b></span>
+      <span class="chip" data-group="cuisine" data-val="huoguo">火锅 <b class="cnt" data-cnt="cuisine:huoguo">0</b></span>
+      <span class="chip" data-group="cuisine" data-val="riliao">日料 <b class="cnt" data-cnt="cuisine:riliao">0</b></span>
+      <span class="chip" data-group="cuisine" data-val="kaorou">烤肉·烧烤 <b class="cnt" data-cnt="cuisine:kaorou">0</b></span>
+      <span class="chip" data-group="cuisine" data-val="hancan">韩餐 <b class="cnt" data-cnt="cuisine:hancan">0</b></span>
+      <span class="chip" data-group="cuisine" data-val="dongnanya">东南亚 <b class="cnt" data-cnt="cuisine:dongnanya">0</b></span>
+      <span class="chip" data-group="cuisine" data-val="xican">西餐 <b class="cnt" data-cnt="cuisine:xican">0</b></span>
+      <span class="chip" data-group="cuisine" data-val="miandian">面点·小吃 <b class="cnt" data-cnt="cuisine:miandian">0</b></span>
+      <span class="chip" data-group="cuisine" data-val="vegetarian">素食 <b class="cnt" data-cnt="cuisine:vegetarian">0</b></span>
+      <span class="chip" data-group="cuisine" data-val="qita">其他各地菜 <b class="cnt" data-cnt="cuisine:qita">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="price" data-val="all">人均不限 <b class="cnt" data-cnt="price:all">0</b></span>
+      <span class="chip" data-group="price" data-val="p50">¥50 以内 <b class="cnt" data-cnt="price:p50">0</b></span>
+      <span class="chip" data-group="price" data-val="p100">¥50–100 <b class="cnt" data-cnt="price:p100">0</b></span>
+      <span class="chip" data-group="price" data-val="p200">¥100–200 <b class="cnt" data-cnt="price:p200">0</b></span>
+      <span class="chip" data-group="price" data-val="p300">¥200 以上 <b class="cnt" data-cnt="price:p300">0</b></span>
+      <span class="chip on" data-group="rank" data-val="all">上榜年份不限 <b class="cnt" data-cnt="rank:all">0</b></span>
+      <span class="chip" data-group="rank" data-val="long">只看连续上榜 5 年以上 <b class="cnt" data-cnt="rank:long">0</b></span>
+      <span class="chip" data-group="rank" data-val="new">只看 2026 新上榜 <b class="cnt" data-cnt="rank:new">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="hint" style="align-self:center;margin-right:2px">排序：</span>
+      <span class="chip on" data-sort="rec">评分优先</span>
+      <span class="chip" data-sort="dist" style="display:none">📏 离我最近</span>
+      <span class="chip" data-sort="cheap">人均从低到高</span>
+      <span class="chip" data-sort="long">收录最久优先</span>
+    </div>
+    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果　·　<b>评分是第三方平台的公开分，不是本站打的标签</b>；星级换算只是为了看得快，请以数字为准。</div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="panel" style="margin-top:20px">
+    <div class="panel-title">🍽 各菜系怎么点 · 去哪片吃 · 注意什么</div>
+    <div class="hint" style="margin-bottom:12px">上面点了哪个菜系，这张卡会高亮。这一段是「不会过期」的部分 —— 店的名单每年会变，点菜逻辑和口味陷阱不会。</div>
+    <div class="scene-grid" id="cuisineGuide"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">⭐ 「美团多少分 / 点评怎么样 / 差评怎么看」—— 这一页的处理方式</div>
+    <div class="hint" style="margin-bottom:12px">
+      先说明为什么这一页<b>不给你抄一串「4.6 分、4.7 分」了事</b>：评分每天都在动，抄进一个静态页两周就错；
+      而且不告诉你「这个分在这个池子里算高还是算低」，数字本身没有意义。所以这里做三件事：
+      <b>① 给真实分</b>（榜单页当天的公开分，标死日期）；<b>② 给对照点</b>（这个池子里的分普遍在 4.1–4.9，4.5 是「正常」）；
+      <b>③ 教你读差评</b>（下面这几条比任何一个分数都有用）。
+    </div>
+    <div class="scene-grid" id="scoreHow"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🏅 米其林 &amp; 黑珍珠（上海） · <b id="honorCount">-</b> 家</div>
+    <div class="hint" id="honorsNote" style="margin-bottom:12px"></div>
+    <div style="overflow-x:auto"><div id="honors"></div></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🛡️ 六个容易踩的坑</div>
+    <ul class="free-list" id="care"></ul>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">✍️ 划词批注</div>
+    <div id="annoBar"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🗣 评论 / 讨论</div>
+    <div class="hint" style="margin-bottom:10px">和首页共用同一个留言区（讨论 #1）。哪家店关门了、改名了、或者分数掉下来了，直接留言：店名 + 现在几分 + 情况就行。</div>
+    <div id="giscusBox"></div>
+  </div>
+
+  <footer>
+    评分 / 人均 / 招牌菜：大众点评「2026 必吃榜」公开榜单页（上海），快照 <b>2026-09-23</b>；米其林星级与必比登：《2026 沪苏浙米其林指南》（官方榜单，首次沪苏浙合并发布）；黑珍珠：2026 黑珍珠餐厅指南官方发布。<br>
+    ⚠️ <b>评分、人均、营业状态每天都在变</b>，榜单每年 4–6 月更新一次。本页是快照，不是实时数据 —— <b>出发前请在点评里确认当前分与是否营业</b>。<br>
+    ⚠️ 本页只做「按菜系挑 + 公开数字对照」，<b>不排名、不构成推荐</b>；分高不等于合你口味。<br>
+    想补一家店？在 <code>data/eats.js</code> 的 <code>window.EATS</code> 里加一条，写清 <code>name / cuisine / cat / score / price / area / must</code> 即可。
+  </footer>
+
+</div>
+
+<script src="data/metro.js?v=20260923a"></script>
+<script src="data/eats.js?v=20260923a"></script>
+<script src="assets/locate.js?v=20260923a"></script>
+<script>
+  /**
+   * 访客用 GitHub 账号留言（giscus）。
+   * 全站六个页面共用同一个讨论帖（仓库里唯一一个讨论：
+   *   #1「Welcome to weekend-go Discussions!」，分类 Announcements）。
+   * ⚠️ 用 mapping:'specific' + 该讨论的「完整标题」最稳（pathname / number 都踩过坑）。
+   */
+  window.GISCUS_CFG = {
+    enabled: true, repo: 'NaphJohn/weekend-go', repoId: 'R_kgDOUY4zNw',
+    category: 'Announcements', categoryId: '',
+    mapping: 'specific', term: 'Welcome to weekend-go Discussions!'
+  };
+  (function () {
+    var cfg = window.GISCUS_CFG || {}, box = document.getElementById('giscusBox');
+    if (!box || !cfg.enabled || !cfg.repo) return;
+    var s = document.createElement('script');
+    s.src = 'https://giscus.app/client.js';
+    s.setAttribute('data-repo', cfg.repo);
+    s.setAttribute('data-repo-id', cfg.repoId || '');
+    s.setAttribute('data-category', cfg.category || 'Announcements');
+    s.setAttribute('data-category-id', cfg.categoryId || '');
+    s.setAttribute('data-mapping', cfg.mapping || 'pathname');
+    s.setAttribute('data-term', cfg.term || '');
+    s.setAttribute('data-strict', '0');
+    s.setAttribute('data-reactions-enabled', '1');
+    s.setAttribute('data-emit-metadata', '0');
+    s.setAttribute('data-input-position', 'bottom');
+    s.setAttribute('data-theme', 'light');
+    s.setAttribute('data-lang', 'zh-CN');
+    s.setAttribute('crossorigin', 'anonymous');
+    s.async = true;
+    box.appendChild(s);
+    window.addEventListener('message', function (ev) {
+      if (!ev || !ev.data || ev.origin !== 'https://giscus.app') return;
+      var d = ev.data.giscus || ev.data;
+      if (!d || !d.error || box.querySelector('.giscus-bad')) return;
+      var msg = String(d.error);
+      var tip = /not installed/i.test(msg)
+        ? 'giscus GitHub App 还没装。到 https://github.com/apps/giscus 安装并对 NaphJohn/weekend-go 授权。'
+        : /Discussion not found/i.test(msg)
+          ? '讨论没找到：全站评论区共用一个讨论帖，<code>GISCUS_CFG</code> 的 mapping/term 必须指向仓库里真实存在的讨论（当前是 #1「Welcome to weekend-go Discussions!」、分类 <b>Announcements</b>），六个页面要一致。若该讨论确实不存在，直接发第一条留言会自动创建。'
+          : msg;
+      box.insertAdjacentHTML('afterbegin', '<div class="giscus-bad">⚠️ 评论区暂时加载不出来：' + tip + '</div>');
+    });
+  })();
+</script>
+<script src="assets/annotate.js?v=20260923a"></script>
+<script src="assets/eats.js?v=20260923a"></script>
+</body>
+</html>

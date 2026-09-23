@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <!-- 每次改动都把 v= 后面的版本号 +1，避免浏览器/GitHub Pages 缓存导致看不到更新
      （GitHub Pages 对 HTML 和资源都返回 cache-control: max-age=600，最长 10 分钟才失效） -->
-<link rel="stylesheet" href="assets/style.css?v=20260922b">
+<link rel="stylesheet" href="assets/style.css?v=20260923a">
 <meta http-equiv="Cache-Control" content="max-age=0">
 </head>
 <body>
@@ -18,12 +18,13 @@
 <header>
   <div class="wrap">
     <nav class="nav">
-      <a id="navCity" class="on" href="index.html?jump=city">🎪 市内 · 展览市集美食</a>
+      <a id="navCity" class="on" href="index.html?jump=city">🎪 市内 · 展览市集</a>
       <a id="navTrip" href="index.html?jump=trip">🚗 周边游</a>
       <a href="shows.html">🎭 看剧 · 演出</a>
       <a href="scripts.html">🕵️ 剧本杀</a>
       <a href="boardgames.html">🎲 桌游</a>
       <a href="venues.html">📍 常年去处</a>
+      <a href="food.html">🍜 美食 · 按菜系</a>
     </nav>
     <h1 id="pgTitle">周末去哪玩</h1>
     <div class="sub" id="pgSub">上海展览 / 市集 / 节庆 / 美食 + 周边游决策器 —— 输入你在哪，就近给你排</div>
@@ -42,7 +43,7 @@
 <div class="wrap">
 
   <div class="panel hud-panel">
-    <div class="panel-title">先选板块 · 剧 / 剧本杀 / 桌游 / 常年去处 / 市内 / 周边游 分开看</div>
+    <div class="panel-title">先选板块 · 剧 / 剧本杀 / 桌游 / 常年去处 / 美食 / 市内 / 周边游 分开看</div>
     <div class="hud">
       <a class="block block-shows" data-block="shows" href="shows.html">
         <div class="bk-go">进入 →</div>
@@ -72,6 +73,13 @@
         <div class="bk-desc">博物馆 / 图书馆 / 公园 / 寺庙 / 古镇 / 郊野</div>
         <div class="bk-stat"><b id="hk-venues">-</b> 处收录</div>
       </a>
+      <a class="block block-food" data-block="food" href="food.html">
+        <div class="bk-go">进入 →</div>
+        <div class="bk-ico">🍜</div>
+        <div class="bk-title">美食 · 按菜系</div>
+        <div class="bk-desc">本帮 / 粤菜 / 川菜 / 日料 / 韩餐 / 火锅</div>
+        <div class="bk-stat"><b id="hk-food">-</b> 家收录</div>
+      </a>
       <a class="block block-exh" data-block="city" href="index.html?jump=city">
         <div class="bk-go">浏览 →</div>
         <div class="bk-ico">🎪</div>
@@ -87,7 +95,7 @@
         <div class="bk-stat"><b id="hk-trip">-</b> 个目的地</div>
       </a>
     </div>
-    <div class="hint" style="margin-top:10px">六块各自分开排：点「周边游」进入周边游板块，只出目的地、和市内的展览互不打扰；两块都能填「你在哪」就近排序。看剧 / 剧本杀 / 桌游 / 常年去处是四个独立的选剧选本选游戏选场馆页。</div>
+    <div class="hint" style="margin-top:10px">七块各自分开排：点「周边游」进入周边游板块，只出目的地、和市内的展览互不打扰；两块都能填「你在哪」就近排序。看剧 / 剧本杀 / 桌游 / 常年去处 / 美食是五个独立的选剧选本选游戏选场馆选店页。</div>
   </div>
 
   <div id="scopeBar" class="scope-bar" style="display:none"></div>
@@ -195,15 +203,16 @@
 
 </div>
 
-<script src="data/activities.js?v=20260922b"></script>
-<script src="data/food.js?v=20260922b"></script>
-<script src="data/metro.js?v=20260922b"></script>
-<script src="data/shows.js?v=20260922b"></script>
-<script src="data/guides.js?v=20260922b"></script>
-<script src="data/scripts.js?v=20260922b"></script>
-<script src="data/games.js?v=20260922b"></script>
-<script src="data/venues.js?v=20260922b"></script>
-<script src="assets/locate.js?v=20260922b"></script>
+<script src="data/activities.js?v=20260923a"></script>
+<script src="data/food.js?v=20260923a"></script>
+<script src="data/metro.js?v=20260923a"></script>
+<script src="data/shows.js?v=20260923a"></script>
+<script src="data/guides.js?v=20260923a"></script>
+<script src="data/scripts.js?v=20260923a"></script>
+<script src="data/games.js?v=20260923a"></script>
+<script src="data/venues.js?v=20260923a"></script>
+<script src="data/eats.js?v=20260923a"></script>
+<script src="assets/locate.js?v=20260923a"></script>
 <script>
   /**
    * 访客用 GitHub 账号留言（giscus）。
@@ -226,8 +235,8 @@
     mapping: 'specific', term: 'Welcome to weekend-go Discussions!'
   };
 </script>
-<script src="assets/annotate.js?v=20260922b"></script>
-<script src="assets/app.js?v=20260922b"></script>
+<script src="assets/annotate.js?v=20260923a"></script>
+<script src="assets/app.js?v=20260923a"></script>
 <script>
   /* 总览三块的实时数量：在演剧目 / 市内进行中 / 周边游目的地 */
   (function () {
@@ -257,6 +266,7 @@
       set('hk-scripts', (window.SCRIPTS || []).length);
       set('hk-games', (window.GAMES || []).length);
       set('hk-venues', (window.VENUES || []).length);
+      set('hk-food', (window.EATS || []).length);
     } catch (e) {}
   })();
 </script>

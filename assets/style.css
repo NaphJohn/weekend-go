@@ -250,6 +250,17 @@ details.guide summary{color:var(--purple);font-weight:600}
 .pill-free{display:inline-block;font-size:11px;font-weight:700;border-radius:5px;padding:1px 8px;background:#f0ecfb;color:var(--purple)}
 .block-games{border-top:4px solid #2b7de9}
 
+/* ===== 美食·按菜系页（food.html / data/eats.js）===== */
+.card-eat{border-color:#f6e3d6;background:linear-gradient(180deg,#fffcf9,#ffffff)}
+.card-eat h3{color:#8a4520}
+.block-food{border-top:4px solid #d9762b}
+/* 菜系只数：选了菜系就高亮对应的「怎么点」卡片 */
+.guide-cuisine{transition:all .18s}
+.guide-cuisine.now{
+  background:#fff8f2;border-color:#f0c9a8;box-shadow:0 0 0 3px rgba(217,118,43,.10);
+}
+.guide-cuisine.now b{color:#8a4520}
+
 /* ===== 常年去处页（venues.html / data/venues.js）===== */
 .card-venue{border-color:#d5ece7;background:linear-gradient(180deg,#f9fdfc,#ffffff)}
 .card-venue h3{color:#0f5f57}
@@ -327,12 +338,14 @@ mark.anno:hover{background:#ffe066}
 .anno-del{color:var(--red)}
 .anno-bar-ops{display:flex;gap:8px;margin-top:8px}
 
-/* ===== 板块：市内 / 周边游 / 看剧 / 剧本杀 / 桌游 / 常年去处（六块入口）===== */
-/* ⚠️ minmax 是算出来的，别乱改：容器约 1050px。
-   190px → 排得下 5 列 → 6 块会变成「5 + 1 只孤儿」，很难看；
-   260px → 只排得下 3 列 → 6 块正好 3 + 3；
-   300px 以上在窄一点的笔记本上会掉成 2 列。加板块数时回来重算一次。 */
-.hud{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:6px}
+/* ===== 板块：市内 / 周边游 / 看剧 / 剧本杀 / 桌游 / 常年去处 / 美食（七块入口）===== */
+/* ⚠️ minmax 是算出来的，别乱改：容器约 1050px，gap 14px。
+   列数 n 要满足 n*m + (n-1)*14 ≤ 1050：
+     198.9px 以上 → 排不下 5 列；
+     252px   以上 → 排不下 4 列（会掉成 3 列 → 7 块变「3+3+1 只孤儿」）。
+   所以 199–252 之间取 240px：正好 4 列，7 块 = 4 + 3。
+   板块数再变就回来重算一次（5 块时曾是 190px，6 块时是 260px）。 */
+.hud{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:6px}
 .block{
   display:flex;flex-direction:column;gap:8px;
   background:var(--card);border:1px solid var(--line);border-radius:16px;

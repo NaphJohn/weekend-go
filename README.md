@@ -9,7 +9,7 @@
 两类数据的排序逻辑不同：**市内活动按剩余天数排**（快结束的在前，避免错过），
 **周边游常年可去**，所以沉底并按推荐度排。
 
-除首页外还有五个独立板块页，共用同一套 CSS 与原生的筛选 / 排序 / 「帮我选一个」交互：
+除首页外还有**六个**独立板块页，共用同一套 CSS 与原生的筛选 / 排序 / 「帮我选一个」交互：
 
 | 板块 | 页面 | 数据 |
 |---|---|---|
@@ -17,6 +17,7 @@
 | 🕵️ 剧本杀 | `scripts.html` | `data/scripts.js`（35 本：经典本 + 新本，人数/时长/难度/发行方式） |
 | 🎲 桌游 · 狼人杀/阿瓦隆 | `boardgames.html` | `data/games.js`（30 款：要不要人主持 / 要不要买一盒；+ `GAMES_META.venues` 门店名单含最近地铁站、`freeHow/freeSpots` 免费玩法） |
 | 📍 常年去处 | `venues.html` | `data/venues.js`（**57 处常设场馆**：博物馆 / 图书馆 / 公园 / 寺庙教堂 / 古镇 / 郊野 / 文艺街区，逐个核过门票、开放时间、闭馆日、预约要求） |
+| 🍜 美食 · 按菜系 | `food.html` | `data/eats.js`（**140 家上榜餐厅**，14 个菜系，带大众点评公开评分 / 人均 / 榜单招牌菜 / 连续上榜年数；+ `EATS_META.honors` 米其林 & 黑珍珠名单、`scoreHow` 评分怎么读） |
 | 🎪🚗 市内 · 周边游 | `index.html` | `data/activities.js` + `data/food.js` + `data/metro.js` |
 
 零依赖、零构建：`index.html` + 一个数据文件 + 一点原生 JS，GitHub Pages 直接托管。
@@ -249,8 +250,88 @@ window.GAMES_META = {
 
 - 五个 HTML 的 `?v=` 一起 +1；`index.html` 的 `.hud` 数量别名 `#hk-venues` 要能取到 `window.VENUES.length`；
   四页 `.nav`（+ 剧本杀/桌游页的 `.subtabs`）都要有 `venues.html` 的入口。
-- ⚠️ `.hud` 的栅格是**算出来的常量**：6 块时 `minmax` 必须是 `260px`（容器约 1050px，190px 会排 5 列、
-  多出 1 个孤儿；300px 在窄本上掉 2 列）。见 `style.css` 顶部注释，加板块数时回去重算。
+- ⚠️ `.hud` 的栅格是**算出来的常量**：**7 块时 `minmax` 必须是 `240px`**（容器约 1050px，gap 14px；
+  `n*m+(n-1)*14 ≤ 1050` → 199–252px 之间才是 4 列，7 块正好 4+3；`260px` 会掉成 3 列 →
+  变成「3+3+1 只孤儿」；`190px` 又会排 5 列）。见 `style.css` 顶部注释，加板块数时回去重算。
+
+## 美食板块（`food.html` + `data/eats.js`）—— 2026-09-23 新增
+
+第 6 个板块：**按菜系挑具体一家店**（不是排行榜、也不给门店排名）。页面是 `food.html`，
+数据在 `data/eats.js`，渲染引擎 `assets/eats.js`。
+
+### 和首页「美食」的分工（别混）
+
+- **首页 `data/food.js`** = 美食**街 / 商圈**（云南南路、黄河路、虹泉路…），回答「去哪一片逛吃」，不绑具体店。
+- **这一页 `data/eats.js`** = **具体一家店**，回答「今晚吃哪一家」，带评分 / 人均 / 招牌菜 / 上榜年数。
+- 两页顶部有 `.subtabs` 互跳；首页 `.hud` 有独立入口块。
+
+### 字段（`window.EATS[]`）
+
+```js
+{ id, name, cuisine,        // cuisine = 14 个菜系之一，供筛选
+  cat,                      // 大众点评的原始品类（如 `日式烧烤/烤肉`），原文照录
+  score, price,             // 平台公开评分 / 人均（榜单页展示值）
+  area,                     // 商圈（如 `淮海路`、`龙华/西岸`）
+  metro, district,          // 最近地铁站（可选）/ 行政区兜底
+  must,                     // 榜单页展示的「N 人推荐」招牌菜
+  reason,                   // 榜单页的上榜理由原文
+  includeYear, rankYear, rankText }
+```
+
+`EATS_META`：`verifiedAt` / `scoreDate` / `note` / `howTo` / **`cuisineGuide`（14 个菜系：去哪片 / 怎么点 / 注意什么）**
+/ **`scoreHow`（评分怎么读、差评怎么看、怎么判断刷分）** / `care` / **`honors`（米其林 & 黑珍珠名单）**。
+
+### 数据来源（全部公开可核，不接受二手转述）
+
+| 数据 | 来源 | 走哪个字段 |
+|---|---|---|
+| 评分 / 人均 / 招牌菜 / 收录年数 / 连续上榜年数 | 大众点评「2026 必吃榜」**官方榜单页**（`plat.dianping.com/app/femember-musteat-web/musteat-rank`，`cityid=1` 上海） | `EATS` |
+| 米其林星级 / 必比登 | **《2026 沪苏浙米其林指南》官方榜单**（`guide.michelin.com` 上海页，带官方法文菜系标注） | `EATS_META.honors` |
+| 黑珍珠钻级 | **2026 黑珍珠餐厅指南**官方发布 | `EATS_META.honors` |
+
+### ⚠️ 抓取这几个坑（下次更新数据直接照抄）
+
+1. **`cityid` 必须传 `1` 才是上海**；不传会被 IP 定位到别的城市（本次默认落到汉中）。
+   校验方法：抓完看店名，出现「浙江中路店 / 肇嘉浜店」这类才是上海。
+2. **那个接口每次返回的是「随机 10 条」，分页参数无效**（`pageNo` / `page` / `offset` 全被忽略，
+   不同参数返回不同随机样本）。所以拿全量的唯一办法是**重复抽样取并集**：
+   本次抽 80 次拿到 **140 / 160** 家（`P(漏) = 0.9375^80 ≈ 0.6%`）。⚠️ 别指望「翻到第 16 页」。
+3. **店名 / 评分 / 人均都嵌在 HTML 里的内联 JSON**（`"shopName"` / `"fiveScore"` / `"price"` /
+   `"mainCategoryName"` / `"shopTags"` / `"includeYear"` / `"inRankYear"`），
+   用「`{` 大括号配平」定位每条对象再逐个抠字段即可，不需要 headless 浏览器。
+4. **`inRankYearText`（如「连续 8 年上榜」/「2026年新上榜」）和 `inRankYear` 是自洽的**，
+   直接当「连续上榜年数」用；`includeYear` 是「收录年数」，两个字段**别混**（前者防刷分，后者看老店）。
+5. 菜品字段 `shopTags` 里是 `78人推荐"总统牛肉"` 这种，要正则剥掉人数与引号。
+
+### 数据诚信：为什么**不抄「美团 4.6 分」**
+
+评分每天都在动，抄进静态页两周就错；而且不给对照点，「4.6」本身没有意义。所以页面走三件事：
+① 只收**榜单页当天的公开数字**并标死 `scoreDate`；② 给**对照区间**（必吃榜池子里普遍 4.1–4.9，
+4.5 属正常、4.7+ 才突出）；③ 用 `EATS_META.scoreHow` 教**怎么读差评、怎么判断刷分** ——
+其中「收录年数 + 连续上榜年数」两个字段是防刷分最有效的，因为刷不出来。
+**❌ 不要把搜索结果里的评分当事实写进 `EATS`**（这类页面十有八九是 AI 生成的 SEO 稿）。
+
+### 菜系归类
+
+`cat`（大众点评 55 种原始品类）→ `cuisine`（14 个）：
+
+`benbang 本帮·上海菜` / `jiangzhe 江浙·杭帮·淮扬` / `yue 粤菜·潮汕` / `chuan 川菜` /
+`xiang 湘菜·湖南` / `huoguo 火锅·锅物` / `riliao 日料` / `kaorou 烤肉·烧烤` / `hancan 韩餐` /
+`dongnanya 东南亚菜` / `xican 西餐` / `miandian 面点·小吃` / `vegetarian 素食·斋菜` / `qita 其他各地菜`
+
+⚠️ **每个菜系都要 ≥3 家才配得上一个筛选芯片**（点下去只剩 1 条比没有还难看）。
+`assets/eats.js` 里对计数为 0 的芯片会直接 `display:none`，但**归类时就该先跑一遍分布**。
+
+### 地名 → 地铁站（距离排序）
+
+商圈名（`淮海路` / `龙华/西岸` / `陆家嘴商圈`）跟站名对不上，三级兜底：
+
+1. 站名子串命中（`陆家嘴商圈` → `陆家嘴`）：取**最长**匹配，避免被短站名抢走；
+2. 别名表 `AREA_STATION`（`淮海路` → `淮海中路`、`虹桥/古北` → `伊犁路`…）：**别名目标必须是 `data/metro.js` 里真有的站**；
+3. 行政区兜底 `AREA_DISTRICT`（`三林地区` → 浦东）。
+
+本次 140 家里 **120 家**能算出精确距离，其余 20 家靠区中心兜底。⚠️ 加了别名要跑
+`node --check` 之外还得校验站名存在，否则距离会静默变 `null`。
 
 ## 怎么加一个周边游（`type: 'trip'`）
 
@@ -295,7 +376,7 @@ window.GAMES_META = {
 
 👉 **https://naphjohn.github.io/weekend-go/**
 
-子页：[/shows.html](https://naphjohn.github.io/weekend-go/shows.html) · [/scripts.html](https://naphjohn.github.io/weekend-go/scripts.html) · [/boardgames.html](https://naphjohn.github.io/weekend-go/boardgames.html)
+子页：[/shows.html](https://naphjohn.github.io/weekend-go/shows.html) · [/scripts.html](https://naphjohn.github.io/weekend-go/scripts.html) · [/boardgames.html](https://naphjohn.github.io/weekend-go/boardgames.html) · [/venues.html](https://naphjohn.github.io/weekend-go/venues.html) · [/food.html](https://naphjohn.github.io/weekend-go/food.html)
 
 ## 部署
 

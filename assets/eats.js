@@ -117,7 +117,7 @@
         (v.cat !== (CN[v.cuisine] || '') ? '<span class="en-name">' + esc(v.cat) + '</span> ' : '') +
         rankBadge(v) +
       '</div>' +
-      '<div class="meta-line">' + scoreStar(v.score) + ' ' + v.score.toFixed(1) + ' 分（平台公开分）　·　💰 人均约 <b>¥' + v.price + '</b></div>' +
+      '<div class="meta-line">' + scoreStar(v.score) + ' <span style="color:var(--sub)">大众点评公开分</span>　·　💰 人均约 <b>¥' + v.price + '</b></div>' +
       '<div class="meta-line">📍 ' + esc(v.area || '—') + (v.metro ? '（近 ' + esc(v.metro) + ' 站）' : '') + '</div>' +
       (v.must && v.must.length ? '<div class="meta-line">🍽 榜单招牌：<b>' + esc(v.must.join('、')) + '</b></div>' : '') +
       '<div class="meta-line">📚 收录 <b>' + v.includeYear + '</b> 年' + (v.rankText ? '　·　' + esc(v.rankText) : '') + '</div>' +

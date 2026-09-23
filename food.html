@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>上海美食按菜系挑 · 本帮/粤菜/川菜/日料/韩餐 评分与人均对照</title>
-<meta name="description" content="上海美食按菜系挑：本帮上海菜、江浙杭帮、粤菜潮汕、川菜、湘菜、火锅、日料、韩餐、东南亚、西餐、烤肉、面点小吃、素食 —— 每家带大众点评公开评分、人均、榜单招牌菜与连续上榜年数，并说明「评分怎么读、差评怎么看」。">
+<meta name="description" content="上海美食按菜系挑：本帮上海菜、江浙杭帮、粤菜潮汕、川菜、湘菜、火锅、日料、韩餐、东南亚、西餐、烤肉、面点小吃、素食 —— 142 家上榜店，每家带大众点评公开评分、人均、榜单招牌菜、连续上榜年数与大众点评门店链接；另附 137 道招牌菜科普词典、「舌尖上的中国」自编一期、米其林与黑珍珠名单，以及「评分怎么读 / 差评怎么看」。">
 <meta property="og:title" content="上海美食按菜系挑 · 评分与人均对照">
-<meta property="og:description" content="14 个菜系、140 家上榜店，带平台公开评分 / 人均 / 招牌菜 / 上榜年数。另附米其林 & 黑珍珠名单，以及「评分怎么读」。">
+<meta property="og:description" content="14 个菜系、142 家上榜店，带平台公开评分 / 人均 / 招牌菜 / 上榜年数 + 点评门店链接；137 道招牌菜科普 + 「舌尖上的中国」自编一期。">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="assets/style.css?v=20260923b">
+<link rel="stylesheet" href="assets/style.css?v=20260923c">
 </head>
 <body>
 
@@ -58,12 +58,18 @@
     <div class="scene-grid" id="howTo"></div>
   </div>
 
-  <div class="panel">
-    <div class="panel-title">🧭 你在哪？填个地点，按远近给你排（可选）</div>
+  <div class="panel" id="locPanel">
+    <div class="panel-title">🧭 你在哪？填个地点按远近排；两个人就填「中间点」（可选）</div>
     <div class="loc-row">
       <input id="locInput" class="loc-input" type="text" placeholder="例如：张江路 / 徐家汇 / 静安寺 / 五角场 / 虹泉路">
       <button class="btn" id="btnLoc">定位</button>
       <button class="btn ghost" id="btnLocClear">清除</button>
+    </div>
+    <div class="loc-row" style="margin-top:8px">
+      <input id="locInputA" class="loc-input half" type="text" placeholder="中间点 A：一个人在哪，例如 漕河泾">
+      <span class="loc-tilde">↔</span>
+      <input id="locInputB" class="loc-input half" type="text" placeholder="中间点 B：另一个人在哪，例如 张江路">
+      <button class="btn" id="btnMid">算中间点</button>
     </div>
     <div class="filters" id="quickStations" style="margin-top:8px"></div>
     <div id="locResult" style="margin-top:8px"></div>
@@ -71,8 +77,9 @@
       <span class="chip" id="chipNear" style="display:none">📍 就近优先（已开）</span>
     </div>
     <div class="hint" style="margin-top:8px">
-      地铁站名、商圈名、路名都能填。<b>定位后自动切到「离我最近」排序</b>。距离按商圈对应的地铁站直线估算，只用来排先后，不代表真实路程。
-      这个定位和首页、剧页共用，填一次大家都认。
+      地铁站名、商圈名、路名都能填。<b>定位后自动切到「离我最近」排序</b>。距离按商圈对应的地铁站直线估算，只用来排先后，不代表真实路程。<br>
+      <b>两个人一起吃饭？</b>上面第二行各填一个地点，点「算中间点」，全部内容会改按「<b>到两人中间点</b>」的距离排 —— 谁都不用跨半个上海。
+      这个定位和首页、剧页共用，填一次大家都认（单点与中间点<b>互斥</b>，用了后一个前一个就清掉）。
     </div>
   </div>
 
@@ -139,8 +146,39 @@
 
   <div class="panel" style="margin-top:20px">
     <div class="panel-title">🍽 各菜系怎么点 · 去哪片吃 · 注意什么</div>
-    <div class="hint" style="margin-bottom:12px">上面点了哪个菜系，这张卡会高亮。这一段是「不会过期」的部分 —— 店的名单每年会变，点菜逻辑和口味陷阱不会。</div>
+    <div class="hint" style="margin-bottom:12px">上面点了哪个菜系，这张卡会高亮。<b>「🍜 代表店」是按本页排序口径从收录的店里取的 3 家</b>（不是全城排名）；其余是「不会过期」的部分 —— 店的名单每年会变，点菜逻辑和口味陷阱不会。</div>
     <div class="scene-grid" id="cuisineGuide"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🥢 招牌菜科普词典 · <b id="dishCount">-</b> 道</div>
+    <div class="hint" style="margin-bottom:12px">
+      卡片里那句「📚 榜单招牌」上的菜名是<b>可以点的</b> —— 点开就在卡片里展开这道菜是什么、怎么做才算好。<br>
+      这里是把 142 家店的招牌菜全部摊开：<b>每道菜写「是什么」和「怎么判断做得好」两行</b>，店会关门改名，但「吊龙该涮几秒」「咖喱分黄绿红」这种知识不会过期。
+      <b>高级硬菜</b>那组（蟹粉、醉蟹、烤全羊、海胆）尤其值得先看一眼再点菜。
+    </div>
+    <div class="filters" id="dishChips" style="margin-bottom:10px"></div>
+    <div class="loc-row" style="margin-bottom:10px">
+      <input id="dishSearch" class="loc-input" type="text" placeholder="搜菜名或关键词，例如：咖喱 / 小笼 / 吊龙 / 醉 / 蟹粉（Esc 清空）">
+    </div>
+    <div id="dishDict"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">📺 舌尖上的中国 · 我们编了一期</div>
+    <div id="epNote" class="hint" style="margin-bottom:8px"></div>
+    <div class="ep-box">
+      <div class="ep-label">全三季分集名（官方分集表）</div>
+      <div id="epSeasons" class="ep-seasons"></div>
+      <div id="epWarn" class="hint" style="margin-top:8px"></div>
+    </div>
+    <div id="epList"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🏷 「是不是上了中国美食榜 / 上过舌尖」—— 这一页怎么标</div>
+    <div class="hint" id="honestIntro" style="margin-bottom:12px"></div>
+    <div class="scene-grid" id="honestList"></div>
   </div>
 
   <div class="panel">
@@ -178,16 +216,18 @@
 
   <footer>
     评分 / 人均 / 招牌菜：大众点评「2026 必吃榜」公开榜单页（上海），快照 <b>2026-09-23</b>；米其林星级与必比登：《2026 沪苏浙米其林指南》（官方榜单，首次沪苏浙合并发布）；黑珍珠：2026 黑珍珠餐厅指南官方发布。<br>
+    🔗 <b>每家店的「大众点评 ↗」</b>指向榜单页里带出来的门店 ID（142 家里 140 家能对上，另 2 家退回站内搜索）；链接指向<strong>第三方平台</strong>，本页不对其内容负责。<br>
+    🥢 <b>招牌菜科普</b>是烹饪常识（这道菜是什么、怎么做才算好），不是某家店的宣传；<b>「舌尖一期」</b>的出处取自央视官方分集表的「涉及美食」列，讲菜不讲店。<br>
     ⚠️ <b>评分、人均、营业状态每天都在变</b>，榜单每年 4–6 月更新一次。本页是快照，不是实时数据 —— <b>出发前请在点评里确认当前分与是否营业</b>。<br>
     ⚠️ 本页只做「按菜系挑 + 公开数字对照」，<b>不排名、不构成推荐</b>；分高不等于合你口味。<br>
-    想补一家店？在 <code>data/eats.js</code> 的 <code>window.EATS</code> 里加一条，写清 <code>name / cuisine / cat / score / price / area / must</code> 即可。
+    想补一家店？在 <code>data/eats.js</code> 的 <code>window.EATS</code> 里加一条，写清 <code>name / cuisine / sub / cat / score / price / area / must</code> 即可；想补一道菜的科普，往 <code>EATS_META.dishes</code> 里加一条（key 要和 <code>must</code> 里的菜名逐字一致）。
   </footer>
 
 </div>
 
-<script src="data/metro.js?v=20260923b"></script>
-<script src="data/eats.js?v=20260923b"></script>
-<script src="assets/locate.js?v=20260923b"></script>
+<script src="data/metro.js?v=20260923c"></script>
+<script src="data/eats.js?v=20260923c"></script>
+<script src="assets/locate.js?v=20260923c"></script>
 <script>
   /**
    * 访客用 GitHub 账号留言（giscus）。
@@ -234,7 +274,7 @@
     });
   })();
 </script>
-<script src="assets/annotate.js?v=20260923b"></script>
-<script src="assets/eats.js?v=20260923b"></script>
+<script src="assets/annotate.js?v=20260923c"></script>
+<script src="assets/eats.js?v=20260923c"></script>
 </body>
 </html>

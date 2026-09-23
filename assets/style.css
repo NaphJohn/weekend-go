@@ -299,6 +299,90 @@ details.guide summary{color:var(--purple);font-weight:600}
   .tp-rank{flex-basis:26px;height:26px;line-height:26px;font-size:13px}
 }
 
+/* 大众点评外链（卡片 / 推荐卡 / 随机结果共用） */
+.dp{
+  display:inline-block;font-size:12px;font-weight:700;
+  color:#c2560d;background:#fff3e8;border:1px solid #f0d6bd;border-radius:7px;
+  padding:2px 9px;text-decoration:none;line-height:1.6;
+}
+.dp:hover{background:#ffe9d6;border-color:#e8bf98}
+.dp-sm{font-size:11.5px;padding:1px 7px}
+.tp-body .dp{margin-top:2px}
+.guide-cuisine .gl-shops{line-height:1.9}
+
+/* 招牌菜：卡片里可点开的一行 */
+.dish{
+  border-bottom:1px dashed #d9762b;cursor:pointer;
+  color:#8a4520;padding-bottom:1px;
+}
+.dish:hover{background:#fff3e8}
+.dish-box{
+  display:none;margin-top:8px;padding:10px 12px;
+  background:#fffaf5;border:1px solid #f0e2d5;border-radius:10px;
+  font-size:12.5px;line-height:1.78;color:#5c4a3c;
+}
+.dish-box.open{display:block}
+.dish-box .db-head{font-weight:800;color:#8a4520;font-size:13px;margin-bottom:4px}
+.dish-box .db-g{
+  font-size:11px;font-weight:700;color:#7a3ea8;background:#f4eefb;
+  border-radius:5px;padding:1px 7px;margin-left:4px;
+}
+.dish-box .db-w{margin-bottom:5px}
+.dish-box .db-t b{color:var(--ink)}
+.tp-body .dish-box{margin-top:6px}
+
+/* 招牌菜科普词典 */
+.dish-group{
+  font-size:13px;font-weight:800;color:#8a4520;margin:16px 0 8px;
+  padding-left:9px;border-left:3px solid #d9762b;
+}
+.dish-card{
+  background:#fff;border:1px solid #f0e2d5;border-radius:12px;
+  padding:12px 14px;margin-bottom:9px;
+}
+.dish-card .dc-n{font-size:14.5px;font-weight:800;color:var(--ink)}
+.dish-card .dc-w{font-size:12.8px;color:#5c4a3c;line-height:1.78;margin-top:4px}
+.dish-card .dc-t{
+  font-size:12.8px;color:var(--sub);line-height:1.78;margin-top:5px;
+  background:#fdf6ef;border-radius:8px;padding:6px 9px;
+}
+.dish-card .dc-t b{color:#8a4520}
+#dishDict .empty{padding:14px;color:var(--sub);font-size:13px}
+
+/* 「舌尖上的中国 · 我们编了一期」 */
+.ep-box{background:#f7f4ee;border:1px solid #e6ded1;border-radius:12px;padding:12px 14px;margin-bottom:4px}
+.ep-label{font-size:12px;font-weight:700;color:#7a6a56;margin-bottom:6px}
+.ep-seasons{font-size:12.8px;color:#41506a;line-height:1.85}
+.ep-seg{
+  background:#fff;border:1px solid #f0e2d5;border-left:3px solid #d9762b;
+  border-radius:12px;padding:14px 16px;margin-top:12px;
+}
+.ep-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:9px}
+.ep-no{
+  flex:0 0 26px;height:26px;line-height:26px;text-align:center;border-radius:50%;
+  background:#d9762b;color:#fff;font-weight:800;font-size:13px;
+}
+.ep-t{font-size:14.5px;font-weight:800;color:#8a4520}
+.ep-dish{
+  font-size:12.5px;font-weight:700;color:#1f6b3a;background:#eefaf1;
+  border-radius:7px;padding:2px 9px;
+}
+.ep-shot{font-size:12.3px;color:var(--sub);line-height:1.8;margin-bottom:7px}
+.ep-what{font-size:13px;color:#41506a;line-height:1.85}
+.ep-where{font-size:12.8px;color:#33405a;line-height:1.8;margin-top:7px}
+.ep-where b{color:#1a8a3a}
+.ep-how{
+  font-size:12.8px;color:#5c4a3c;line-height:1.8;margin-top:6px;
+  background:#fdf6ef;border-radius:8px;padding:6px 9px;
+}
+.ep-how b{color:#8a4520}
+.ep-cuis{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.ep-cui{cursor:pointer}
+@media (max-width:560px){
+  .ep-seg{padding:12px}
+  .dish-card{padding:11px 12px}
+}
+
 /* ===== 常年去处页（venues.html / data/venues.js）===== */
 .card-venue{border-color:#d5ece7;background:linear-gradient(180deg,#f9fdfc,#ffffff)}
 .card-venue h3{color:#0f5f57}

@@ -25,16 +25,67 @@
                'kaorou', 'hancan', 'dongnanya', 'xican', 'miandian', 'vegetarian', 'qita'];
   var PRICE_TEXT = { p50: '人均 ¥50 以内', p100: '人均 ¥50–100', p200: '人均 ¥100–200', p300: '人均 ¥200 以上' };
 
-  var state = { cuisine: 'all', sub: 'all', price: 'all', rank: 'all', sort: 'rec' };
-  var located = null;
+  var state = { cuisine: 'all', sub: 'all', price: 'all', rank: 'all', sort: 'rec',
+                loc: null,      // 单点定位：站名
+                midA: null, midB: null, midErr: '',   // 中间点：两个人的站名
+                ref: null };    // 唯一距离基准（中间点优先，否则单点）
   var distCache = {};
+
+  /**
+   * 距离基准 state.ref —— 中间点优先，否则单点定位。语义与 index/assets/app.js 的 refreshRef() 一致。
+   *
+   * ⚠️ 所有跟距离有关的地方（distOf / sortFn / 卡片文案 / 推荐框）都必须只读 state.ref，
+   *    不能各自去读 state.loc，否则会出现「有的卡按中点算、有的按单点算」。
+   */
+  function refreshRef() {
+    var r = null;
+    if (state.midA && state.midB && window.WG && window.WG.midPoint) {
+      var mp = window.WG.midPoint(state.midA, state.midB);
+      if (mp) r = { kind: 'mid', pt: mp.M, label: mp.A + ' ↔ ' + mp.B, near: mp.near };
+    }
+    if (!r && state.loc && window.WG && window.WG.station) {
+      var p = window.WG.station(state.loc);
+      if (p) r = { kind: 'loc', pt: p, label: state.loc, near: { name: state.loc, km: 0 } };
+    }
+    state.ref = r;
+    distCache = {};
+    return r;
+  }
+  /** 距离基准的说明名：单点 →「张江路」；中点 →「漕河泾 ↔ 张江路」中间点 */
+  function refName() {
+    if (!state.ref) return '';
+    return state.ref.kind === 'mid' ? '「' + state.ref.label + '」中间点' : '「' + state.ref.label + '」';
+  }
+  function refShort() {
+    if (!state.ref) return '';
+    return state.ref.kind === 'mid' ? state.ref.label + ' 中间点' : state.ref.label;
+  }
 
   function esc(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/"/g, '&quot;')
       .replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
+  /**
+   * 作者文案专用：先转义、再把 **加粗** 变成 <b>。
+   * ⚠️ 数据里（episode / honestTag 等）写的是 **这样**，而 esc() 只转义不解析，
+   *    直接用 esc 会把星号原样显示在页面上。凡是「我写的说明文字」都走 md()，
+   *    凡是「平台上抓来的原文」（店名 / 菜名 / 地址）仍走 esc()，不要混。
+   */
+  function md(s) {
+    return esc(s).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  }
   function idxOf(v) { return DATA.indexOf(v); }
+
+  /** 大众点评链接：有 shopId 就直达门店页，没有就退回站内搜索 */
+  function dpUrl(v) {
+    if (v.dp) return 'https://www.dianping.com/shop/' + v.dp;
+    return 'https://www.dianping.com/search/keyword/1/0_' + encodeURIComponent(v.name);
+  }
+  function dpLink(v, cls) {
+    return '<a class="' + (cls || 'dp') + '" href="' + dpUrl(v) +
+      '" target="_blank" rel="noopener nofollow">大众点评' + (v.dp ? '' : '（搜索）') + ' ↗</a>';
+  }
 
   function stationOf(v) {
     if (v.metro && window.WG && window.WG.stations[v.metro]) return v.metro;
@@ -43,10 +94,10 @@
     return null;
   }
   function distOf(v) {
-    if (!located) return null;
+    if (!state.ref) return null;
     if (distCache[v.id] !== undefined) return distCache[v.id];
     var st = stationOf(v);
-    var km = st && window.WG ? window.WG.km(located, st) : null;
+    var km = st && window.WG && window.WG.ptKm ? window.WG.ptKm(state.ref.pt, st) : null;
     distCache[v.id] = km;
     return km;
   }
@@ -88,7 +139,7 @@
   }
 
   function sortFn(a, b) {
-    if (state.sort === 'dist' && located) {
+    if (state.sort === 'dist' && state.ref) {
       var da = distOf(a), db = distOf(b);
       if (da == null && db == null) return b.score - a.score;
       if (da == null) return 1;
@@ -122,13 +173,36 @@
   }
 
   function distHTML(v) {
-    if (!located || !window.WG) return '';
+    if (!state.ref || !window.WG) return '';
     var km = distOf(v);
-    if (km == null) return '<div class="dist d3">📍 距 <b>' + esc(located) + '</b> 较远（跨区）</div>';
+    if (km == null) return '<div class="dist d5">📍 距' + esc(refName()) + '较远（跨区）</div>';
     var g = window.WG.grade(km);
     if (!g) return '';
-    return '<div class="dist ' + g.cls + '">📍 距 <b>' + esc(located) + '</b> 约 ' +
+    return '<div class="dist ' + g.cls + '">📍 距' + esc(refName()) + '约 ' +
       km.toFixed(1) + ' km <span>· ' + g.txt + ' · ' + g.sub + '</span></div>';
+  }
+
+  /* ===== 招牌菜：有科普词典的就做成可点，点开在卡内展开 ===== */
+  function dishHTML(v) {
+    if (!v.must || !v.must.length) return '';
+    var D = META.dishes || {};
+    var spans = v.must.map(function (d, i) {
+      var has = !!D[d];
+      return has
+        ? '<span class="dish" data-dish="' + esc(d) + '" data-box="db-' + esc(v.id) + '-' + i + '">' + esc(d) + '</span>'
+        : esc(d);
+    }).join('、');
+    var boxes = v.must.map(function (d, i) {
+      var e = D[d];
+      if (!e) return '';
+      return '<div class="dish-box" id="db-' + esc(v.id) + '-' + i + '">' +
+        '<div class="db-head">🍽 ' + esc(d) + '　<span class="db-g">' + esc(e.g) + '</span></div>' +
+        '<div class="db-w">' + esc(e.w) + '</div>' +
+        '<div class="db-t"><b>怎么判断 / 怎么点：</b>' + esc(e.t) + '</div>' +
+        '</div>';
+    }).join('');
+    return '<div class="meta-line">🍽 榜单招牌：<b>' + spans + '</b>' +
+      '<span class="hint" style="margin-left:6px">（点菜名看科普）</span>' + boxes + '</div>';
   }
 
   function cardHTML(v) {
@@ -141,9 +215,10 @@
       '</div>' +
       '<div class="meta-line">' + scoreStar(v.score) + ' <span style="color:var(--sub)">大众点评公开分</span>　·　💰 人均约 <b>¥' + v.price + '</b></div>' +
       '<div class="meta-line">📍 ' + esc(v.area || '—') + (v.metro ? '（近 ' + esc(v.metro) + ' 站）' : '') + '</div>' +
-      (v.must && v.must.length ? '<div class="meta-line">🍽 榜单招牌：<b>' + esc(v.must.join('、')) + '</b></div>' : '') +
+      dishHTML(v) +
       '<div class="meta-line">📚 收录 <b>' + v.includeYear + '</b> 年' + (v.rankText ? '　·　' + esc(v.rankText) : '') + '</div>' +
       distHTML(v) +
+      '<div class="meta-line">' + dpLink(v) + '</div>' +
       (v.reason ? '<div class="detail"><div class="tip">' + esc(v.reason) + '</div></div>' : '') +
       '</div>';
   }
@@ -152,7 +227,7 @@
   function topPickCard(v, rank) {
     var addr = esc(v.area || '—') + (v.metro ? '（近 ' + esc(v.metro) + ' 站）' : '');
     var d = distOf(v);
-    if (located && d != null) addr += '　·　📍 ' + d.toFixed(1) + ' km';
+    if (state.ref && d != null) addr += '　·　📍 距 ' + esc(refShort()) + ' ' + d.toFixed(1) + ' km';
     var why = '平台公开分 <b>' + v.score.toFixed(1) + '</b>';
     why += '　·　' + (v.rankText ? esc(v.rankText) : '上榜年数未标注');
     why += '　·　收录 <b>' + v.includeYear + '</b> 年';
@@ -163,9 +238,10 @@
           (rank === 1 ? ' <span class="badge b-d1">🏆 本次首选</span>' : '') + '</div>' +
         '<div class="tp-meta"><span class="pill-type">' + esc(v.sub || v.cat) + '</span>　' + addr +
           '　·　💰 人均约 <b>¥' + v.price + '</b></div>' +
-        (v.must && v.must.length ? '<div class="tp-meta">🍽 招牌：<b>' + esc(v.must.join('、')) + '</b></div>' : '') +
+        dishHTML(v) +
         '<div class="tp-why">为什么排第 ' + rank + '：' + why + '</div>' +
         (v.reason ? '<div class="tp-reason">' + esc(v.reason) + '</div>' : '') +
+        '<div style="margin-top:6px">' + dpLink(v) + '</div>' +
       '</div>' +
     '</div>';
   }
@@ -302,11 +378,12 @@
     box.style.display = 'block';
     box.innerHTML = '<div class="pick-card">' +
       '<div class="pk-name">' + esc(v.name) + '　' + scoreBadge(v) + '</div>' +
-      '<div class="pk-line">' + esc(CN[v.cuisine] || v.cat) + '　·　' + esc(v.area || '—') + '</div>' +
+      '<div class="pk-line">' + esc(CN[v.cuisine] || v.cat) + '　·　' + esc(v.area || '—') +
+        (state.ref ? '　·　📍 距 ' + esc(refShort()) + ' ' + (distOf(v) == null ? '—' : distOf(v).toFixed(1) + ' km') : '') + '</div>' +
       '<div class="pk-line">🍽 ' + esc((v.must || []).join('、') || '—') + '　·　💰 人均约 ¥' + v.price + '</div>' +
       '<div class="pk-why"><b>为什么是它：</b>' + esc(why.join('；')) + '。</div>' +
       '<div class="pk-line" style="color:var(--sub);font-size:12px">评分与人均是 ' + esc(META.scoreDate || '') +
-        ' 的快照，去之前请在点评里再看一眼当前分。</div>' +
+        ' 的快照，去之前请在点评里再看一眼当前分。　' + dpLink(v, 'dp dp-sm') + '</div>' +
       '</div>';
     if (box.scrollIntoView) box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
@@ -317,11 +394,110 @@
       esc(r.v) + '</span><br><span style="color:var(--sub)">' + esc(r.d) + '</span></div>';
   }
   function guideCard(g) {
+    var shops = (g.shops || []).map(function (s) {
+      return esc(s.n) + '<span style="color:var(--sub)">（⭐' + s.s.toFixed(1) + ' · ¥' + s.p + '）</span>';
+    }).join('　');
     return '<div class="scene-card guide-cuisine" data-cuisine="' + esc(g.k) + '">' +
       '<b>' + esc(g.name) + '</b><br>' +
       '<span style="color:var(--blue)">🗺 去哪吃　</span><span>' + esc(g.where) + '</span><br>' +
       '<span style="color:#1a8a3a">🍽 怎么点　</span><span>' + esc(g.how) + '</span><br>' +
-      '<span style="color:#a3670a">⚠️ 注意　</span><span>' + esc(g.watch) + '</span></div>';
+      '<span style="color:#a3670a">⚠️ 注意　</span><span>' + esc(g.watch) + '</span>' +
+      (shops ? '<br><span style="color:#7a3ea8">🍜 代表店　</span><span class="gl-shops">' + shops + '</span>' : '') +
+      '<br><span class="hint">👆 点这张卡＝直接把上面的列表筛成「' + esc(g.name) + '」</span>' +
+      '</div>';
+  }
+
+  /* ===== 招牌菜科普词典（137 道，可按分组筛 + 按菜名搜） ===== */
+  var dishState = { g: 'all', q: '' };
+  var DGROUP = ['高级硬菜', '本帮江浙', '粤潮', '川湘', '火锅', '日料', '烤西', '韩东南亚', '面点小吃', '素与地方'];
+
+  function renderDishDict() {
+    var box = document.getElementById('dishDict');
+    if (!box) return;
+    var D = META.dishes || {};
+    var keys = Object.keys(D);
+    var chips = document.getElementById('dishChips');
+    if (chips) {
+      var html = '<span class="chip' + (dishState.g === 'all' ? ' on' : '') + '" data-dg="all">全部 <b class="cnt">' + keys.length + '</b></span>';
+      DGROUP.forEach(function (g) {
+        var n = keys.filter(function (k) { return D[k].g === g; }).length;
+        if (!n) return;
+        html += '<span class="chip' + (dishState.g === g ? ' on' : '') + '" data-dg="' + esc(g) + '">' +
+          esc(g) + ' <b class="cnt">' + n + '</b></span>';
+      });
+      chips.innerHTML = html;
+    }
+    var q = dishState.q.trim();
+    var list = keys.filter(function (k) {
+      if (dishState.g !== 'all' && D[k].g !== dishState.g) return false;
+      if (q && k.indexOf(q) < 0 && (D[k].w + D[k].t).indexOf(q) < 0) return false;
+      return true;
+    });
+    var cnt = document.getElementById('dishCount');
+    if (cnt) cnt.textContent = list.length;
+    if (!list.length) {
+      box.innerHTML = '<div class="empty">没搜到这道菜 —— 换个词（比如「咖喱」「小笼」「吊龙」）试试。</div>';
+      return;
+    }
+    var out = '', lastG = '';
+    DGROUP.forEach(function (g) {
+      var sub = list.filter(function (k) { return D[k].g === g; });
+      if (!sub.length) return;
+      if (g !== lastG) { out += '<div class="dish-group">' + esc(g) + '</div>'; lastG = g; }
+      out += sub.map(function (k) {
+        var e = D[k];
+        return '<div class="dish-card"><div class="dc-n">' + esc(k) + '</div>' +
+          '<div class="dc-w">' + esc(e.w) + '</div>' +
+          '<div class="dc-t"><b>怎么判断 / 怎么点：</b>' + esc(e.t) + '</div></div>';
+      }).join('');
+    });
+    box.innerHTML = out;
+  }
+
+  /* ===== 「舌尖上的中国 · 我们编了一期」 ===== */
+  function renderEpisode() {
+    var E = META.episode;
+    if (!E) return;
+    function set(id, t, html) {
+      var e = document.getElementById(id);
+      if (!e) return;
+      if (html) e.innerHTML = t; else e.textContent = t;
+    }
+    set('epNote', md(E.note || ''), true);
+    set('epSeasons', md(E.seasons || ''), true);
+    set('epWarn', md(E.warn || ''), true);
+    var box = document.getElementById('epList');
+    if (!box) return;
+    box.innerHTML = (E.segs || []).map(function (s, i) {
+      var cui = (s.cui || []).map(function (c) {
+        var n = DATA.filter(function (v) { return v.cuisine === c; }).length;
+        return '<span class="chip sm ep-cui" data-cui="' + esc(c) + '">' + esc(CN[c] || c) + ' · ' + n + ' 家</span>';
+      }).join('');
+      return '<div class="ep-seg">' +
+        '<div class="ep-head"><span class="ep-no">' + (i + 1) + '</span>' +
+          '<span class="ep-t">' + esc(s.ep) + '</span>' +
+          '<span class="ep-dish">🥢 ' + esc(s.dish) + '</span></div>' +
+        '<div class="ep-shot">🎬 这一集拍了：' + md(s.shot) + '</div>' +
+        '<div class="ep-what">' + md(s.what) + '</div>' +
+        '<div class="ep-where"><b>在上海吃同类：</b>' + md(s.where) + '</div>' +
+        '<div class="ep-how"><b>怎么判断：</b>' + md(s.how) + '</div>' +
+        (cui ? '<div class="ep-cuis">' + cui + '</div>' : '') +
+        '</div>';
+    }).join('');
+  }
+
+  /* ===== 「上过榜 / 上过电视」怎么标 ===== */
+  function renderHonest() {
+    var H = META.honestTag;
+    if (!H) return;
+    var intro = document.getElementById('honestIntro');
+    if (intro) intro.innerHTML = '⚠️ ' + md(H.intro);
+    var box = document.getElementById('honestList');
+    if (!box) return;
+    box.innerHTML = (H.items || []).map(function (r) {
+      return '<div class="scene-card"><b>' + md(r.k) + '</b>　<span style="color:var(--blue);font-weight:700">' +
+        md(r.v) + '</span><br><span style="color:var(--sub)">' + md(r.d) + '</span></div>';
+    }).join('');
   }
   function honorTable() {
     var box = document.getElementById('honors');
@@ -364,6 +540,9 @@
     var th = document.getElementById('topHow');
     if (th) th.innerHTML = '规则很简单，<b>没有加权公式</b>：' + esc(META.topHow || '');
     honorTable();
+    renderDishDict();
+    renderEpisode();
+    renderHonest();
   }
   /* 选了菜系，把对应的「怎么点」卡片高亮 */
   function highlightGuide() {
@@ -376,95 +555,197 @@
     if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  /* ===== 定位 ===== */
-  function renderLoc(result, cls) {
+  /* ===== 定位（单点 + 中间点）=====
+     语义与首页 assets/app.js 完全一致：两者互斥，state.ref 是唯一距离基准。
+     卡片文案区分「距「张江路」」与「距「漕河泾 ↔ 张江路」中间点」。 */
+  function setSortChip(which) {
+    document.querySelectorAll('.chip[data-sort]').forEach(function (o) {
+      var s = o.getAttribute('data-sort');
+      if (s === 'dist') o.style.display = state.ref ? '' : 'none';
+      o.classList.toggle('on', s === which);
+    });
+  }
+  function renderLoc(html, cls) {
     var box = document.getElementById('locResult');
     if (!box) return;
-    box.innerHTML = result ? '<div class="' + (cls || 'loc-ok') + '">' + result + '</div>' : '';
+    box.innerHTML = html ? '<div class="' + (cls || 'loc-ok') + '">' + html + '</div>' : '';
   }
-  function applyLoc(name, fromUrl) {
+  function quickChipPush() {
+    var chip = document.getElementById('chipNear');
+    if (chip) chip.style.display = state.ref ? '' : 'none';
+  }
+  /** 单点定位：中间点会被清掉（互斥） */
+  function applyLoc(raw, fromUrl) {
     if (!window.WG) return;
-    if (!name) { located = null; renderLoc(''); }
-    else {
-      var r = window.WG.locate(name);
+    var a = document.getElementById('locInputA'), b = document.getElementById('locInputB');
+    if (a) a.value = '';
+    if (b) b.value = '';
+    state.midA = null; state.midB = null; state.midErr = '';
+    var q = (raw == null ? (document.getElementById('locInput') || {}).value : raw) || '';
+    q = String(q).trim();
+    if (!q) {
+      state.loc = null; refreshRef();
+      renderLoc('先填一个地点，比如「徐家汇」或「张江路」。', 'loc-bad');
+    } else {
+      var r = window.WG.locate(q);
       if (!r || !r.station) {
-        located = null;
+        state.loc = null; refreshRef();
         renderLoc((r && r.how) || '认不出这个地点，试试填地铁站名（例如「徐家汇」「张江路」）。', 'loc-bad');
       } else {
-        located = r.station;
+        state.loc = r.station; refreshRef();
+        var inp = document.getElementById('locInput');
+        if (inp) inp.value = q;
         renderLoc('已定位到 <b>' + esc(r.station) + '</b> 站　·　' + esc(r.how) +
           (fromUrl ? '' : '　·　下面按「离 ' + esc(r.station) + ' 远近」重排'));
-        if (!fromUrl) window.WG.saveLoc(name);
+        if (!fromUrl) window.WG.saveLoc(q);
       }
     }
     distCache = {};
-    document.querySelectorAll('.chip[data-sort]').forEach(function (o) {
-      if (o.getAttribute('data-sort') === 'dist') o.style.display = located ? '' : 'none';
-    });
-    if (located) {
-      state.sort = 'dist';
-      document.querySelectorAll('.chip[data-sort]').forEach(function (o) {
-        o.classList.toggle('on', o.getAttribute('data-sort') === 'dist');
-      });
-    } else if (state.sort === 'dist') {
-      state.sort = 'rec';
-      document.querySelectorAll('.chip[data-sort]').forEach(function (o) {
-        o.classList.toggle('on', o.getAttribute('data-sort') === 'rec');
-      });
-    }
-    var chip = document.getElementById('chipNear');
-    if (chip) chip.style.display = located ? '' : 'none';
+    if (state.ref) state.sort = 'dist';
+    else if (state.sort === 'dist') state.sort = 'rec';
+    setSortChip(state.sort);
+    quickChipPush();
     render();
+    if (state.ref) syncCarry();
+  }
+  /** 中间点：填两个地点，全部卡片改按「到两人中间点」的距离排 */
+  function applyMid(fromUrl) {
+    if (!window.WG || !window.WG.midPoint) return;
+    var A = document.getElementById('locInputA'), B = document.getElementById('locInputB');
+    if (!A || !B) return;
+    var a = (A.value || '').trim(), b = (B.value || '').trim();
+    if (!a || !b) {
+      state.midA = null; state.midB = null; state.loc = null; refreshRef();
+      state.midErr = '中间点要填两个地点：左边一个人在哪，右边另一个人在哪。两边都填上再点「算中间点」。';
+      renderLoc(state.midErr, 'loc-bad');
+    } else {
+      var ra = window.WG.locate(a), rb = window.WG.locate(b);
+      if (!ra || !ra.station || !rb || !rb.station) {
+        state.midA = null; state.midB = null; state.loc = null; refreshRef();
+        var bad = (!ra || !ra.station) ? a : b;
+        state.midErr = '中间点这一侧「' + esc(bad) + '」没认出来，换个更常见的地名或地铁站名试试。';
+        renderLoc(state.midErr, 'loc-bad');
+      } else {
+        state.midA = ra.station; state.midB = rb.station;
+        state.loc = null; state.midErr = '';
+        A.value = ra.station; B.value = rb.station;   // 回填规范站名，方便确认认对了
+        var li = document.getElementById('locInput'); if (li) li.value = '';
+        var r = refreshRef();
+        var extra = r && r.near ? '　·　中间点离 <b>' + esc(r.near.name) + '</b> 站约 ' +
+          r.near.km.toFixed(1) + ' km' : '';
+        renderLoc('中间点：<b>' + esc(ra.station) + ' ↔ ' + esc(rb.station) + '</b>' + extra +
+          (fromUrl ? '' : '　·　下面按「离中间点远近」重排'));
+        if (!fromUrl) window.WG.saveLocMid(ra.station, rb.station);
+      }
+    }
+    distCache = {};
+    if (state.ref) state.sort = 'dist';
+    else if (state.sort === 'dist') state.sort = 'rec';
+    setSortChip(state.sort);
+    quickChipPush();
+    render();
+    if (state.ref) syncCarry();
+  }
+  function clearLoc() {
+    ['locInput', 'locInputA', 'locInputB'].forEach(function (id) {
+      var e = document.getElementById(id); if (e) e.value = '';
+    });
+    state.loc = null; state.midA = null; state.midB = null; state.midErr = '';
+    refreshRef();
+    renderLoc('');
+    var chip = document.getElementById('chipNear'); if (chip) chip.style.display = 'none';
+    state.sort = 'rec';
+    setSortChip('rec');
+    var d = document.querySelector('.chip[data-sort="dist"]');
+    if (d) d.style.display = 'none';
+    window.WG && window.WG.dropLoc && window.WG.dropLoc();
+    window.WG && window.WG.dropLocMid && window.WG.dropLocMid();
+    syncCarry();
+    render();
+  }
+  /** 跨页携带：把当前基准写进所有站内链接（?here= 单点 / ?mid=A,B 中点） */
+  function syncCarry() {
+    var q = '';
+    if (state.midA && state.midB) q = 'mid=' + encodeURIComponent(state.midA + ',' + state.midB);
+    else if (state.loc) q = 'here=' + encodeURIComponent(state.loc);
+    document.querySelectorAll('.nav a, .subtabs a, footer a').forEach(function (a) {
+      if (!a.getAttribute('data-href')) {
+        var h0 = a.getAttribute('href');
+        if (!h0 || /^(https?:|mailto:|#)/.test(h0)) return;
+        a.setAttribute('data-href', h0);          // 原链接留档，反复调用才是幂等的
+      }
+      var base = a.getAttribute('data-href').split('#')[0];
+      var parts = base.split('?');
+      var keep = (parts[1] || '').split('&').filter(function (kv) {
+        return kv && !/^(here|mid)=/.test(kv);
+      });
+      if (q) keep.push(q);
+      a.setAttribute('href', parts[0] + (keep.length ? '?' + keep.join('&') : ''));
+    });
   }
   function bindLoc() {
     if (!window.WG) return;
     var input = document.getElementById('locInput');
     var btn = document.getElementById('btnLoc');
     var clr = document.getElementById('btnLocClear');
+    var btnMid = document.getElementById('btnMid');
     var quick = document.getElementById('quickStations');
+    var A = document.getElementById('locInputA'), B = document.getElementById('locInputB');
+
     if (quick && window.WG.meta && window.WG.meta.quick) {
-      quick.innerHTML = window.WG.meta.quick.map(function (s) {
+      var qs = window.WG.meta.quick.slice();
+      if (qs.indexOf('张江路') < 0) qs.push('张江路');
+      quick.innerHTML = qs.map(function (s) {
         return '<span class="chip sm" data-st="' + esc(s) + '">' + esc(s) + '</span>';
-      }).join('') + '<span class="chip sm" data-st="张江路">张江路</span>';
+      }).join('');
+      /* 快捷站填「最后聚焦的那一栏」——在中间点那两栏里点，就填那一栏并重算 */
+      var focus = 'locInput';
+      ['locInput', 'locInputA', 'locInputB'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('focus', function () { focus = id; });
+      });
       quick.addEventListener('click', function (ev) {
         var el = ev.target.closest ? ev.target.closest('[data-st]') : null;
         if (!el) return;
         var s = el.getAttribute('data-st');
-        if (input) input.value = s;
-        applyLoc(s, false);
+        var target = document.getElementById(focus) || input;
+        if (!target) return;
+        target.value = s;
+        if (focus === 'locInputA' || focus === 'locInputB') {
+          if (A && B && (A.value || '').trim() && (B.value || '').trim()) applyMid(false);
+        } else applyLoc(s, false);
       });
     }
-    if (btn) btn.addEventListener('click', function () {
-      var q = input ? input.value : '';
-      if (!q) { renderLoc('先填一个地点，比如「徐家汇」或「张江路」。', 'loc-bad'); return; }
-      applyLoc(q, false);
-    });
+    if (btn) btn.addEventListener('click', function () { applyLoc(null, false); });
+    if (btnMid) btnMid.addEventListener('click', function () { applyMid(false); });
     if (input) input.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') { e.preventDefault(); if (btn) btn.click(); }
     });
-    if (clr) clr.addEventListener('click', function () {
-      if (input) input.value = '';
-      window.WG.dropLoc(); window.WG.dropLocMid();
-      located = null; distCache = {};
-      renderLoc('');
-      var chip = document.getElementById('chipNear'); if (chip) chip.style.display = 'none';
-      state.sort = 'rec';
-      document.querySelectorAll('.chip[data-sort]').forEach(function (o) {
-        o.classList.toggle('on', o.getAttribute('data-sort') === 'rec');
-        if (o.getAttribute('data-sort') === 'dist') o.style.display = 'none';
+    [A, B].forEach(function (el) {
+      if (el) el.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); applyMid(false); }
       });
-      render();
     });
+    if (clr) clr.addEventListener('click', clearLoc);
     var chip = document.getElementById('chipNear');
     if (chip) chip.addEventListener('click', function () {
-      if (!located) return;
-      if (input && !input.value) input.value = located;
-      applyLoc(located, false);
+      if (!state.ref) return;
+      if (input && !input.value && state.ref.kind === 'loc') input.value = state.loc;
+      state.sort = 'dist';
+      setSortChip('dist');
+      render();
     });
-    var here = window.WG.urlHere();
-    var saved = window.WG.readLoc();
-    if (here) { if (input) input.value = here; applyLoc(here, true); }
-    else if (saved) { if (input) input.value = saved; applyLoc(saved, true); }
+    /* 优先 ?mid= → ?here= → 本地记忆（与首页一致） */
+    var mid = window.WG.urlMid(), here = window.WG.urlHere();
+    if (mid && A && B) { A.value = mid.A; B.value = mid.B; applyMid(true); }
+    else if (here) { if (input) input.value = here; applyLoc(here, true); }
+    else {
+      var savedMid = window.WG.readLocMid && window.WG.readLocMid();
+      var saved = window.WG.readLoc && window.WG.readLoc();
+      if (savedMid && A && B) { A.value = savedMid.A; B.value = savedMid.B; applyMid(true); }
+      else if (saved) { if (input) input.value = saved; applyLoc(saved, true); }
+    }
+    syncCarry();
   }
 
   function bindFilters() {
@@ -507,6 +788,63 @@
     if (d) d.style.display = 'none';
     var btn = document.getElementById('btnDecide');
     if (btn) btn.addEventListener('click', pick);
+
+    /* 卡片里的招牌菜：点菜名展开科普（卡片是重渲染的，必须走事件委托） */
+    var grid = document.getElementById('grid');
+    if (grid) grid.addEventListener('click', function (ev) {
+      var el = ev.target.closest ? ev.target.closest('.dish') : null;
+      if (!el) return;
+      var box = document.getElementById(el.getAttribute('data-box'));
+      if (!box) return;
+      box.classList.toggle('open');
+    });
+
+    /* 词典：分组芯片 + 搜索框 */
+    var dch = document.getElementById('dishChips');
+    if (dch) dch.addEventListener('click', function (ev) {
+      var el = ev.target.closest ? ev.target.closest('[data-dg]') : null;
+      if (!el) return;
+      dishState.g = el.getAttribute('data-dg');
+      renderDishDict();
+    });
+    var ds = document.getElementById('dishSearch');
+    if (ds) {
+      ds.addEventListener('input', function () {
+        dishState.q = ds.value || '';
+        renderDishDict();
+      });
+      ds.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { ds.value = ''; dishState.q = ''; renderDishDict(); }
+      });
+    }
+
+    /* 「舌尖一期」里的菜系芯片：点了直接筛列表 */
+    var epl = document.getElementById('epList');
+    if (epl) epl.addEventListener('click', function (ev) {
+      var el = ev.target.closest ? ev.target.closest('[data-cui]') : null;
+      if (!el) return;
+      var c = el.getAttribute('data-cui');
+      var chip = document.querySelector('.chip[data-group="cuisine"][data-val="' + c + '"]');
+      if (chip) {
+        chip.click();
+        var g = document.getElementById('grid');
+        if (g && g.scrollIntoView) g.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    /* 菜系知识卡：整张卡可点，直接筛出这一类 */
+    var cg = document.getElementById('cuisineGuide');
+    if (cg) cg.addEventListener('click', function (ev) {
+      var el = ev.target.closest ? ev.target.closest('.guide-cuisine') : null;
+      if (!el) return;
+      var c = el.getAttribute('data-cuisine');
+      var chip = document.querySelector('.chip[data-group="cuisine"][data-val="' + c + '"]');
+      if (chip) {
+        chip.click();
+        var g = document.getElementById('grid');
+        if (g && g.scrollIntoView) g.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
   }
 
   document.addEventListener('DOMContentLoaded', function () {

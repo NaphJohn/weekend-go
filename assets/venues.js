@@ -15,8 +15,9 @@
     museum: '博物馆 / 美术馆', library: '图书馆 / 书院', park: '公园',
     temple: '寺庙 / 教堂', town: '古镇 / 老街', hill: '登山 / 郊野', street: '文艺街区'
   };
-  var state = { cat: 'all', free: 'all', book: 'all', conf: 'all', sort: 'rec' };
-  var located = null;          // 站名；null = 没定位
+  var state = { cat: 'all', free: 'all', book: 'all', conf: 'all', sort: 'rec',
+                loc: null, midA: null, midB: null,   // 单点 / 中间点（互斥）
+                ref: null };                          // 唯一距离基准（中点优先，否则单点）
   var distCache = {};
 
   function esc(s) {
@@ -26,6 +27,32 @@
   }
   function idxOf(v) { return DATA.indexOf(v); }
 
+  /**
+   * 距离基准 state.ref —— 中间点优先，否则单点定位。语义与 assets/eats.js 的 refreshRef() 完全一致。
+   *
+   * ⚠️ 所有跟距离有关的地方（distOf / sortFn / 卡片文案 / 帮我选一个）都必须只读 state.ref，
+   *    不能各自去读 state.loc，否则会出现「有的卡按中点算、有的按单点算」。
+   */
+  function refreshRef() {
+    var r = null;
+    if (state.midA && state.midB && window.WG && window.WG.midPoint) {
+      var mp = window.WG.midPoint(state.midA, state.midB);
+      if (mp) r = { kind: 'mid', pt: mp.M, label: mp.A + ' ↔ ' + mp.B, near: mp.near };
+    }
+    if (!r && state.loc && window.WG && window.WG.station) {
+      var p = window.WG.station(state.loc);
+      if (p) r = { kind: 'loc', pt: p, label: state.loc, near: { name: state.loc, km: 0 } };
+    }
+    state.ref = r;
+    distCache = {};
+    return r;
+  }
+  /** 距离基准的说明名：单点 →「张江路」；中点 →「漕河泾 ↔ 张江路」中间点 */
+  function refName() {
+    if (!state.ref) return '';
+    return state.ref.kind === 'mid' ? '「' + state.ref.label + '」中间点' : '「' + state.ref.label + '」';
+  }
+
   /* 场馆 → 用于算距离的站名。字段里没写就退回「区」兜底，认不出来返回 null */
   function stationOf(v) {
     if (v.metro && window.WG && window.WG.stations[v.metro]) return v.metro;
@@ -34,10 +61,10 @@
     return null;
   }
   function distOf(v) {
-    if (!located) return null;
+    if (!state.ref) return null;
     if (distCache[v.id] !== undefined) return distCache[v.id];
     var st = stationOf(v);
-    var km = st && window.WG ? window.WG.km(located, st) : null;
+    var km = st && window.WG && window.WG.ptKm ? window.WG.ptKm(state.ref.pt, st) : null;
     distCache[v.id] = km;
     return km;
   }
@@ -54,13 +81,17 @@
   }
 
   function sortFn(a, b) {
-    if (state.sort === 'dist' && located) {
-      if (a.free !== b.free) return a.free ? -1 : 1;      // 同距离先推免费的
+    if (state.sort === 'dist' && state.ref) {
+      /* ⚠️ 「📏 离我最近」必须是**纯距离**排序：免费优先是另一颗芯片（free-first）的事。
+         这里只保留注释里写的那点偏好 —— **差不到 0.3 km 时**才让免费的插到前面。
+         （2026-09-23 修：旧写法 `if (a.free !== b.free) return ...` 是无条件免费优先，
+          会把 40 km 外的免费馆排到 1 km 内的收费馆前面，和「离我最近」这块牌子自相矛盾。） */
       var da = distOf(a), db = distOf(b);
       if (da == null && db == null) return idxOf(a) - idxOf(b);
       if (da == null) return 1;
       if (db == null) return -1;
       if (Math.abs(da - db) > 0.3) return da - db;
+      if (a.free !== b.free) return a.free ? -1 : 1;
       return idxOf(a) - idxOf(b);
     }
     if (state.sort === 'free-first' && a.free !== b.free) return a.free ? -1 : 1;
@@ -85,12 +116,12 @@
   }
 
   function distHTML(v) {
-    if (!located || !window.WG) return '';
+    if (!state.ref || !window.WG) return '';
     var km = distOf(v);
-    if (km == null) return '<div class="dist d3">📍 距 <b>' + esc(located) + '</b> 较远（跨区）</div>';
+    if (km == null) return '<div class="dist d3">📍 距' + esc(refName()) + '较远（跨区）</div>';
     var g = window.WG.grade(km);
     if (!g) return '';
-    return '<div class="dist ' + g.cls + '">📍 距 <b>' + esc(located) + '</b> 约 ' +
+    return '<div class="dist ' + g.cls + '">📍 距' + esc(refName()) + '约 ' +
       km.toFixed(1) + ' km <span>· ' + g.txt + ' · ' + g.sub + '</span></div>';
   }
 
@@ -179,6 +210,8 @@
       '<div class="pk-name">' + esc(v.name) + '　' + freeBadge(v) + '</div>' +
       '<div class="pk-line">' + (CAT_TEXT[v.cat] || '') + '　·　' + esc(v.addr) + '</div>' +
       '<div class="pk-line">🚇 ' + esc(v.metroNote || '—') + '</div>' +
+      (state.ref && distOf(v) != null
+        ? '<div class="pk-line">📍 距' + esc(refName()) + '约 ' + distOf(v).toFixed(1) + ' km</div>' : '') +
       '<div class="pk-line">🕐 ' + esc(v.hours === '—' ? '以馆方公告为准' : v.hours) + '　·　🛑 ' + esc(v.closed) + '</div>' +
       '<div class="pk-why"><b>为什么是它：</b>' + esc(why.join('；')) + '。</div>' +
       '</div>';
@@ -221,99 +254,182 @@
     list('care', META.care);
   }
 
-  /* ===== 定位（复用 index 页那套记忆，跨页带得过去） ===== */
+  /* ===== 定位（复用 index 页那套记忆，跨页带得过去）
+     单点「你在哪」+ 中间点「两个人约在中间」。两者互斥，距离基准一律走 state.ref。 ===== */
   function renderLoc(result, cls) {
     var box = document.getElementById('locResult');
     if (!box) return;
     box.innerHTML = result ? '<div class="' + (cls || 'loc-ok') + '">' + result + '</div>' : '';
   }
-
-  function applyLoc(name, fromUrl) {
+  /** 排序芯片：dist 只在有基准时出现，并保证「当前排序」只有一个高亮 */
+  function setSortChip(s) {
+    document.querySelectorAll('.chip[data-sort]').forEach(function (o) {
+      if (o.getAttribute('data-sort') === 'dist') o.style.display = state.ref ? '' : 'none';
+      o.classList.toggle('on', o.getAttribute('data-sort') === s);
+    });
+  }
+  function quickChipPush() {
+    var chip = document.getElementById('chipNear');
+    if (chip) chip.style.display = state.ref ? '' : 'none';
+  }
+  /** 单点定位：中间点会被清掉（互斥） */
+  function applyLoc(raw, fromUrl) {
     if (!window.WG) return;
-    if (!name) { located = null; renderLoc(''); }
-    else {
-      var r = window.WG.locate(name);
+    var a = document.getElementById('locInputA'), b = document.getElementById('locInputB');
+    if (a) a.value = '';
+    if (b) b.value = '';
+    state.midA = null; state.midB = null;
+    var q = (raw == null ? (document.getElementById('locInput') || {}).value : raw) || '';
+    q = String(q).trim();
+    if (!q) {
+      state.loc = null; refreshRef();
+      renderLoc('先填一个地点，比如「徐家汇」或「张江路」。', 'loc-bad');
+    } else {
+      var r = window.WG.locate(q);
       if (!r || !r.station) {
-        located = null;
+        state.loc = null; refreshRef();
         renderLoc((r && r.how) || '认不出这个地点，试试填地铁站名（例如「徐家汇」「张江路」）。', 'loc-bad');
       } else {
-        located = r.station;
+        state.loc = r.station; refreshRef();
+        var inp = document.getElementById('locInput');
+        if (inp) inp.value = q;
         renderLoc('已定位到 <b>' + esc(r.station) + '</b> 站　·　' + esc(r.how) +
           (fromUrl ? '' : '　·　下面按「离 ' + esc(r.station) + ' 远近」重排'));
-        if (!fromUrl) window.WG.saveLoc(name);
+        if (!fromUrl) window.WG.saveLoc(q);
       }
     }
-    distCache = {};
-    document.querySelectorAll('.chip[data-sort]').forEach(function (o) {
-      if (o.getAttribute('data-sort') === 'dist') o.style.display = located ? '' : 'none';
-    });
-    if (located) {
-      state.sort = 'dist';
-      document.querySelectorAll('.chip[data-sort]').forEach(function (o) {
-        o.classList.toggle('on', o.getAttribute('data-sort') === 'dist');
-      });
-    } else if (state.sort === 'dist') {
-      state.sort = 'rec';
-      document.querySelectorAll('.chip[data-sort]').forEach(function (o) {
-        o.classList.toggle('on', o.getAttribute('data-sort') === 'rec');
-      });
+    if (state.ref) state.sort = 'dist';
+    else if (state.sort === 'dist') state.sort = 'rec';
+    setSortChip(state.sort);
+    quickChipPush();
+    render();
+    if (state.ref) syncCarry();
+  }
+  /** 中间点：填两个地点，全部卡片改按「到两人中间点」的距离排 */
+  function applyMid(fromUrl) {
+    if (!window.WG || !window.WG.midPoint) return;
+    var A = document.getElementById('locInputA'), B = document.getElementById('locInputB');
+    if (!A || !B) return;
+    var a = (A.value || '').trim(), b = (B.value || '').trim();
+    if (!a || !b) {
+      state.midA = null; state.midB = null; state.loc = null; refreshRef();
+      renderLoc('中间点要填两个地点：左边一个人在哪，右边另一个人在哪。两边都填上再点「算中间点」。', 'loc-bad');
+    } else {
+      var ra = window.WG.locate(a), rb = window.WG.locate(b);
+      if (!ra || !ra.station || !rb || !rb.station) {
+        state.midA = null; state.midB = null; state.loc = null; refreshRef();
+        var bad = (!ra || !ra.station) ? a : b;
+        renderLoc('中间点这一侧「' + esc(bad) + '」没认出来，换个更常见的地名或地铁站名试试。', 'loc-bad');
+      } else {
+        state.midA = ra.station; state.midB = rb.station; state.loc = null;
+        A.value = ra.station; B.value = rb.station;   // 回填规范站名，方便确认认对了
+        var li = document.getElementById('locInput'); if (li) li.value = '';
+        var r = refreshRef();
+        var extra = r && r.near ? '　·　中间点离 <b>' + esc(r.near.name) + '</b> 站约 ' +
+          r.near.km.toFixed(1) + ' km' : '';
+        renderLoc('中间点：<b>' + esc(ra.station) + ' ↔ ' + esc(rb.station) + '</b>' + extra +
+          (fromUrl ? '' : '　·　下面按「离中间点远近」重排'));
+        if (!fromUrl) window.WG.saveLocMid(ra.station, rb.station);
+      }
     }
-    var chip = document.getElementById('chipNear');
-    if (chip) chip.style.display = located ? '' : 'none';
+    if (state.ref) state.sort = 'dist';
+    else if (state.sort === 'dist') state.sort = 'rec';
+    setSortChip(state.sort);
+    quickChipPush();
+    render();
+    if (state.ref) syncCarry();
+  }
+  function clearLoc() {
+    ['locInput', 'locInputA', 'locInputB'].forEach(function (id) {
+      var e = document.getElementById(id); if (e) e.value = '';
+    });
+    state.loc = null; state.midA = null; state.midB = null;
+    refreshRef();
+    renderLoc('');
+    state.sort = 'rec';
+    setSortChip('rec');
+    var chip = document.getElementById('chipNear'); if (chip) chip.style.display = 'none';
+    window.WG && window.WG.dropLoc && window.WG.dropLoc();
+    window.WG && window.WG.dropLocMid && window.WG.dropLocMid();
+    syncCarry();
     render();
   }
-
+  /** 跨页携带：把当前基准写进所有站内链接（?here= 单点 / ?mid=A,B 中点） */
+  function syncCarry() {
+    var q = '';
+    if (state.midA && state.midB) q = 'mid=' + encodeURIComponent(state.midA + ',' + state.midB);
+    else if (state.loc) q = 'here=' + encodeURIComponent(state.loc);
+    document.querySelectorAll('.nav a, .subtabs a, footer a').forEach(function (a) {
+      if (!a.getAttribute('data-href')) {
+        var h0 = a.getAttribute('href');
+        if (!h0 || /^(https?:|mailto:|#)/.test(h0)) return;
+        a.setAttribute('data-href', h0);          // 原链接留档，反复调用才是幂等的
+      }
+      var base = a.getAttribute('data-href').split('#')[0];
+      var parts = base.split('?');
+      var keep = (parts[1] || '').split('&').filter(function (kv) {
+        return kv && !/^(here|mid)=/.test(kv);
+      });
+      if (q) keep.push(q);
+      a.setAttribute('href', parts[0] + (keep.length ? '?' + keep.join('&') : ''));
+    });
+  }
   function bindLoc() {
     if (!window.WG) return;
     var input = document.getElementById('locInput');
     var btn = document.getElementById('btnLoc');
     var clr = document.getElementById('btnLocClear');
+    var btnMid = document.getElementById('btnMid');
     var quick = document.getElementById('quickStations');
+    var A = document.getElementById('locInputA'), B = document.getElementById('locInputB');
+
+    /* 快捷站填「最后聚焦的那一栏」：焦点在中点 A/B 上就填那一栏，两栏都填好就重算 */
     if (quick && window.WG.meta && window.WG.meta.quick) {
-      quick.innerHTML = window.WG.meta.quick.map(function (s) {
+      var qs = window.WG.meta.quick.slice();
+      if (qs.indexOf('张江路') < 0) qs.push('张江路');
+      quick.innerHTML = qs.map(function (s) {
         return '<span class="chip sm" data-st="' + esc(s) + '">' + esc(s) + '</span>';
-      }).join('') + '<span class="chip sm" data-st="张江路">张江路</span>';
+      }).join('');
       quick.addEventListener('click', function (ev) {
         var el = ev.target.closest ? ev.target.closest('[data-st]') : null;
         if (!el) return;
         var s = el.getAttribute('data-st');
+        var focus = document.activeElement;
+        if (focus === A) { A.value = s; if ((B.value || '').trim()) applyMid(false); return; }
+        if (focus === B) { B.value = s; if ((A.value || '').trim()) applyMid(false); return; }
         if (input) input.value = s;
         applyLoc(s, false);
       });
     }
-    if (btn) btn.addEventListener('click', function () {
-      var q = input ? input.value : '';
-      if (!q) { renderLoc('先填一个地点，比如「徐家汇」或「张江路」。', 'loc-bad'); return; }
-      applyLoc(q, false);
-    });
+    if (btn) btn.addEventListener('click', function () { applyLoc(null, false); });
+    if (btnMid) btnMid.addEventListener('click', function () { applyMid(false); });
     if (input) input.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') { e.preventDefault(); if (btn) btn.click(); }
     });
-    if (clr) clr.addEventListener('click', function () {
-      if (input) input.value = '';
-      window.WG.dropLoc(); window.WG.dropLocMid();
-      located = null; distCache = {};
-      renderLoc('');
-      var chip = document.getElementById('chipNear'); if (chip) chip.style.display = 'none';
-      state.sort = 'rec';
-      document.querySelectorAll('.chip[data-sort]').forEach(function (o) {
-        o.classList.toggle('on', o.getAttribute('data-sort') === 'rec');
-        if (o.getAttribute('data-sort') === 'dist') o.style.display = 'none';
+    [A, B].forEach(function (el) {
+      if (el) el.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); applyMid(false); }
       });
-      render();
     });
+    if (clr) clr.addEventListener('click', clearLoc);
     var chip = document.getElementById('chipNear');
     if (chip) chip.addEventListener('click', function () {
-      if (!located) return;
-      if (input && !input.value) input.value = located;
-      applyLoc(located, false);
+      if (!state.ref) return;
+      if (state.midA && state.midB) applyMid(false);
+      else applyLoc(state.loc, false);
     });
 
-    /* 首次进入：URL 参数优先，其次读记忆 */
-    var here = window.WG.urlHere();
-    var saved = window.WG.readLoc();
-    if (here) { if (input) input.value = here; applyLoc(here, true); }
-    else if (saved) { if (input) input.value = saved; applyLoc(saved, true); }
+    /* 首次进入：?mid= → ?here= → 本地记忆（与首页 / 美食页一致） */
+    var mid = window.WG.urlMid(), here = window.WG.urlHere();
+    if (mid && A && B) { A.value = mid.A; B.value = mid.B; applyMid(true); }
+    else if (here) { if (input) input.value = here; applyLoc(here, true); }
+    else {
+      var savedMid = window.WG.readLocMid && window.WG.readLocMid();
+      var saved = window.WG.readLoc && window.WG.readLoc();
+      if (savedMid && A && B) { A.value = savedMid.A; B.value = savedMid.B; applyMid(true); }
+      else if (saved) { if (input) input.value = saved; applyLoc(saved, true); }
+    }
+    syncCarry();
   }
 
   function bindFilters() {

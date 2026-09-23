@@ -499,6 +499,45 @@
         md(r.v) + '</span><br><span style="color:var(--sub)">' + md(r.d) + '</span></div>';
     }).join('');
   }
+  /* ===== 「14 个菜系是怎么划的」 =====
+     ⚠️ 家数一律实时从 DATA 算，绝不写死 —— 换榜单时页面上不会出现对不上的旧数字。 */
+  function renderCuisineWhy() {
+    var W = META.cuisineWhy;
+    if (!W) return;
+    function count(k) {
+      var n = 0;
+      for (var i = 0; i < DATA.length; i++) if (DATA[i].cuisine === k) n++;
+      return n;
+    }
+    var intro = document.getElementById('cwIntro');
+    if (intro) intro.innerHTML = md(W.intro);
+    var ax = document.getElementById('cwAxes');
+    if (ax) {
+      ax.innerHTML = (W.axes || []).map(function (a) {
+        return '<div class="scene-card"><b>' + md(a.k) + '</b><br>' +
+          '<span style="color:var(--blue)">' + md(a.ex) + '</span><br>' +
+          '<span style="color:var(--sub)">' + md(a.d) + '</span></div>';
+      }).join('');
+    }
+    var ft = document.getElementById('cwFacts');
+    if (ft) {
+      ft.innerHTML = (W.facts || []).map(function (f) {
+        return '<div class="cw-row"><span class="cw-k">' + md(f.k) + '</span>' +
+          '<span class="cw-d">' + md(f.d) + '</span></div>';
+      }).join('');
+    }
+    var it = document.getElementById('cwItems');
+    if (it) {
+      it.innerHTML = (W.items || []).map(function (r) {
+        return '<div class="cw-row cw-item" data-cui="' + esc(r.k) + '">' +
+          '<span class="cw-k"><b>' + esc(r.name) + '</b>　<span class="cw-n">' + count(r.k) + ' 家</span><br>' +
+          '<span class="cw-from">' + esc(r.from) + '</span></span>' +
+          '<span class="cw-d">' + md(r.why) + '</span></div>';
+      }).join('');
+    }
+    var w = document.getElementById('cwWatch');
+    if (w) w.innerHTML = (W.watch || []).map(function (t) { return '<li>' + md(t) + '</li>'; }).join('');
+  }
   function honorTable() {
     var box = document.getElementById('honors');
     if (!box || !META.honors) return;
@@ -543,6 +582,7 @@
     renderDishDict();
     renderEpisode();
     renderHonest();
+    renderCuisineWhy();
   }
   /* 选了菜系，把对应的「怎么点」卡片高亮 */
   function highlightGuide() {
@@ -838,6 +878,19 @@
       var el = ev.target.closest ? ev.target.closest('.guide-cuisine') : null;
       if (!el) return;
       var c = el.getAttribute('data-cuisine');
+      var chip = document.querySelector('.chip[data-group="cuisine"][data-val="' + c + '"]');
+      if (chip) {
+        chip.click();
+        var g = document.getElementById('grid');
+        if (g && g.scrollIntoView) g.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+    /* 「14 类怎么划的」里的每一行也可点：点了直接筛出这一类 */
+    var cwi = document.getElementById('cwItems');
+    if (cwi) cwi.addEventListener('click', function (ev) {
+      var el = ev.target.closest ? ev.target.closest('.cw-item') : null;
+      if (!el) return;
+      var c = el.getAttribute('data-cui');
       var chip = document.querySelector('.chip[data-group="cuisine"][data-val="' + c + '"]');
       if (chip) {
         chip.click();

@@ -505,3 +505,22 @@ body.scope-city .stat[data-scope="trip"]{display:none}
 /* 评论区（giscus）报错提示 */
 #giscusBox:empty{display:none}
 .giscus-bad{background:#fff5f5;border:1px dashed #f0c2c0;border-radius:10px;padding:12px 14px;font-size:13px;color:var(--red);line-height:1.7;margin-bottom:14px}
+
+/* ===== 「14 个菜系是怎么划的」 ===== */
+.cw-facts,.cw-items{display:flex;flex-direction:column;gap:8px}
+.cw-row{
+  display:grid;grid-template-columns:190px 1fr;gap:12px;align-items:start;
+  background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;
+}
+.cw-k{color:var(--ink);font-weight:700;line-height:1.6}
+.cw-d{color:var(--sub);line-height:1.75}
+.cw-n{
+  display:inline-block;background:#eef3ff;color:var(--blue);border:1px solid #d7e2ff;
+  border-radius:999px;padding:0 7px;font-size:11.5px;font-weight:700;vertical-align:1px
+}
+.cw-from{display:inline-block;margin-top:4px;font-weight:400;color:#8a94a6;font-size:12px;line-height:1.65}
+.cw-item{cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.cw-item:hover{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,107,255,.08)}
+@media (max-width:700px){
+  .cw-row{grid-template-columns:1fr;gap:6px}
+}

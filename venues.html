@@ -8,7 +8,7 @@
 <meta property="og:title" content="上海常年免费去处 · 常设场馆清单">
 <meta property="og:description" content="57 处常设场馆，逐个核过门票 / 开放时间 / 闭馆日 / 要不要预约。含「网上免费清单里最常见的 10 个错」。">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="assets/style.css?v=20260923c">
+<link rel="stylesheet" href="assets/style.css?v=20260923d">
 </head>
 <body>
 
@@ -62,11 +62,17 @@
   </div>
 
   <div class="panel">
-    <div class="panel-title">① 你在哪？填个地点，按远近给你排（可选）</div>
+    <div class="panel-title">① 你在哪？填个地点按远近排；两个人就填「中间点」（可选）</div>
     <div class="loc-row">
       <input id="locInput" class="loc-input" type="text" placeholder="例如：张江路 / 徐家汇 / 静安寺 / 上海昆虫博物馆 / 和平书院">
       <button class="btn" id="btnLoc">定位</button>
       <button class="btn ghost" id="btnLocClear">清除</button>
+    </div>
+    <div class="loc-row" style="margin-top:8px">
+      <input id="locInputA" class="loc-input half" type="text" placeholder="中间点 A：一个人在哪，例如 漕河泾">
+      <span class="loc-tilde">↔</span>
+      <input id="locInputB" class="loc-input half" type="text" placeholder="中间点 B：另一个人在哪，例如 张江路">
+      <button class="btn" id="btnMid">算中间点</button>
     </div>
     <div class="filters" id="quickStations" style="margin-top:8px"></div>
     <div id="locResult" style="margin-top:8px"></div>
@@ -75,7 +81,8 @@
     </div>
     <div class="hint" style="margin-top:8px">
       场馆名、路名、商圈名、地铁站名都能填，也可以直接填场馆全名。<b>定位后会自动切到「离我最近」排序</b>，同类里离你近的排前面。
-      这个定位和首页共用，填一次两边都认。路程按直线距离估算，只用来排先后。
+      这个定位和首页共用，填一次两边都认。路程按直线距离估算，只用来排先后。<br>
+      <b>两个人约在中间</b>：把两边填进 A / B 再点「算中间点」，整页改成按「到两人中点」的距离排；想回到单点定位，点「清除」重填即可（两者互斥）。
     </div>
   </div>
 
@@ -156,9 +163,9 @@
 
 </div>
 
-<script src="data/metro.js?v=20260923c"></script>
-<script src="data/venues.js?v=20260923c"></script>
-<script src="assets/locate.js?v=20260923c"></script>
+<script src="data/metro.js?v=20260923d"></script>
+<script src="data/venues.js?v=20260923d"></script>
+<script src="assets/locate.js?v=20260923d"></script>
 <script>
   /**
    * 访客用 GitHub 账号留言（giscus）。
@@ -208,7 +215,7 @@
     });
   })();
 </script>
-<script src="assets/annotate.js?v=20260923c"></script>
-<script src="assets/venues.js?v=20260923c"></script>
+<script src="assets/annotate.js?v=20260923d"></script>
+<script src="assets/venues.js?v=20260923d"></script>
 </body>
 </html>

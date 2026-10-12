@@ -87,8 +87,19 @@
       '" target="_blank" rel="noopener nofollow">大众点评' + (v.dp ? '' : '（搜索）') + ' ↗</a>';
   }
 
+  /**
+   * 商圈名 → 地铁站（README 设计的中间层兜底，2026-10-12 补上）：
+   * metro 字段没写、但商圈名有明确归属时按这里映射；目标站必须真实存在于 data/metro.js。
+   * ⚠️ 只映射「商圈整体归属明确」的名字，不按单店猜站。
+   */
+  var AREA_STATION = {
+    '三林地区': '三林',
+    '上南地区': '三林'
+  };
   function stationOf(v) {
     if (v.metro && window.WG && window.WG.stations[v.metro]) return v.metro;
+    var a = AREA_STATION[v.area];
+    if (a && window.WG && window.WG.stations[a]) return a;
     var d = window.WG && window.WG.meta && window.WG.meta.district;
     if (d && v.district && d[v.district]) return d[v.district];
     return null;

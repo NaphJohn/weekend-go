@@ -39,7 +39,10 @@
   function locate(raw) {
     var q0 = (raw || '').trim();
     if (!q0) return null;
-    var q = q0.replace(/\s+/g, '').replace(/^上海市?/, '').replace(/市$/, '');
+    // 归一化：去空白 / 去「上海市」前后缀 / 去口語尾字「站」（「三林站」「三林东站」→ 站名）
+    // ⚠️ 尾字「站」只在前面还剩 ≥2 个字时才剥：「上海南站」经「上海」前缀剥离后剩「南站」，
+    //    再剥就成「南」、长度不够 2 会断掉部分匹配——那种情况保留「南站」交给部分匹配找回上海南站。
+    var q = q0.replace(/\s+/g, '').replace(/^上海市?/, '').replace(/市$/, '').replace(/^(.{2,})站$/, '$1');
     if (!q) return null;
 
     if (S[q]) return { station: q, how: '定位到地铁站「' + q + '」' };

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>送礼指南 · 送女生 / 送男士该送什么</title>
+<meta name="description" content="送女生、送男士该送什么礼物：按送给谁、预算、场景、关系阶段筛选，附每件「为什么好 + 怎么送不翻车」，外加送礼避坑清单、按场景抄答案与体验类礼物推荐。仅供参考，不构成购买建议。">
+<meta property="og:title" content="送礼指南 · 送女生 / 送男士">
+<meta property="og:description" content="按对象 / 预算 / 场景 / 关系阶段挑礼物，附避坑清单与「一起度过的时间」类体验礼物。">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/style.css?v=20261019a">
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav class="nav">
+      <a href="index.html?jump=city">🎪 市内 · 展览市集</a>
+      <a href="index.html?jump=trip">🚗 周边游</a>
+      <a href="shows.html">🎭 看剧 · 演出</a>
+      <a href="scripts.html">🕵️ 剧本杀</a>
+      <a href="boardgames.html">🎲 桌游</a>
+      <a href="venues.html">📍 常年去处</a>
+      <a href="food.html">🍜 美食 · 按菜系</a>
+      <a class="on" href="gifts.html">🎁 送礼指南</a>
+    </nav>
+    <h1>送礼指南 · 送女生 / 送男士</h1>
+    <div class="sub">该送什么礼物 —— 按送给谁 / 预算 / 场景 / 关系阶段筛，每件都写清「为什么好 + 怎么送不翻车」</div>
+    <div class="stats">
+      <div class="stat"><b id="s-total">-</b>条礼物灵感</div>
+      <div class="stat"><b id="s-safe">-</b>条安全牌</div>
+      <div class="stat"><b id="s-exp">-</b>个体验类</div>
+    </div>
+    <div class="meta">整理于 <span id="verifiedAt"></span>　·　通行送礼经验整理，非测评榜单，仅供参考、不构成购买建议</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="panel">
+    <div class="panel-title">🤝 怎么用这一页</div>
+    <div id="metaNote" class="hint"></div>
+    <div class="hint" style="margin-top:8px">
+      <b>先定三件事：送给谁、大概多少预算、什么场景</b>，再按关系阶段拿捏分寸；拿不准就开「只看安全牌」。
+      想偷懒直接点上面的「帮我选一个礼物」。翻到下面是<b>送礼避坑清单</b>和<b>按场景抄答案</b>——那两块比礼物清单本身更值钱。
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">懒得挑？让它替你决定</div>
+    <div class="decide-row">
+      <button class="btn" id="btnDecide">帮我选一个礼物</button>
+      <span class="hint">在当前筛选结果里按「安全牌 + 体验类」加权随机，再点一次换一个</span>
+    </div>
+    <div id="pickResult"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">筛选</div>
+    <div class="filters">
+      <span class="chip on" data-group="for" data-val="all">全部对象 <b class="cnt" data-cnt="for:all">0</b></span>
+      <span class="chip" data-group="for" data-val="women">送女生 <b class="cnt" data-cnt="for:women">0</b></span>
+      <span class="chip" data-group="for" data-val="men">送男士 <b class="cnt" data-cnt="for:men">0</b></span>
+      <span class="chip" data-group="for" data-val="both">男女都合适 <b class="cnt" data-cnt="for:both">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="price" data-val="all">预算不限 <b class="cnt" data-cnt="price:all">0</b></span>
+      <span class="chip" data-group="price" data-val="p1">¥100 以内 <b class="cnt" data-cnt="price:p1">0</b></span>
+      <span class="chip" data-group="price" data-val="p2">¥100–300 <b class="cnt" data-cnt="price:p2">0</b></span>
+      <span class="chip" data-group="price" data-val="p3">¥300–800 <b class="cnt" data-cnt="price:p3">0</b></span>
+      <span class="chip" data-group="price" data-val="p4">¥800 以上 <b class="cnt" data-cnt="price:p4">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="occasion" data-val="all">场景不限 <b class="cnt" data-cnt="occasion:all">0</b></span>
+      <span class="chip" data-group="occasion" data-val="birthday">生日 <b class="cnt" data-cnt="occasion:birthday">0</b></span>
+      <span class="chip" data-group="occasion" data-val="anniv">纪念日 <b class="cnt" data-cnt="occasion:anniv">0</b></span>
+      <span class="chip" data-group="occasion" data-val="valentine">情人节 / 七夕 <b class="cnt" data-cnt="occasion:valentine">0</b></span>
+      <span class="chip" data-group="occasion" data-val="festival">圣诞 / 节日 <b class="cnt" data-cnt="occasion:festival">0</b></span>
+      <span class="chip" data-group="occasion" data-val="daily">日常小惊喜 <b class="cnt" data-cnt="occasion:daily">0</b></span>
+      <span class="chip" data-group="occasion" data-val="confess">表白 / 升温 <b class="cnt" data-cnt="occasion:confess">0</b></span>
+      <span class="chip" data-group="occasion" data-val="heal">和好 / 道歉 <b class="cnt" data-cnt="occasion:heal">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="stage" data-val="all">阶段不限 <b class="cnt" data-cnt="stage:all">0</b></span>
+      <span class="chip" data-group="stage" data-val="crush">暧昧 / 刚接触 <b class="cnt" data-cnt="stage:crush">0</b></span>
+      <span class="chip" data-group="stage" data-val="dating">稳定交往 <b class="cnt" data-cnt="stage:dating">0</b></span>
+      <span class="chip" data-group="stage" data-val="longterm">长期 / 已婚 <b class="cnt" data-cnt="stage:longterm">0</b></span>
+      <span class="chip" data-group="toggle" data-val="onlySafe">✅ 只看安全牌</span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="hint" style="align-self:center;margin-right:2px">排序：</span>
+      <span class="chip on" data-sort="rec">推荐（安全牌优先）</span>
+      <span class="chip" data-sort="price-asc">预算从低到高</span>
+      <span class="chip" data-sort="price-desc">预算从高到低</span>
+    </div>
+    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果　·　标 <b>🟢 安全牌</b> 的不太会出错，标 <b>🟡 较看人</b> 的要先了解对方喜好，送前多观察</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">⭐ 体验类礼物 · 和「周末去哪玩」是绝配</div>
+    <div class="scene-grid">
+      <div class="scene-card">
+        <b>为什么最推荐「一起去做某事」</b><br>
+        ① 共同的经历比实物更难忘、更拉近关系；② 没有尺寸 / 色号 / 款式的翻车问题；③ 礼物本身就是一次约会，一举两得；④ 回忆会增值，实物会贬值。<br>
+        <span style="color:var(--sub)">本站立场：重要的日子，优先送「一段一起度过的时间」，实物只是点缀。</span>
+      </div>
+      <div class="scene-card">
+        <b>搭配本站直接抄</b><br>
+        想看演出 → <a href="shows.html">🎭 看剧 · 演出</a>；想找地方逛 → <a href="venues.html">📍 常年去处</a>；想吃顿好的 → <a href="food.html">🍜 美食 · 按菜系</a>；想两个人出门 → 首页「算中间点」找一个折中地点。<br>
+        <span style="color:var(--sub)">把礼物变成「我带你去看 X」，比递一个盒子更动人。</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="panel" style="margin-top:20px">
+    <div class="panel-title">💰 大概多少钱（行业通行区间，非某件商品报价）</div>
+    <div class="scene-grid">
+      <div class="scene-card"><b>¥100 以内</b>　<span style="color:var(--amber);font-weight:700">心意 / 氛围型</span><br><span style="color:var(--sub)">花 + 手写卡、香薰小物、手写信、小零食礼盒。预算低反而更考验用心。</span></div>
+      <div class="scene-card"><b>¥100–300</b>　<span style="color:var(--amber);font-weight:700">经典入门</span><br><span style="color:var(--sub)">品牌爆款口红、护手霜礼盒、乐高小套、钱包、拍立得相纸。性价比最高的「不会错」区间。</span></div>
+      <div class="scene-card"><b>¥300–800</b>　<span style="color:var(--amber);font-weight:700">主力区间</span><br><span style="color:var(--sub)">香水、项链、降噪耳机、机械键盘、智能手表、情侣写真、定制饰品。纪念日 / 生日的主力预算带。</span></div>
+      <div class="scene-card"><b>¥800 以上</b>　<span style="color:var(--amber);font-weight:700">大件 / 轻奢</span><br><span style="color:var(--sub)">包包、高端耳机 / 表、球鞋、摄影器材、周末短途。关系到位再上，注意对方的回礼压力。</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🛡️ 送礼避坑清单（比「送什么」更重要）</div>
+    <table class="mini-tbl">
+      <tr><th>1. 别送「教做人」的礼物</th><td>减肥秤、厨具、吸尘器、功效型护肤（美白 / 抗老 / 祛痘）都像在暗示「你需要改」，除非对方明确说过想要。</td></tr>
+      <tr><th>2. 三大翻车重灾区</th><td>口红（色号）、香水（香型）、球鞋（款 + 码）错一个就翻车。拿不准就送小样套装 / 礼品卡，或让对方列清单你来买单。</td></tr>
+      <tr><th>3. 关系不确定别越界</th><td>戒指、内衣、太贵重、太 personal 的，会给对方压力。分寸感永远比惊喜重要。</td></tr>
+      <tr><th>4. 别只送实用不送心意</th><td>包装 + 一张手写卡片很加分，别省；再实用的礼物，配几句话立刻就不同。</td></tr>
+      <tr><th>5. 记住对方随口说的话</th><td>「我好想要 X」是最高级情报，远胜你闷头挑半天 —— 平时多留心。</td></tr>
+      <tr><th>6. 价格别太悬殊</th><td>送远超对方消费水平的东西会造成回礼压力，关系早期尤其注意。</td></tr>
+      <tr><th>7. 别送难打理 / 占地方 / 活物</th><td>大型毛绒、要精心养的植物、宠物，除非确认对方有条件也有意愿。</td></tr>
+      <tr><th>8. 别送「自我感动」型</th><td>花了很久很多、但对方用不上的手工 / 摆件，感动的通常只有自己。投其所好 &gt; 自我表达。</td></tr>
+      <tr><th>9. 价签要处理好</th><td>撕掉显眼价签，但保留小票 / 退换凭证（悄悄给对方或自己先留着），万一尺寸 / 款不对还能退。</td></tr>
+      <tr><th>10. 公开场合看场合</th><td>太私人或太贵重的别在人多时送，容易让对方尴尬；私密场合 + 一件小礼物往往更好。</td></tr>
+    </table>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🎯 按场景送 · 直接抄答案</div>
+    <div class="scene-grid">
+      <div class="scene-card"><b>生日</b><br>主力区间 ¥300–800 最稳；提前订餐厅 / 蛋糕；当天一封手写信是杀手锏。<span style="color:var(--sub)">别只发个红包。</span></div>
+      <div class="scene-card"><b>纪念日</b><br>重「回忆」和「仪式」——照片书、相遇地星空图、重游第一次约会的地方。<span style="color:var(--sub)">贵在「只有你们懂」，不在贵。</span></div>
+      <div class="scene-card"><b>情人节 / 七夕</b><br>花 + 一件像样礼物 + 一顿饭三件套；提前订位（这天餐厅爆满）。<span style="color:var(--sub)">别临时抱佛脚。</span></div>
+      <div class="scene-card"><b>圣诞 / 节日</b><br>氛围型最应景——香薰、围巾、礼盒装；可以玩「交换礼物」，约定预算更有趣。<span style="color:var(--sub)">重点是氛围，不是价格。</span></div>
+      <div class="scene-card"><b>日常小惊喜</b><br>不需要节日借口：一束花、一杯她提过的奶茶、一个小物件 + 一句话。<span style="color:var(--sub)">效果往往比节日大礼更好。</span></div>
+      <div class="scene-card"><b>表白 / 升温</b><br>分寸感第一，别一上来就贵重 / 越界；一束花 + 一顿用心的饭 + 一句真诚的话最管用。<span style="color:var(--sub)">别用贵重礼物「砸」。</span></div>
+      <div class="scene-card"><b>和好 / 道歉</b><br>礼物是辅助不是主角：先诚恳沟通，再配一束花 / 一件她提过的小物。<span style="color:var(--sub)">别用贵重礼物「堵嘴」，治标不治本。</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">💞 关系阶段的分寸（比选哪件礼物更要命）</div>
+    <table class="mini-tbl">
+      <tr><th>暧昧 / 刚接触</th><td>预算压低、别越界。安全牌优先（花 + 卡、香薰、一顿饭、一起看展）；别送戒指 / 太贵重的，容易把对方吓退。</td></tr>
+      <tr><th>稳定交往</th><td>可以上贴身 / 定制 / 主力区间（项链、香水、耳机、情侣写真）；开始可以送「懂她」的东西，先观察喜好再出手。</td></tr>
+      <tr><th>长期 / 已婚</th><td>实用 + 惊喜并重。高频好物（降噪耳机、剃须刀、手表）很实在，但重要的日子仍要有仪式感（纪念日重游、照片书）——别把「过日子」过成「凑合过」。</td></tr>
+    </table>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">✍️ 划词批注</div>
+    <div id="annoBar"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🗣 评论 / 讨论</div>
+    <div class="hint" style="margin-bottom:10px">和全站共用同一个留言区（讨论 #1）。有踩过的坑、或想补的礼物灵感，欢迎留言。</div>
+    <div id="giscusBox"></div>
+  </div>
+
+  <footer>
+    本页是<b>送礼选品参考</b>，整理的是通行送礼经验与分寸感，<b>不是商品测评、不是排行榜、也不构成购买建议</b>。<br>
+    ⚠️ 价格只给行业通行区间，具体款式 / 色号 / 型号随时在变，送前请以对方真实喜好和当期商品为准。<br>
+    想加礼物灵感？直接改 <code>data/gifts.js</code>，提个 PR 或本地改完推送即可。
+  </footer>
+
+</div>
+
+<script src="data/gifts.js?v=20261019a"></script>
+<script>
+  window.GISCUS_CFG = {
+    enabled: true, repo: 'NaphJohn/weekend-go', repoId: 'R_kgDOUY4zNw',
+    category: 'Announcements', categoryId: '',
+    mapping: 'specific', term: 'Welcome to weekend-go Discussions!'
+  };
+  (function () {
+    var cfg = window.GISCUS_CFG || {}, box = document.getElementById('giscusBox');
+    if (!box || !cfg.enabled || !cfg.repo) return;
+    var s = document.createElement('script');
+    s.src = 'https://giscus.app/client.js';
+    s.setAttribute('data-repo', cfg.repo);
+    s.setAttribute('data-repo-id', cfg.repoId || '');
+    s.setAttribute('data-category', cfg.category || 'Announcements');
+    s.setAttribute('data-category-id', cfg.categoryId || '');
+    s.setAttribute('data-mapping', cfg.mapping || 'pathname');
+    s.setAttribute('data-term', cfg.term || '');
+    s.setAttribute('data-strict', '0');
+    s.setAttribute('data-reactions-enabled', '1');
+    s.setAttribute('data-emit-metadata', '0');
+    s.setAttribute('data-input-position', 'bottom');
+    s.setAttribute('data-theme', 'light');
+    s.setAttribute('data-lang', 'zh-CN');
+    s.setAttribute('crossorigin', 'anonymous');
+    s.async = true;
+    box.appendChild(s);
+    window.addEventListener('message', function (ev) {
+      if (!ev || !ev.data || ev.origin !== 'https://giscus.app') return;
+      var d = ev.data.giscus || ev.data;
+      if (!d || !d.error || box.querySelector('.giscus-bad')) return;
+      var msg = String(d.error);
+      var tip = /not installed/i.test(msg)
+        ? 'giscus GitHub App 还没装。到 https://github.com/apps/giscus 安装并对 NaphJohn/weekend-go 授权。'
+        : /Discussion not found/i.test(msg)
+          ? '讨论没找到：全站评论区共用一个讨论帖，<code>GISCUS_CFG</code> 的 mapping/term 必须指向仓库里真实存在的讨论（当前是 #1「Welcome to weekend-go Discussions!」、分类 <b>Announcements</b>）。'
+          : msg;
+      box.insertAdjacentHTML('afterbegin', '<div class="giscus-bad">⚠️ 评论区暂时加载不出来：' + tip + '</div>');
+    });
+  })();
+</script>
+<script src="assets/annotate.js?v=20261019a"></script>
+<script src="assets/gifts.js?v=20261019a"></script>
+</body>
+</html>

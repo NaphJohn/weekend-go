@@ -254,6 +254,17 @@ details.guide summary{color:var(--purple);font-weight:600}
 .card-eat{border-color:#f6e3d6;background:linear-gradient(180deg,#fffcf9,#ffffff)}
 .card-eat h3{color:#8a4520}
 .block-food{border-top:4px solid #d9762b}
+/* 礼物板块：玫红主题 */
+.card-gift{border-color:#f3d3e0;background:linear-gradient(180deg,#fffafc,#ffffff)}
+.card-gift h3{color:#a8325a}
+.block-gift{border-top:4px solid #d24d7f}
+.b-safe{background:#e6f7ee;color:var(--green)}
+.b-risk{background:#fdf1dc;color:#9a6a12}
+.gift-why{margin-top:8px;font-size:14px;color:#3f4653;line-height:1.65}
+.gift-tip{
+  margin-top:8px;font-size:13.5px;line-height:1.7;color:#7a5410;
+  background:#fff7e8;border:1px solid #f0dcb4;border-radius:10px;padding:9px 12px;
+}
 /* 菜系只数：选了菜系就高亮对应的「怎么点」卡片 */
 .guide-cuisine{transition:all .18s}
 .guide-cuisine.now{

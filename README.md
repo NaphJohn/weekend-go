@@ -9,7 +9,7 @@
 两类数据的排序逻辑不同：**市内活动按剩余天数排**（快结束的在前，避免错过），
 **周边游常年可去**，所以沉底并按推荐度排。
 
-除首页（首页自己含「🎪 市内」与「🚗 周边游」两个视图）外，还有**五个**独立板块页，
+除首页（首页自己含「🎪 市内」与「🚗 周边游」两个视图）外，还有**六个**独立板块页，
 共用同一套 CSS 与原生的筛选 / 排序 / 「帮我选一个」交互：
 
 | 板块 | 页面 | 数据 |
@@ -19,6 +19,7 @@
 | 🎲 桌游 · 狼人杀/阿瓦隆 | `boardgames.html` | `data/games.js`（30 款：要不要人主持 / 要不要买一盒；+ `GAMES_META.venues` 门店名单含最近地铁站、`freeHow/freeSpots` 免费玩法） |
 | 📍 常年去处 | `venues.html` | `data/venues.js`（**57 处常设场馆**：博物馆 / 图书馆 / 公园 / 寺庙教堂 / 古镇 / 郊野 / 文艺街区，逐个核过门票、开放时间、闭馆日、预约要求） |
 | 🍜 美食 · 按菜系 | `food.html` | `data/eats.js`（**142 家上榜餐厅**，14 个菜系 + 二级细分（东南亚菜→泰国菜），带大众点评公开评分 / 人均 / 榜单招牌菜 / 连续上榜年数 / **点评直达链接**；页面顶部有 **🏆「最值得去」** 推荐框；**137 道招牌菜科普词典**、**📺 舌尖上的中国·自己编的一期**、**🏷 榜单口径**（什么标什么不标）；+ `EATS_META.honors` 米其林 & 黑珍珠名单、`scoreHow` 评分怎么读） |
+| 🎁 送礼指南 | `gifts.html` | `data/gifts.js`（**37 条礼物灵感**：送女生 / 送男士 / 通用，按预算 / 场景 / 关系阶段筛，每条写「为什么好 + 怎么送不翻车」；🟢安全牌 / 🟡较看人分档；⭐体验类礼物联动看剧 / 去处 / 美食页；含送礼避坑清单、按场景抄答案、关系阶段分寸、预算档参考） |
 | 🎪🚗 市内 · 周边游 | `index.html` | `data/activities.js` + `data/food.js` + `data/metro.js` |
 
 零依赖、零构建：`index.html` + 一个数据文件 + 一点原生 JS，GitHub Pages 直接托管。
@@ -269,12 +270,12 @@ window.GAMES_META = {
 
 ### 加完记得
 
-- **六个** HTML 的 `?v=` 一起 +1（`index / food / shows / scripts / boardgames / venues`）；
+- **七个** HTML 的 `?v=` 一起 +1（`index / food / shows / scripts / boardgames / venues / gifts`）；
   `index.html` 的 `.hud` 数量别名 `#hk-venues` 要能取到 `window.VENUES.length`、`#hk-food` 要能取到 `window.EATS.length`；
-  六页 `.nav`（+ 剧本杀/桌游页的 `.subtabs`）都要有 `venues.html` 的入口。
-- ⚠️ `.hud` 的栅格是**算出来的常量**：**7 块时 `minmax` 必须是 `240px`**（容器约 1050px，gap 14px；
-  `n*m+(n-1)*14 ≤ 1050` → 199–252px 之间才是 4 列，7 块正好 4+3；`260px` 会掉成 3 列 →
-  变成「3+3+1 只孤儿」；`190px` 又会排 5 列）。见 `style.css` 顶部注释，加板块数时回去重算。
+  七页 `.nav`（+ 剧本杀/桌游页的 `.subtabs`）都要有 `venues.html` 的入口。
+- ⚠️ `.hud` 的栅格是**算出来的常量**：**8 块时 `minmax` 仍是 `240px`**（容器约 1050px，gap 14px；
+  `n*m+(n-1)*14 ≤ 1050` → 199–252px 之间才是 4 列，8 块正好 4+4；`260px` 会掉成 3 列 →
+  变成「3+3+2」；`190px` 又会排 5 列）。见 `style.css` 顶部注释，加板块数时回去重算。
 
 ## 美食板块（`food.html` + `data/eats.js`）—— 2026-09-23 新增
 
@@ -527,7 +528,7 @@ console.log('原始品类', new Set(w.EATS.map(x=>x.cat)).size);"   # → 56
 
 ### 加完记得
 
-- **六个** HTML 的 `?v=` 一起 +1；六页 `.nav` 都要有 `food.html` 的入口（`food.html` 自身那条用 `<span class="on">`）；
+- **七个** HTML 的 `?v=` 一起 +1；七页 `.nav` 都要有 `food.html` 的入口（`food.html` 自身那条用 `<a class="on">`）；
   `index.html` 的 `#hk-food` 要能取到 `window.EATS.length`。
 - ⚠️ **新增店铺必须同时写 `sub`**（二级细分）。漏了不会报错，但二级芯片会退化成显示 `cat`，
   冒出「日式烧烤/烤肉」这种带斜线的怪芯片名。加完跑一遍 `sub` 分布，确认没有一家掉队。
@@ -551,6 +552,41 @@ console.log('原始品类', new Set(w.EATS.map(x=>x.cat)).size);"   # → 56
   `wg_r3_test.js` 用 `距「…」约` 认基准名。文案一变两处都得跟着改，否则假失败。
 - ⚠️ **`#grid` 是 `.wrap` 的直接子元素、不在任何 `.panel` 里**（截图/打印时想「只留某个面板」
   要记得连 `#grid` 一起隐藏，只按 `.panel` 过滤会留下整片网格）。
+
+## 送礼指南板块（`gifts.html` + `data/gifts.js`）—— 2026-10-19 新增
+
+第 8 个板块：**送女生 / 送男士该送什么**（选品参考，不是商品测评、不是排行榜）。页面 `gifts.html`，数据 `data/gifts.js`，渲染引擎 `assets/gifts.js`。
+
+```js
+window.GIFTS = [{
+  id: 'g01',
+  name: '拍立得相机（富士 instax 类）',
+  for: 'both',                 // 'women' 送女生 | 'men' 送男士 | 'both' 男女都合适
+  price: 3,                    // 预算档 1–4：1=¥100内 / 2=¥100–300 / 3=¥300–800 / 4=¥800+
+  priceText: '约 ¥400–800',    // 卡片显示的区间（行业通行口径，非某件商品报价）
+  occasion: ['birthday','anniv','festival','daily'],  // 场景：birthday/anniv/valentine/festival/daily/confess/heal
+  stage: ['crush','dating','longterm'],               // 关系阶段：crush 暧昧 / dating 稳定交往 / longterm 长期已婚
+  reason: '为什么送这个好（卡片 💡 行）',
+  tip: '怎么送 / 注意什么 / 避坑（卡片 🎁 行）',
+  tags: ['仪式感','回忆'],
+  conf: 'high'                 // 'high' 安全牌(不太会出错) | 'mid' 较看人(要先了解对方喜好)；卡片分别标 🟢 / 🟡
+}];
+window.GIFTS_META = {
+  verifiedAt: '2026-10-19',
+  note: '…口径声明…',
+  forText:  { all, women, men, both },
+  priceText:{ all, p1, p2, p3, p4 },
+  occText:  { all, birthday, anniv, valentine, festival, daily, confess, heal },
+  stageText:{ all, crush, dating, longterm }
+};
+```
+
+- 筛选维度：**送给谁 / 预算 / 场景 / 关系阶段** + 「✅ 只看安全牌」开关；排序：推荐（安全牌优先 → 预算从低到高）/ 预算升降。
+- 「帮我选一个礼物」= 当前筛选结果里按「安全牌 + 体验类」加权随机。
+- **核心是「避坑」而非「清单」**：页面固定放 10 条**送礼避坑清单**、按 7 个场景抄答案、3 档关系阶段分寸、4 档预算参考。加灵感时先把 `tip`（怎么送不翻车）写清楚，比 `reason` 更重要。
+- ⭐ **体验类礼物**（名字以 `⭐` 开头，如「⭐ 一起看展」「⭐ 周末短途」）是本站立场最推荐的一类 —— 卡片自动标「⭐ 体验类」徽章，`isExp()` 靠文件名前缀识别；页面顶部与「周末去哪玩」的看剧 / 去处 / 美食页做了联动。加新的体验类，名字记得以 `⭐` 开头。
+- **数据纪律**：`conf:'mid'` = 较看人 / 有翻车风险（色号、香型、球鞋款码、轴体…），页面标 🟡 并提示「送前多观察」；价格只给**行业通行区间**，**不写具体商品链接 / 型号 / 当日价**（会过期）。
+- 加完记得：**七个** HTML 的 `?v=` 一起 +1；七页 `.nav` 都要有 `gifts.html` 入口；`index.html` 的 `#hk-gifts` 要能取到 `window.GIFTS.length`。
 
 ## 怎么加一个周边游（`type: 'trip'`）
 
@@ -597,7 +633,7 @@ console.log('原始品类', new Set(w.EATS.map(x=>x.cat)).size);"   # → 56
 
 👉 **https://naphjohn.github.io/weekend-go/**
 
-子页：[/shows.html](https://naphjohn.github.io/weekend-go/shows.html) · [/scripts.html](https://naphjohn.github.io/weekend-go/scripts.html) · [/boardgames.html](https://naphjohn.github.io/weekend-go/boardgames.html) · [/venues.html](https://naphjohn.github.io/weekend-go/venues.html) · [/food.html](https://naphjohn.github.io/weekend-go/food.html)
+子页：[/shows.html](https://naphjohn.github.io/weekend-go/shows.html) · [/scripts.html](https://naphjohn.github.io/weekend-go/scripts.html) · [/boardgames.html](https://naphjohn.github.io/weekend-go/boardgames.html) · [/venues.html](https://naphjohn.github.io/weekend-go/venues.html) · [/food.html](https://naphjohn.github.io/weekend-go/food.html) · [/gifts.html](https://naphjohn.github.io/weekend-go/gifts.html)
 
 ## 部署
 

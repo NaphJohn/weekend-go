@@ -127,6 +127,150 @@
     if (box.scrollIntoView) box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
+  /* ===== 「说说 TA 的情况」问答式推荐（2026-10-22 加） ===== */
+  var ADVICE = window.GIFT_ADVICE || [];
+  var BY_ID = {};
+  DATA.forEach(function (g) { BY_ID[g.id] = g; });
+  var GENDER_WORDS = [
+    { re: /女生|女孩|女票|女朋友|女友|她|妹子|姑娘|老婆|女方|女士/i, v:'women' },
+    { re: /男生|男孩|男朋友|男友|他|汉子|老公|男方|先生/i, v:'men' }
+  ];
+  var STAGE_WORDS = [
+    { re: /暧昧|刚认识|刚接触|还没在一起|追求|暗恋|初期/, v:'crush' },
+    { re: /结婚|已婚|老夫老妻|多年|长期/ , v:'longterm' }
+  ];
+  var PRICE_WORDS = [
+    { re: /便宜|不贵|小几十|一百以内|100以内|百元内|低成本/, v:'p1' },
+    { re: /预算\s*(1|2|3)\s*百|小几百|两三百|一百多/, v:'p2' }
+  ];
+
+  function parseAsk(txt) {
+    var r = { gender:null, stage:null, priceTier:null };
+    GENDER_WORDS.forEach(function (w) { if (w.re.test(txt) && !r.gender) r.gender = w.v; });
+    STAGE_WORDS.forEach(function (w) { if (w.re.test(txt) && !r.stage) r.stage = w.v; });
+    PRICE_WORDS.forEach(function (w) { if (w.re.test(txt) && !r.priceTier) r.priceTier = PRICE_TIER[w.v]; });
+    return r;
+  }
+
+  /** 从礼物对象收集可匹配的文本：pains + tags + name + reason */
+  function giftHay(g) {
+    if (g.__hay) return g.__hay;
+    var h = [ g.name || '', g.reason || '', g.tip || '' ]
+      .concat(g.pains || []).concat(g.tags || []).join('｜');
+    g.__hay = h;
+    return h;
+  }
+
+  /** 原始 id 序列 → 过滤（性别/阶段约束）→ 去重 → 前 4 */
+  function constrain(ids, ctx) {
+    var out = [];
+    (ids || []).forEach(function (id) {
+      var g = BY_ID[id];
+      if (!g || out.indexOf(g) >= 0) return;
+      if (ctx.gender && g.for !== 'both' && g.for !== ctx.gender) return;
+      if (ctx.stage === 'crush' && /贴身|分寸感|要熟|阶段/.test((g.tags || []).join('') + (g.tip || ''))) return;
+      out.push(g);
+    });
+    return out.slice(0, 4);
+  }
+
+  function askAdvice() {
+    var input = document.getElementById('askInput');
+    var box = document.getElementById('askResult');
+    if (!input || !box) return;
+    var txt = (input.value || '').trim();
+    if (!txt) { box.style.display = 'block'; box.innerHTML = '<div class="ask-empty">先说说 TA 的情况：比如「女生，最近天天加班，有黑眼圈」「男朋友健身」——对象、状况、预算，随口说就行。</div>'; return; }
+    if (txt.length < 2) { box.style.display = 'block'; box.innerHTML = '<div class="ask-empty">再多写几个字吧——至少说说对象（女生 / 男生）和状况。</div>'; return; }
+
+    var ctx = parseAsk(txt);
+
+    /* 1) 痛点组命中 */
+    var hitGroups = ADVICE.filter(function (grp) {
+      return grp.keys.some(function (k) { return txt.indexOf(k) >= 0; });
+    });
+    var picked = [], seen = {};
+    hitGroups.forEach(function (grp) {
+      constrain(grp.picks, ctx).forEach(function (g) {
+        if (!seen[g.id]) { seen[g.id] = 1; picked.push({ g:g, from:grp }); }
+      });
+    });
+
+    /* 2) 无命中：giftHay 关键词兜底（取输入里 ≥2 字的片段） */
+    var fallbackUsed = false;
+    if (!picked.length) {
+      var grams = [];
+      for (var n = 4; n >= 2; n--) {
+        for (var i = 0; i + n <= txt.length; i++) grams.push(txt.substr(i, n));
+      }
+      var scored = [];
+      DATA.forEach(function (g) {
+        var hay = giftHay(g), s = 0;
+        grams.forEach(function (gm) { if (hay.indexOf(gm) >= 0) s += gm.length; });
+        if (s > 0) scored.push({ g:g, s:s });
+      });
+      if (scored.length) {
+        scored.sort(function (a, b) { return b.s - a.s; });
+        scored.slice(0, 4).forEach(function (x) {
+          var g = constrain([x.g.id], ctx)[0] || (ctx.gender && x.g.for !== 'both' && x.g.for !== ctx.gender ? null : x.g);
+          if (g && !seen[g.id]) { seen[g.id] = 1; picked.push({ g:g, from:null }); }
+        });
+        fallbackUsed = picked.length > 0;
+      }
+    }
+
+    /* 3) 渲染 */
+    box.style.display = 'block';
+    var html = '';
+    if (hitGroups.length) {
+      html += '<div class="ask-groups">' + hitGroups.map(function (grp) {
+        return '<span class="ask-grp-tag">' + esc(grp.title) + '</span>';
+      }).join('') + '</div>';
+    }
+    if (picked.length) {
+      html += '<div class="ask-cards">' + picked.map(function (p) {
+        var g = p.g;
+        var confBadge = isSafe(g) ? '<span class="badge b-safe">🟢 安全牌</span>' : '<span class="badge b-risk">🟡 较看人</span>';
+        var exp = isExp(g) ? ' <span class="badge b-run">⭐ 体验类</span>' : '';
+        return '<div class="ask-card">' +
+          '<div class="ak-top"><b>' + g.name + '</b>' + confBadge + exp +
+            '　<span class="ak-price">' + esc(g.priceText || '') + '</span></div>' +
+          '<div class="ak-reason">💡 ' + g.reason + '</div>' +
+          '<div class="ak-tip">🎁 ' + g.tip + '</div>' +
+          (p.from ? '<div class="ak-from">对症：' + esc(p.from.title) + '——' + p.from.say + '</div>' : '') +
+          '</div>';
+      }).join('') + '</div>';
+      /* 避雷提醒：只取第一个命中组的 */
+      if (hitGroups.length && hitGroups[0].avoid) {
+        html += '<div class="ask-avoid">' + hitGroups[0].avoid + '</div>';
+      }
+      if (fallbackUsed) {
+        html += '<div class="ask-note">以上是按你说的关键词从清单里挑的——没直接命中「状况库」，想更对症可以说说 TA 具体哪里不舒服（失眠 / 脖子酸 / 手脚冰凉…）。</div>';
+      }
+      if (ctx.stage === 'crush') {
+        html += '<div class="ask-note">⚠️ 你提到「还在暧昧 / 刚接触」：已自动过滤贴身类和高分寸感礼物，预算建议压在 ¥300 内，分寸感永远比惊喜重要。</div>';
+      }
+    } else {
+      html = '<div class="ask-empty">这段没认出具体状况。可以换成「黑眼圈」「失眠」「久坐脖子酸」「生理期」「健身」「压力大」这类说法，或直接用下面的筛选 chips 挑。</div>';
+    }
+    box.innerHTML = html;
+    if (box.scrollIntoView) box.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function bindAsk() {
+    var btn = document.getElementById('btnAsk');
+    var input = document.getElementById('askInput');
+    if (btn) btn.addEventListener('click', askAdvice);
+    if (input) input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.keyCode === 13) askAdvice();
+    });
+    document.querySelectorAll('.chip[data-example]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        if (input) input.value = el.getAttribute('data-example') || '';
+        askAdvice();
+      });
+    });
+  }
+
   function bind() {
     document.querySelectorAll('.chip[data-group]').forEach(function (el) {
       el.addEventListener('click', function () {
@@ -164,6 +308,7 @@
     renderStats();
     renderCounts();
     bind();
+    bindAsk();
     render();
   });
 })();

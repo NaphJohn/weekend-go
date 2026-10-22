@@ -8,7 +8,7 @@
 <meta property="og:title" content="送礼指南 · 送女生 / 送男士">
 <meta property="og:description" content="按对象 / 预算 / 场景 / 关系阶段挑礼物，附避坑清单与「一起度过的时间」类体验礼物。">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="assets/style.css?v=20261019a">
+<link rel="stylesheet" href="assets/style.css?v=20261022a">
 </head>
 <body>
 
@@ -42,7 +42,8 @@
     <div id="metaNote" class="hint"></div>
     <div class="hint" style="margin-top:8px">
       <b>先定三件事：送给谁、大概多少预算、什么场景</b>，再按关系阶段拿捏分寸；拿不准就开「只看安全牌」。
-      想偷懒直接点上面的「帮我选一个礼物」。翻到下面是<b>送礼避坑清单</b>和<b>按场景抄答案</b>——那两块比礼物清单本身更值钱。
+      TA 最近有具体状况（黑眼圈 / 失眠 / 久坐腰酸…）？直接在上面「说说 TA 的情况」里描述，帮你对症挑 + 提醒避雷。
+      翻到下面是<b>送礼避坑清单</b>和<b>按场景抄答案</b>——那两块比礼物清单本身更值钱。
     </div>
   </div>
 
@@ -53,6 +54,28 @@
       <span class="hint">在当前筛选结果里按「安全牌 + 体验类」加权随机，再点一次换一个</span>
     </div>
     <div id="pickResult"></div>
+  </div>
+
+  <div class="panel block-gift">
+    <div class="panel-title">💬 说说 TA 的情况，帮你挑（2026-10-22 新增）</div>
+    <div class="ask-row">
+      <input type="text" id="askInput" class="loc-input" autocomplete="off"
+             placeholder="例：女生，最近天天加班，有黑眼圈，预算两三百">
+      <button class="btn" id="btnAsk">帮 TA 挑</button>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="hint" style="align-self:center">试试这些（点一下自动填入）：</span>
+      <span class="chip chip-ex" data-example="女生有黑眼圈，经常熬夜">🌙 女生有黑眼圈</span>
+      <span class="chip chip-ex" data-example="女朋友生理期，痛经，手脚冰凉">🔴 生理期不舒服</span>
+      <span class="chip chip-ex" data-example="男生久坐加班，脖子颈椎不舒服">💻 久坐加班劳损</span>
+      <span class="chip chip-ex" data-example="男朋友失眠睡不好">😴 失眠睡不好</span>
+      <span class="chip chip-ex" data-example="她最近压力大，心情不好，有点emo">🌧 压力大心情差</span>
+      <span class="chip chip-ex" data-example="暧昧期的女生，最近降温怕冷，预算一百多">⚠️ 暧昧期 + 怕冷</span>
+    </div>
+    <div class="hint" style="margin-top:10px">
+      随口描述 TA 的<b>对象 / 近况 / 预算</b>——会按「状况」对症推荐（眼疲劳 / 失眠 / 经期 / 久坐 / 压力大…），并提醒<b>什么礼物这时候千万别送</b>（比如黑眼圈就别送祛黑眼圈眼霜——那是教做人）。
+    </div>
+    <div id="askResult"></div>
   </div>
 
   <div class="panel">
@@ -181,7 +204,7 @@
 
 </div>
 
-<script src="data/gifts.js?v=20261019a"></script>
+<script src="data/gifts.js?v=20261022a"></script>
 <script>
   window.GISCUS_CFG = {
     enabled: true, repo: 'NaphJohn/weekend-go', repoId: 'R_kgDOUY4zNw',
@@ -222,7 +245,7 @@
     });
   })();
 </script>
-<script src="assets/annotate.js?v=20261019a"></script>
-<script src="assets/gifts.js?v=20261019a"></script>
+<script src="assets/annotate.js?v=20261022a"></script>
+<script src="assets/gifts.js?v=20261022a"></script>
 </body>
 </html>

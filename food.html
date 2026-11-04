@@ -8,7 +8,7 @@
 <meta property="og:title" content="上海美食按菜系挑 · 评分与人均对照">
 <meta property="og:description" content="14 个菜系、142 家上榜店，带平台公开评分 / 人均 / 招牌菜 / 上榜年数 + 点评门店链接；137 道招牌菜科普 + 「舌尖上的中国」自编一期。">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="assets/style.css?v=20261019a">
+<link rel="stylesheet" href="assets/style.css?v=20261104q">
 </head>
 <body>
 
@@ -84,8 +84,25 @@
     </div>
   </div>
 
+  <div class="panel panel-crave">
+    <div class="panel-title">🔎 我想吃……　<span class="hint">（先说出那一口，再往下筛；不搜也行）</span></div>
+    <div class="loc-row">
+      <input id="qInput" class="loc-input" type="text" autocomplete="off"
+             placeholder="例如：想吃火锅 / 想吃鱼杂 / 蟹粉小笼 / 不辣的海鲜（Enter 搜，Esc 清空）">
+      <button class="btn" id="btnQ">搜</button>
+      <button class="btn ghost" id="btnQClear" style="display:none">清除</button>
+    </div>
+    <div class="filters" id="qHints" style="margin-top:10px"></div>
+    <div id="qInfo" class="q-info" style="margin-top:10px"></div>
+    <div class="hint" style="margin-top:8px">
+      搜的是<b>嘴里那一口</b>，不是店名：可以直接搜<b>食材</b>（鱼 / 蟹 / 牛肉 / 生蚝）、<b>菜名</b>（蟹粉小笼 / 吊龙 / 三虾面）、<b>菜系</b>（潮汕 / 本帮），也能整句说「想吃点不辣的牛肉」。<br>
+      ⚠️ 本站只收录大众点评「必吃榜」上的这些店，<b>榜单之外的品类（鱼杂、生煎、螺蛳粉、汉堡）本身就不在池子里</b> —— 搜不到时会明说，并告诉你最接近的能搜什么，不会假装有。<br>
+      搜索和下面的菜系 / 人均 / 上榜是<b>叠加</b>关系：搜到 20 家、再选「粤菜」剩 4 家，这两个数字都会写出来。
+    </div>
+  </div>
+
     <div class="panel">
-    <div class="panel-title">① 先选大类，再选细分（选了菜系，「怎么点」那张卡会跟着高亮）</div>
+    <div class="panel-title">① 搜不到想吃的？也可以先选大类，再选细分（选了菜系，「怎么点」那张卡会跟着高亮）</div>
     <div class="filters">
       <span class="chip on" data-group="cuisine" data-val="all">全部菜系 <b class="cnt" data-cnt="cuisine:all">0</b></span>
       <span class="chip" data-group="cuisine" data-val="benbang">本帮·上海菜 <b class="cnt" data-cnt="cuisine:benbang">0</b></span>
@@ -240,9 +257,9 @@
 
 </div>
 
-<script src="data/metro.js?v=20261019a"></script>
-<script src="data/eats.js?v=20261019a"></script>
-<script src="assets/locate.js?v=20261019a"></script>
+<script src="data/metro.js?v=20261104q"></script>
+<script src="data/eats.js?v=20261104q"></script>
+<script src="assets/locate.js?v=20261104q"></script>
 <script>
   /**
    * 访客用 GitHub 账号留言（giscus）。
@@ -289,7 +306,7 @@
     });
   })();
 </script>
-<script src="assets/annotate.js?v=20261019a"></script>
-<script src="assets/eats.js?v=20261019a"></script>
+<script src="assets/annotate.js?v=20261104q"></script>
+<script src="assets/eats.js?v=20261104q"></script>
 </body>
 </html>

@@ -248,6 +248,14 @@ window.VENUES = [
 
   /* ==================== 公园 ==================== */
   {
+    id: 'zhangjiang-central-park', name: '张江中央公园', cat: 'park', district: '浦东',
+    addr: '祖冲之路 / 华佗路一带（川杨河两岸）', metro: '中科路',
+    metroNote: '13 号线中科路站 / 2 号线张江高科站，出站步行 10 分钟内',
+    free: true, fee: '免费', hours: '全天开放', closed: '无', book: '免预约',
+    tip: '张江科学城里的免费绿地，川杨河穿园而过，适合下班或周末快走一圈。就近奶茶：张江地铁站、长泰广场、传奇广场一带喜茶 / 奈雪 / 霸王茶姬 / 茶百道 / 古茗都有，逛累了带一杯进来坐。',
+    conf: 'mid'
+  },
+  {
     id: 'century-park', name: '世纪公园', cat: 'park', district: '浦东',
     addr: '锦绣路 1001 号', metro: '世纪公园',
     metroNote: '2 号线世纪公园站 / 7 号线花木路站',
@@ -340,6 +348,14 @@ window.VENUES = [
     metroNote: '3 / 8 号线虹口足球场站',
     free: true, fee: '免费', hours: '—', closed: '无', book: '免预约',
     tip: '鲁迅墓和纪念馆在园内（纪念馆免费）。和多伦路文化名人街是一条线。',
+    conf: 'mid'
+  },
+  {
+    id: 'huajing-park', name: '华泾公园', cat: 'park', district: '徐汇',
+    addr: '华泾路 1500 号附近', metro: '景洪路',
+    metroNote: '15 号线 / 市域机场线景洪路站，出站步行约 10 分钟',
+    free: true, fee: '免费', hours: '—（以园方公告为准）', closed: '无', book: '免预约',
+    tip: '徐汇最南端华泾板块的社区公园，安静人少。这一带目前偏居住 + 在建（景洪路站上盖的 GATE M 华之门广场 2026 年才封顶），逛街吃饭建议往北到徐家汇 / 上海南站一带。',
     conf: 'mid'
   },
   {

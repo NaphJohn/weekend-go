@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <!-- 每次改动都把 v= 后面的版本号 +1，避免浏览器/GitHub Pages 缓存导致看不到更新
      （GitHub Pages 对 HTML 和资源都返回 cache-control: max-age=600，最长 10 分钟才失效） -->
-<link rel="stylesheet" href="assets/style.css?v=20261105a">
+<link rel="stylesheet" href="assets/style.css?v=20261112c">
 <meta http-equiv="Cache-Control" content="max-age=0">
 </head>
 <body>
@@ -36,6 +36,7 @@
       <div class="stat" data-scope="city"><b id="s-urgent">-</b>个 10 天内结束</div>
       <div class="stat" data-scope="city"><b id="s-food">-</b>个美食街区</div>
       <div class="stat" data-scope="trip"><b id="s-trip">-</b>个周边游</div>
+      <div class="stat"><b id="s-weekend">-</b>条本周推荐</div>
     </div>
     <div class="meta">数据核对于 <span id="verifiedAt"></span>　·　出行前请以主办方官方最新公告为准</div>
   </div>
@@ -107,6 +108,11 @@
   </div>
 
   <div id="scopeBar" class="scope-bar" style="display:none"></div>
+
+  <div class="panel week-panel" id="weekPanel">
+    <div class="panel-title">🗓️ 本周推荐（<span id="weekRange">本周末</span>）　·　只收这周末两天还在办、值得专门跑一趟的</div>
+    <div id="weekBox"></div>
+  </div>
 
   <div class="panel">
     <div class="panel-title">① 你在哪？填个地点，就近给你排（可选）</div>
@@ -211,17 +217,18 @@
 
 </div>
 
-<script src="data/activities.js?v=20261105a"></script>
-<script src="data/food.js?v=20261105a"></script>
-<script src="data/metro.js?v=20261105a"></script>
-<script src="data/shows.js?v=20261105a"></script>
-<script src="data/guides.js?v=20261105a"></script>
-<script src="data/scripts.js?v=20261105a"></script>
-<script src="data/games.js?v=20261105a"></script>
-<script src="data/venues.js?v=20261105a"></script>
-<script src="data/eats.js?v=20261105a"></script>
-<script src="data/gifts.js?v=20261105a"></script>
-<script src="assets/locate.js?v=20261105a"></script>
+<script src="data/activities.js?v=20261112c"></script>
+<script src="data/food.js?v=20261112c"></script>
+<script src="data/metro.js?v=20261112c"></script>
+<script src="data/shows.js?v=20261112c"></script>
+<script src="data/guides.js?v=20261112c"></script>
+<script src="data/scripts.js?v=20261112c"></script>
+<script src="data/games.js?v=20261112c"></script>
+<script src="data/venues.js?v=20261112c"></script>
+<script src="data/eats.js?v=20261112c"></script>
+<script src="data/gifts.js?v=20261112c"></script>
+<script src="data/weekend.js?v=20261112c"></script>
+<script src="assets/locate.js?v=20261112c"></script>
 <script>
   /**
    * 访客用 GitHub 账号留言（giscus）。
@@ -244,8 +251,9 @@
     mapping: 'specific', term: 'Welcome to weekend-go Discussions!'
   };
 </script>
-<script src="assets/annotate.js?v=20261105a"></script>
-<script src="assets/app.js?v=20261105a"></script>
+<script src="assets/annotate.js?v=20261112c"></script>
+<script src="assets/app.js?v=20261112c"></script>
+<script src="assets/weekend.js?v=20261112c"></script>
 <script>
   /* 总览三块的实时数量：在演剧目 / 市内进行中 / 周边游目的地 */
   (function () {

@@ -9,7 +9,7 @@
 两类数据的排序逻辑不同：**市内活动按剩余天数排**（快结束的在前，避免错过），
 **周边游常年可去**，所以沉底并按推荐度排。
 
-除首页（首页自己含「🎪 市内」与「🚗 周边游」两个视图）外，还有**六个**独立板块页，
+除首页（首页自己含「🎪 市内」与「🚗 周边游」两个视图 + 顶部 **🗓️ 本周推荐** 板块）外，还有**六个**独立板块页，
 共用同一套 CSS 与原生的筛选 / 排序 / 「帮我选一个」交互：
 
 | 板块 | 页面 | 数据 |
@@ -23,6 +23,54 @@
 | 🎪🚗 市内 · 周边游 | `index.html` | `data/activities.js` + `data/food.js` + `data/metro.js` |
 
 零依赖、零构建：`index.html` + 一个数据文件 + 一点原生 JS，GitHub Pages 直接托管。
+
+## 🗓️ 本周推荐（`index.html` 顶部板块，2026-11-12 加）
+
+放在首页 `#scopeBar` 上方的 `.week-panel`，回答的是「**这周末两天，到底去哪**」——
+和下面「🎪 市内」板块的区别是：市内侧收**所有还在展的活动**（按剩余天数排，几十条），
+本周推荐只收**值得专门跑一趟的 6 条主推 + 若干顺路可加**，并且带完整动线建议。
+
+| 文件 | 作用 |
+|---|---|
+| `data/weekend.js` | `window.WEEKEND` + `window.WEEKEND_META` |
+| `assets/weekend.js` | 渲染层（IIFE）：过期自动隐藏、状态徽章、陈旧黄条 |
+| `scripts/weekly-maintain.mjs` | 每周维护：推周末区间 / 清过期条目 / bump 全站 `?v=` |
+| `scripts/send-mail.mjs` | 每周邮件通知（纯 HTML、零 `<script>`、自检后发送） |
+| `.github/workflows/weekly-maintain.yml` | 每周四 20:00（cron `0 12 * * 4` UTC）自动跑 |
+
+**数据结构**：`id / pick / cat(exhibition|show|market|pet) / name / dateText / sessions / place / addr / metro / why / book / free / needBooking / tip / start / end / src[]`
+
+- `pick: true` → 主推大卡（两列网格）；`false` → 「顺路可加」小行。
+- `sessions` 存**原文时段**，多场次逐条写（如音乐剧三场 `11/13（五）19:30 · 11/14（六）19:30 · 11/15（日）14:00`）。
+- `metro` 拿不准写 `'—'`，渲染层会跳过，**绝不编地铁站**。
+- `end` 过期后**渲染层自动隐藏**（`daysLeft()` 过滤），不会出现「点进去发现已经结束」。
+- `WEEKEND_META` 带 `howTo`（这周末怎么排）、`care`（出行提醒）、`updater`、`staleHint`。
+
+**三层「不装新鲜」的兜底**（这块最容易被忽略，但它是这个板块能不能长期挂着的前提）：
+
+1. **条目级**：`end < 今天` → 该条不渲染。
+2. **板块级**：全部过期 → 显示「已全部过期 + 先去看常年有效板块」的空态，不留假数据。
+3. **数据级**：`updatedAt` 距今 > 9 天 → 顶部弹黄条「数据已 N 天未更新」。**自动化挂了页面会自己承认**。
+
+**周更机制**：`.github/workflows/weekly-maintain.yml` 每周四 20:00 跑 `scripts/weekly-maintain.mjs`，
+做四件事 —— ① 把 `range` 推到下一个周末 ② 删掉过期超 14 天的条目 ③ **bump 全站 `?v=`**（Pages 有 `max-age=600`，
+不 bump 用户看不到更新）④ 写 `scripts/summary.json` 给邮件用。
+随后 `scripts/send-mail.mjs` 发摘要邮件；**没有任何 SMTP secrets 时自动降级**为只写 `scripts/mail-preview.html`，
+不让「邮件没配好」把整个周更搞挂。
+
+**配置邮件**（仓库 Settings → Secrets and variables → Actions，四个都是 Repository secrets）：
+
+| Secret | 值 |
+|---|---|
+| `SMTP_HOST` | `smtp.qq.com` |
+| `SMTP_PORT` | `465` |
+| `SMTP_USER` | 发件邮箱，如 `xxx@qq.com` |
+| `SMTP_PASS` | QQ 邮箱**授权码**（不是登录密码） |
+| `MAIL_TO` | 收件邮箱，不填默认 `abdavi.001@qq.com` |
+
+⚠️ 内容本身（哪 6 条值得去）**仍靠人 / WorkBuddy 每周更新** —— 脚本只负责「区间推进 + 清理 + 版本号 + 通知」。
+所以脚本里有一条硬判定：**主推不足 3 条 → `summary.stale = true`**，站点弹黄条、邮件标题也带警告。
+宁可在页面上写「这周没更新」，也不要拿上周的档期冒充本周。
 
 ## 描述语备选（GitHub About / 分享卡片用）
 | 场景 | 文案 |
@@ -644,6 +692,9 @@ window.GIFT_ADVICE = [{
 👉 **https://naphjohn.github.io/weekend-go/**
 
 子页：[/shows.html](https://naphjohn.github.io/weekend-go/shows.html) · [/scripts.html](https://naphjohn.github.io/weekend-go/scripts.html) · [/boardgames.html](https://naphjohn.github.io/weekend-go/boardgames.html) · [/venues.html](https://naphjohn.github.io/weekend-go/venues.html) · [/food.html](https://naphjohn.github.io/weekend-go/food.html) · [/gifts.html](https://naphjohn.github.io/weekend-go/gifts.html)
+
+**🗓️ 本周推荐**在首页顶部（不单独成页）：位于 header + 八块入口之后、筛选面板之前。
+直接访问 [首页#weekPanel](https://naphjohn.github.io/weekend-go/#weekPanel) 可跳转到该板块。
 
 ## 部署
 

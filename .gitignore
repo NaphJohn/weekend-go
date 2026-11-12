@@ -1,0 +1,4 @@
+scripts/mail-preview.html
+scripts/summary.json
+node_modules/
+.DS_Store

@@ -1,0 +1,80 @@
+name: 每周维护（本周推荐 + 邮件）
+
+# 每周四 20:00（北京时间）跑一次：
+#   cron 用的是 UTC —— 12:00 UTC = 20:00 CST
+# 周四晚上跑，是为了赶在周六出门前把数据刷好。
+on:
+  schedule:
+    - cron: '0 12 * * 4'
+  workflow_dispatch:        # 手动补跑（Actions 页面 → Run workflow）
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-maintain
+  cancel-in-progress: false
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 配 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 维护数据 + bump 版本号
+        id: maintain
+        run: node scripts/weekly-maintain.mjs
+
+      - name: 校验 JS 语法
+        run: |
+          node --check data/weekend.js
+          node --check assets/weekend.js
+          echo "语法 OK"
+
+      - name: 发邮件通知
+        # 缺 secrets 时脚本自身会降级为「只写 preview + summary」，不报错
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: node scripts/send-mail.mjs
+
+      - name: 有变更才提交
+        run: |
+          git config user.name  "weekend-go bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "无变更，跳过提交"
+            exit 0
+          fi
+          VER=$(node -p "require('./scripts/summary.json').newVer")
+          git commit -m "weekly: 本周推荐自动维护 ${VER}（bump 版本号 + 清理过期条目）"
+          git push
+
+      - name: 提交摘要
+        if: always()
+        run: |
+          echo "## 每周维护结果" >> $GITHUB_STEP_SUMMARY
+          if [ -f scripts/summary.json ]; then
+            node -e "
+              const s=require('./scripts/summary.json');
+              console.log('- 周末区间：'+s.range.sat+' ~ '+s.range.sun);
+              console.log('- 收录 '+s.total+' 条，未过期 '+s.live+' 条（主推 '+s.picks+' / 顺路 '+s.subs+'）');
+              console.log('- 版本号：'+s.oldVer+' → '+s.newVer);
+              console.log('- 移除过期：'+(s.removed.length?s.removed.map(x=>x.name).join('、'):'无'));
+              console.log(s.stale?'- ⚠️ 主推不足 3 条，站点已显示「数据未更新」黄条':'');
+            " >> $GITHUB_STEP_SUMMARY
+          else
+            echo "summary.json 未生成" >> $GITHUB_STEP_SUMMARY
+          fi

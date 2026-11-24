@@ -506,14 +506,14 @@ mark.anno:hover{background:#ffe066}
 .anno-del{color:var(--red)}
 .anno-bar-ops{display:flex;gap:8px;margin-top:8px}
 
-/* ===== 板块：市内 / 周边游 / 看剧 / 剧本杀 / 桌游 / 常年去处 / 美食（七块入口）===== */
-/* ⚠️ minmax 是算出来的，别乱改：容器约 1050px，gap 14px。
-   列数 n 要满足 n*m + (n-1)*14 ≤ 1050：
-     198.9px 以上 → 排不下 5 列；
-     252px   以上 → 排不下 4 列（会掉成 3 列 → 7 块变「3+3+1 只孤儿」）。
-   所以 199–252 之间取 240px：正好 4 列，7 块 = 4 + 3。
-   板块数再变就回来重算一次（5 块时曾是 190px，6 块时是 260px）。 */
-.hud{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:6px}
+/* ===== 板块：市内 / 周边游 / 看剧 / 剧本杀 / 桌游 / 常年去处 / 运动 / 美食 / 送礼（九块入口）===== */
+/* ⚠️ minmax 是算出来的，别乱改：容器约 1044px（wrap 1080 − 左右 padding 各 18），gap 14px。
+   列数 n 要满足 n*m + (n-1)*14 ≤ 1044：
+     250.5px 以上 → 排不下 4 列（4 列要 1082px）；
+     340px   以上 → 排不下 3 列（会掉成 2 列 → 9 块变「2+2+2+2+1 一堆孤儿」）。
+   所以 251–340 之间取 260px：正好 3 列，9 块 = 3 + 3 + 3，刚好齐。
+   板块数再变就回来重算一次（7 块时曾是 240px，8 块也是 240px 的 4+4）。 */
+.hud{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:6px}
 .block{
   display:flex;flex-direction:column;gap:8px;
   background:var(--card);border:1px solid var(--line);border-radius:16px;
@@ -703,3 +703,64 @@ body.scope-city .stat[data-scope="trip"]{display:none}
   background:#fff;border:1px solid #f0c98d;border-radius:5px;padding:0 7px;
 }
 .wk-sub-src{margin-top:4px;display:flex;flex-wrap:wrap;gap:8px}
+
+/* ===== 运动页（sports.html / data/sports.js）=====
+   卡片版式沿用 .card-venue 那套，只多三件东西：
+   ① .slots  分时段价表（早 / 午 / 晚，本页核心）
+   ② .book-row 预约按钮（没有官方入口时降级成灰条，不放假链接）
+   ③ .sport-go 「怎么过去」白话段
+   配色用 #7a4bbd 系（紫），和常年去处的青绿 #0f9b8e 区分开。 */
+.card-sport{border-color:#e0d6f3;background:linear-gradient(180deg,#fbf8ff,#ffffff)}
+.card-sport h3{color:#5b3a9e}
+.block-sport{border-top:4px solid #7a4bbd}
+
+.slots{
+  margin-top:9px;border:1px solid #e6dff5;border-radius:9px;
+  background:#faf8ff;padding:8px 10px;
+}
+.slots-h{font-size:12.5px;font-weight:700;color:#5b3a9e;margin-bottom:6px}
+.slots-h span{font-weight:400;color:var(--sub);font-size:11.5px}
+.slot{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;
+  font-size:12.8px;line-height:1.6;padding:4px 7px;border-radius:6px;
+}
+.slot + .slot{margin-top:2px}
+.slot-k{flex:0 0 62px;color:#5b3a9e;font-weight:700}
+.slot-t{flex:0 0 auto;color:var(--sub);font-size:12px}
+.slot-p{font-weight:700;color:#8a4520}
+.slot-n{flex:1 1 100%;color:var(--sub);font-size:11.5px;padding-left:62px}
+/* 未公示价：整行灰掉，避免看着像已知价格 */
+.slot.pending .slot-p{color:var(--sub);font-weight:600}
+/* 用户在「我想这时候去」里选中的那一段 */
+.slot.on{background:#f0e9ff;box-shadow:inset 0 0 0 1px #d8c9f5}
+
+.want{
+  margin-top:7px;font-size:12.8px;color:#5b3a9e;
+  background:#f4efff;border-left:3px solid #7a4bbd;border-radius:0 7px 7px 0;
+  padding:5px 10px;
+}
+.want b{color:#8a4520}
+
+.book-row{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:9px}
+.btn-book{
+  display:inline-block;text-decoration:none;font-size:13px;font-weight:700;
+  background:#7a4bbd;color:#fff;border-radius:9px;padding:7px 16px;
+  transition:filter .15s;
+}
+.btn-book:hover{filter:brightness(1.08)}
+.btn-book.disabled{
+  background:#f2f4f8;color:var(--sub);font-weight:600;cursor:default;
+  border:1px dashed #d7dce6;
+}
+.book-note{flex:1 1 200px;font-size:12.3px;color:var(--sub);line-height:1.6}
+
+.sport-go{
+  margin-top:9px;font-size:12.8px;color:#5c4a3c;line-height:1.75;
+  background:#fdf6ef;border-radius:8px;padding:7px 10px;
+}
+.sport-go b{color:#8a4520;font-size:12.5px}
+
+@media (max-width:560px){
+  .slot-n{padding-left:0}
+  .btn-book{width:100%;text-align:center}
+}

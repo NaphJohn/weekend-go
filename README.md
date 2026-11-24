@@ -9,8 +9,8 @@
 两类数据的排序逻辑不同：**市内活动按剩余天数排**（快结束的在前，避免错过），
 **周边游常年可去**，所以沉底并按推荐度排。
 
-除首页（首页自己含「🎪 市内」与「🚗 周边游」两个视图 + 顶部 **🗓️ 本周推荐** 板块）外，还有**六个**独立板块页，
-共用同一套 CSS 与原生的筛选 / 排序 / 「帮我选一个」交互：
+除首页（首页自己含「🎪 市内」与「🚗 周边游」两个视图 + 顶部 **🗓️ 本周推荐** 板块）外，还有**七个**独立板块页，
+共用同一套 CSS、原生的筛选 / 排序 / 「帮我选一个」交互，以及**同一套「填你在哪（或 A↔B 中间点）→ 就近排 → 怎么过去」的定位口径**：
 
 | 板块 | 页面 | 数据 |
 |---|---|---|
@@ -18,6 +18,7 @@
 | 🕵️ 剧本杀 | `scripts.html` | `data/scripts.js`（35 本：经典本 + 新本，人数/时长/难度/发行方式） |
 | 🎲 桌游 · 狼人杀/阿瓦隆 | `boardgames.html` | `data/games.js`（30 款：要不要人主持 / 要不要买一盒；+ `GAMES_META.venues` 门店名单含最近地铁站、`freeHow/freeSpots` 免费玩法） |
 | 📍 常年去处 | `venues.html` | `data/venues.js`（**57 处常设场馆**：博物馆 / 图书馆 / 公园 / 寺庙教堂 / 古镇 / 郊野 / 文艺街区，逐个核过门票、开放时间、闭馆日、预约要求） |
+| 🏸 运动 · 羽毛球登山 | `sports.html` | `data/sports.js`（**15 处运动场地**：9 个羽毛球馆 + 6 座可爬的山，**按早上 / 下午 / 晚上 / 深夜分时段标单价**，含怎么过去 + 预约入口按钮 + 未公示价的显式标注） |
 | 🍜 美食 · 按菜系 | `food.html` | `data/eats.js`（**142 家上榜餐厅**，14 个菜系 + 二级细分（东南亚菜→泰国菜），带大众点评公开评分 / 人均 / 榜单招牌菜 / 连续上榜年数 / **点评直达链接**；页面顶部有 **🏆「最值得去」** 推荐框；**137 道招牌菜科普词典**、**📺 舌尖上的中国·自己编的一期**、**🏷 榜单口径**（什么标什么不标）；+ `EATS_META.honors` 米其林 & 黑珍珠名单、`scoreHow` 评分怎么读） |
 | 🎁 送礼指南 | `gifts.html` | `data/gifts.js`（**48 条礼物灵感**：送女生 / 送男士 / 通用，按预算 / 场景 / 关系阶段筛，每条写「为什么好 + 怎么送不翻车」；🟢安全牌 / 🟡较看人分档；⭐体验类礼物联动看剧 / 去处 / 美食页；**「说说 TA 的情况」问答式推荐**：输入「女生有黑眼圈」等描述对症出礼物 + 避雷提醒；含送礼避坑清单、按场景抄答案、关系阶段分寸、预算档参考） |
 | 🎪🚗 市内 · 周边游 | `index.html` | `data/activities.js` + `data/food.js` + `data/metro.js` |
@@ -318,12 +319,13 @@ window.GAMES_META = {
 
 ### 加完记得
 
-- **七个** HTML 的 `?v=` 一起 +1（`index / food / shows / scripts / boardgames / venues / gifts`）；
-  `index.html` 的 `.hud` 数量别名 `#hk-venues` 要能取到 `window.VENUES.length`、`#hk-food` 要能取到 `window.EATS.length`；
-  七页 `.nav`（+ 剧本杀/桌游页的 `.subtabs`）都要有 `venues.html` 的入口。
-- ⚠️ `.hud` 的栅格是**算出来的常量**：**8 块时 `minmax` 仍是 `240px`**（容器约 1050px，gap 14px；
-  `n*m+(n-1)*14 ≤ 1050` → 199–252px 之间才是 4 列，8 块正好 4+4；`260px` 会掉成 3 列 →
-  变成「3+3+2」；`190px` 又会排 5 列）。见 `style.css` 顶部注释，加板块数时回去重算。
+- **八个** HTML 的 `?v=` 一起 +1（`index / food / shows / scripts / boardgames / venues / sports / gifts`）；
+  `index.html` 的 `.hud` 数量别名 `#hk-venues` 要能取到 `window.VENUES.length`、`#hk-food` 要能取到 `window.EATS.length`、
+  `#hk-sport` 要能取到 `window.SPORTS.length`；
+  八页 `.nav`（+ 剧本杀/桌游页的 `.subtabs`）都要有 `venues.html` 的入口。
+- ⚠️ `.hud` 的栅格是**算出来的常量**：**9 块时 `minmax` 改成 `260px`**（容器约 1044px，gap 14px；
+  `n*m+(n-1)*14 ≤ 1044` → `260px` 时 3 列，9 块正好 3+3+3；回到 `240px/250px` 会排 4 列 →
+  变成「4+4+1」，`340px` 又会掉成 2 列 →「2+2+2+2+1」）。见 `style.css` 顶部注释，加板块数时回去重算。
 
 ## 美食板块（`food.html` + `data/eats.js`）—— 2026-09-23 新增
 
@@ -682,6 +684,65 @@ window.GIFT_ADVICE = [{
 
 **2026-10-12 新增 5 条户外线**（30 → 35 条）：青山村手作步道 / 舟山悬山岛 / 余姚上王岗古道 / 平湖独山港净滩 / 诸暨东白山。来源：各俱乐部公开排期（游侠客、上海空心户外、i人岛、久久公益节）+ 六横管委会船班时刻表 + 景区官方信息；俱乐部报价标注为 2026-09 参考价，排期每周更新、以当期公众号为准。净滩条目把「9/19 单场已结束」写进了 `booking.steps`，避免过期信息误导。
 
+## 运动板块（`sports.html` + `data/sports.js`）—— 2026-11-24 新增
+
+第 9 个板块：**周末动起来 —— 羽毛球馆 / 能爬的山**。页面 `sports.html`，数据 `data/sports.js`，渲染引擎 `assets/sports.js`。
+
+回答的是一条完整链路，而不是「列一堆场地」：
+
+> **我在张江 → 附近有什么羽毛球馆 → 怎么过去 → 早上 / 下午 / 晚上各多少钱 → 能不能现在约**
+
+前四步和「常年去处」页完全同口径（同一套 `assets/locate.js`、同一个 `state.ref`），第五步是这个板块新增的。
+
+### 数据和别的板块不一样的三处
+
+1. **价格不是一个数，是一排时段价**。`slots: [{ k, t, p, n }]`
+   - `k` 时段键（`上午 / 下午 / 晚上 / 深夜`），`t` 时间文字（`09:00–12:00`），
+     `p` 单价（`¥35/小时`，认不出就写 `'未公示'`），`n` 备注（`工作日 / 周末同价`、`需会员卡`）。
+   - 页面顶部有 4 颗**时段芯片**（`data-slot="all|am|pm|night"`），点了只高亮对应行 + 改摘要，**不过滤条目** ——
+     一个场馆常常只缺一个时段，过滤掉整条反而更难比价。
+   - `bandOf(slot)` 靠时段键里的图标（`🌅 / ☀️ / 🌙·🌚`）判早/午/晚，`pricedSlot()` 把 `'未公示'` 视为无价，
+     所以「有没有价」和「有没有这个时段」是两件事，各算各的。
+2. **预约入口是一个按钮，不是一句「请自行查询」**。`bookHref` 有值 → 渲染 `<a class="btn-book">`；
+   没值 → 渲染 `<span class="btn-book disabled">无公开线上入口 · 需电话确认</span>`，
+   并把 `tel:` 号码放在 `book` 字段里直接可点。**绝不直链大众点评 / 活动聚合页**（301/302 跳转 + 反爬，
+   上过一次就不再用），只留 `tel:` 和能确认的官方小程序/公众号入口。
+3. **`sport` 字段驱动两套完全不同的信息**：`'badminton'`（按小时、要场地、有片数/地胶/灯光）
+   与 `'hike'`（按人次门票、有海拔/爬升/耗时/难度）。同一个卡片模板，靠 `sport` 切换要渲染哪些事实行。
+
+### 字段
+
+```js
+sport('badminton' | 'hike')   // 二级分类
+free:   true | false          // 是否免费（登山多为免费但要预约）
+fee:    '¥35/小时'            // 一句话总价口径（卡片角标用）
+slots:  [{ k, t, p, n }]      // 分时段单价，至少 3 段
+hours / closed                // 开放时间 / 闭馆闭园日
+metro / metroNote             // 最近地铁站（必须在 data/metro.js 里能命中）+ 出站后怎么走
+howTo                         // 从你在的地方过去的白话说明
+book / bookLabel / bookHref   // 预约渠道文字 / 按钮文案 / 链接（无线上入口则留空）
+conf:   'high' | 'mid'        // 价格确认度，mid 的卡片会显式标「建议出行前电话再确认」
+tip / district / addr         // 一句话忠告 / 区 / 地址
+```
+
+### 四条硬规矩（这个板块最容易写错）
+
+1. **价格不许估。** 查不到就写 `'未公示'`，卡片显 `pending` 灰字；不允许「约 ¥50 左右」这种模糊数当单价。
+2. **分时段必须真的分。** 只写「¥150/小时」而实际是深夜特价，是把用户骗到现场。
+   华体汇的 4 段（含深夜 `¥36`）来自上观新闻两轮报道；佘山的开闭园时间来自游园须知（2026 实名预约、
+   5/1–10/7 `08:30–17:00`、10/8–4/30 `08:30–16:30`、暑期延至 `18:30`）。
+3. **「张江」不等于「张江高科」。** `locate('张江')` 会落到**张江高科站**，而张江高科 / 张江路 / 学林路是三个不同的站。
+   `sports.html` 的定位块里有一行专门讲这件事，否则用户会以为「附近没有」。
+4. **免费 ≠ 随便进。** 东佘山、双子山都免费但要预约/限时段，`free: true` 的卡片仍必须显示预约要求，
+   页脚 `.block` 专写「免费怎么进」。
+
+### 加运动场地时
+
+- `data/sports.js` 里追加一条 → `sports.html` 的筛选芯片和统计（`s-total / s-free / s-price / s-book`）自动跟上。
+- `state.loc` 变了要走 `refreshRef()` 清 `distCache`，否则距离是上一个人的。
+- `syncCarry()` 改写 `.nav a, .subtabs a, footer a` 的 href 时，**必须放过 `tel:` / `https:` / `mailto:` / `#`**
+  （正则 `/^(https?:|mailto:|tel:|#)/`）—— 运动页的预约按钮是 `tel:`，早期版本会被拼成 `?here=xxx` 打坏。
+
 ## 数据来源与免责
 
 信息由各主办方官方渠道（上博 / 浦东美术馆 / PSA / 品牌小程序 / 区政府公告等）与公开报道整理，
@@ -691,9 +752,9 @@ window.GIFT_ADVICE = [{
 
 👉 **https://naphjohn.github.io/weekend-go/**
 
-子页：[/shows.html](https://naphjohn.github.io/weekend-go/shows.html) · [/scripts.html](https://naphjohn.github.io/weekend-go/scripts.html) · [/boardgames.html](https://naphjohn.github.io/weekend-go/boardgames.html) · [/venues.html](https://naphjohn.github.io/weekend-go/venues.html) · [/food.html](https://naphjohn.github.io/weekend-go/food.html) · [/gifts.html](https://naphjohn.github.io/weekend-go/gifts.html)
+子页：[/shows.html](https://naphjohn.github.io/weekend-go/shows.html) · [/scripts.html](https://naphjohn.github.io/weekend-go/scripts.html) · [/boardgames.html](https://naphjohn.github.io/weekend-go/boardgames.html) · [/venues.html](https://naphjohn.github.io/weekend-go/venues.html) · [/sports.html](https://naphjohn.github.io/weekend-go/sports.html) · [/food.html](https://naphjohn.github.io/weekend-go/food.html) · [/gifts.html](https://naphjohn.github.io/weekend-go/gifts.html)
 
-**🗓️ 本周推荐**在首页顶部（不单独成页）：位于 header + 八块入口之后、筛选面板之前。
+**🗓️ 本周推荐**在首页顶部（不单独成页）：位于 header + 九块入口之后、筛选面板之前。
 直接访问 [首页#weekPanel](https://naphjohn.github.io/weekend-go/#weekPanel) 可跳转到该板块。
 
 ## 部署

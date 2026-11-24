@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <!-- 每次改动都把 v= 后面的版本号 +1，避免浏览器/GitHub Pages 缓存导致看不到更新
      （GitHub Pages 对 HTML 和资源都返回 cache-control: max-age=600，最长 10 分钟才失效） -->
-<link rel="stylesheet" href="assets/style.css?v=20261119a">
+<link rel="stylesheet" href="assets/style.css?v=20261124a">
 <meta http-equiv="Cache-Control" content="max-age=0">
 </head>
 <body>
@@ -24,6 +24,7 @@
       <a href="scripts.html">🕵️ 剧本杀</a>
       <a href="boardgames.html">🎲 桌游</a>
       <a href="venues.html">📍 常年去处</a>
+      <a href="sports.html">🏸 运动 · 羽毛球登山</a>
       <a href="food.html">🍜 美食 · 按菜系</a>
       <a href="gifts.html">🎁 送礼指南</a>
     </nav>
@@ -45,7 +46,7 @@
 <div class="wrap">
 
   <div class="panel hud-panel">
-    <div class="panel-title">先选板块 · 剧 / 剧本杀 / 桌游 / 常年去处 / 美食 / 送礼 / 市内 / 周边游 分开看</div>
+    <div class="panel-title">先选板块 · 剧 / 剧本杀 / 桌游 / 常年去处 / 运动 / 美食 / 送礼 / 市内 / 周边游 分开看</div>
     <div class="hud">
       <a class="block block-shows" data-block="shows" href="shows.html">
         <div class="bk-go">进入 →</div>
@@ -74,6 +75,13 @@
         <div class="bk-title">常年去处</div>
         <div class="bk-desc">博物馆 / 图书馆 / 公园 / 寺庙 / 古镇 / 郊野</div>
         <div class="bk-stat"><b id="hk-venues">-</b> 处收录</div>
+      </a>
+      <a class="block block-sport" data-block="sports" href="sports.html">
+        <div class="bk-go">进入 →</div>
+        <div class="bk-ico">🏸</div>
+        <div class="bk-title">运动 · 羽毛球登山</div>
+        <div class="bk-desc">羽毛球馆 / 登山，含分时段价 + 怎么过去 + 预约入口</div>
+        <div class="bk-stat"><b id="hk-sport">-</b> 处场地</div>
       </a>
       <a class="block block-food" data-block="food" href="food.html">
         <div class="bk-go">进入 →</div>
@@ -104,7 +112,7 @@
         <div class="bk-stat"><b id="hk-trip">-</b> 个目的地</div>
       </a>
     </div>
-    <div class="hint" style="margin-top:10px">八块各自分开排：点「周边游」进入周边游板块，只出目的地、和市内的展览互不打扰；两块都能填「你在哪」就近排序。看剧 / 剧本杀 / 桌游 / 常年去处 / 美食 / 送礼是六个独立的选剧选本选游戏选场馆选店选礼页。</div>
+    <div class="hint" style="margin-top:10px">九块各自分开排：点「周边游」进入周边游板块，只出目的地、和市内的展览互不打扰；两块都能填「你在哪」就近排序。看剧 / 剧本杀 / 桌游 / 常年去处 / 运动 / 美食 / 送礼是七个独立的选剧选本选游戏选场馆选场地选店选礼页。</div>
   </div>
 
   <div id="scopeBar" class="scope-bar" style="display:none"></div>
@@ -217,18 +225,19 @@
 
 </div>
 
-<script src="data/activities.js?v=20261119a"></script>
-<script src="data/food.js?v=20261119a"></script>
-<script src="data/metro.js?v=20261119a"></script>
-<script src="data/shows.js?v=20261119a"></script>
-<script src="data/guides.js?v=20261119a"></script>
-<script src="data/scripts.js?v=20261119a"></script>
-<script src="data/games.js?v=20261119a"></script>
-<script src="data/venues.js?v=20261119a"></script>
-<script src="data/eats.js?v=20261119a"></script>
-<script src="data/gifts.js?v=20261119a"></script>
-<script src="data/weekend.js?v=20261119a"></script>
-<script src="assets/locate.js?v=20261119a"></script>
+<script src="data/activities.js?v=20261124a"></script>
+<script src="data/food.js?v=20261124a"></script>
+<script src="data/metro.js?v=20261124a"></script>
+<script src="data/shows.js?v=20261124a"></script>
+<script src="data/guides.js?v=20261124a"></script>
+<script src="data/scripts.js?v=20261124a"></script>
+<script src="data/games.js?v=20261124a"></script>
+<script src="data/venues.js?v=20261124a"></script>
+<script src="data/sports.js?v=20261124a"></script>
+<script src="data/eats.js?v=20261124a"></script>
+<script src="data/gifts.js?v=20261124a"></script>
+<script src="data/weekend.js?v=20261124a"></script>
+<script src="assets/locate.js?v=20261124a"></script>
 <script>
   /**
    * 访客用 GitHub 账号留言（giscus）。
@@ -251,9 +260,9 @@
     mapping: 'specific', term: 'Welcome to weekend-go Discussions!'
   };
 </script>
-<script src="assets/annotate.js?v=20261119a"></script>
-<script src="assets/app.js?v=20261119a"></script>
-<script src="assets/weekend.js?v=20261119a"></script>
+<script src="assets/annotate.js?v=20261124a"></script>
+<script src="assets/app.js?v=20261124a"></script>
+<script src="assets/weekend.js?v=20261124a"></script>
 <script>
   /* 总览三块的实时数量：在演剧目 / 市内进行中 / 周边游目的地 */
   (function () {
@@ -283,6 +292,7 @@
       set('hk-scripts', (window.SCRIPTS || []).length);
       set('hk-games', (window.GAMES || []).length);
       set('hk-venues', (window.VENUES || []).length);
+      set('hk-sport', (window.SPORTS || []).length);
       set('hk-food', (window.EATS || []).length);
       set('hk-gifts', (window.GIFTS || []).length);
     } catch (e) {}

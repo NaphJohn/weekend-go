@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>周末运动 · 羽毛球馆 / 登山 分时段价 + 怎么过去 + 预约</title>
+<meta name="description" content="上海周末运动清单：张江一带 9 家羽毛球馆 + 佘山九峰 6 处登山，逐个写清怎么过去（几号口、步行几分钟、换哪路公交）、早上/下午/晚上分别多少钱、怎么预约。填一个地点就按远近重排，两个人还能算中间点。">
+<meta property="og:title" content="周末运动 · 羽毛球馆 / 登山 分时段价 + 预约">
+<meta property="og:description" content="先填你在哪，再看附近有哪些球馆和山：怎么过去、早/午/晚各多少钱、怎么约，一次说清。">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/style.css?v=20261124a">
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav class="nav">
+      <a href="index.html?jump=city">🎪 市内 · 展览市集</a>
+      <a href="index.html?jump=trip">🚗 周边游</a>
+      <a href="shows.html">🎭 看剧 · 演出</a>
+      <a href="scripts.html">🕵️ 剧本杀</a>
+      <a href="boardgames.html">🎲 桌游</a>
+      <a href="venues.html">📍 常年去处</a>
+      <a class="on" href="sports.html">🏸 运动 · 羽毛球登山</a>
+      <a href="food.html">🍜 美食 · 按菜系</a>
+      <a href="gifts.html">🎁 送礼指南</a>
+    </nav>
+    <h1>周末运动 · 羽毛球馆 / 登山</h1>
+    <div class="sub">先填你在哪 → 附近有什么场地 → 怎么过去 → 早上 / 下午 / 晚上各多少钱 → 怎么约</div>
+    <div class="stats">
+      <div class="stat"><b id="s-total">-</b>处场地收录</div>
+      <div class="stat"><b id="s-free">-</b>处免费</div>
+      <div class="stat"><b id="s-price">-</b>处有分时价</div>
+      <div class="stat"><b id="s-book">-</b>处有可点预约入口</div>
+    </div>
+    <div class="meta">价格 / 时段 / 预约方式核对于 <span id="verifiedAt"></span>　·　标 🟡 的条目只有单一来源，下单前请看场馆小程序当日价</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="panel">
+    <div class="panel-title">🤝 这一页和「常年去处」有什么区别</div>
+    <div id="metaNote" class="hint"></div>
+    <div class="hint" style="margin-top:8px">
+      <b>常年去处</b>回答「去哪儿逛」—— 博物馆、图书馆、公园、古镇，看的是门票和闭馆日。<br>
+      <b>这一页</b>回答「去哪儿动」—— 羽毛球和登山，看的是<b>怎么过去、几点多少钱、怎么约</b>；场馆要订场、山要预约时段，都是"不打就不能去"的那一类。<br>
+      两页共用同一套定位：在哪儿填过，两边都认。
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">📖 怎么用这一页（<b id="metaTotal">-</b> 处场地，看这四条就够）</div>
+    <div class="scene-grid" id="howTo"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">⚠️ 最容易白跑、白花钱的六个坑</div>
+    <div class="hint" style="margin-bottom:12px">
+      「免费入园」「24 小时营业」「¥30 一小时」这三句话，每一句单独看都不是假话，<b>合起来就会让你白跑一趟</b>。
+      先把这六条看完，再看下面的场地清单。
+    </div>
+    <div class="scene-grid" id="notFree"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">① 你在哪？填个地点按远近排；两个人就填「中间点」（可选）</div>
+    <div class="loc-row">
+      <input id="locInput" class="loc-input" type="text" placeholder="例如：张江 / 张江高科 / 广兰路 / 徐家汇 / 佘山">
+      <button class="btn" id="btnLoc">定位</button>
+      <button class="btn ghost" id="btnLocClear">清除</button>
+    </div>
+    <div class="loc-row" style="margin-top:8px">
+      <input id="locInputA" class="loc-input half" type="text" placeholder="中间点 A：一个人在哪，例如 漕河泾">
+      <span class="loc-tilde">↔</span>
+      <input id="locInputB" class="loc-input half" type="text" placeholder="中间点 B：另一个人在哪，例如 张江高科">
+      <button class="btn" id="btnMid">算中间点</button>
+    </div>
+    <div class="filters" id="quickStations" style="margin-top:8px"></div>
+    <div id="locResult" style="margin-top:8px"></div>
+    <div style="margin-top:8px">
+      <span class="chip" id="chipNear" style="display:none">📍 就近优先（已开）</span>
+    </div>
+    <div class="hint" style="margin-top:8px">
+      地铁站名、路名、园区名、场馆名都能填。<b>定位后会自动切到「离我最近」排序</b>，先回答「这附近有什么」。<br>
+      ⚠️ 一个容易踩的点：<b>「张江」「张江高科」「张江路」是三个不同的站</b>。张江高科在 2 号线上（华体汇、张江中学都在它附近），
+      张江路在 13 号线上。填「张江」会落到张江高科 —— 按球馆分布来说，这也正是你想去的那一片。<br>
+      <b>两个人约在中间</b>：把两边填进 A / B 点「算中间点」，整页改成按「到两人中点」的距离排；想回到单点定位，点「清除」重填（两者互斥）。
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">② 打算什么时候去？选一段，价格直接高亮</div>
+    <div class="filters">
+      <span class="chip on" data-slot="all">不限时段</span>
+      <span class="chip" data-slot="am">🌅 早上</span>
+      <span class="chip" data-slot="pm">☀️ 下午</span>
+      <span class="chip" data-slot="night">🌙 晚上</span>
+    </div>
+    <div class="hint" style="margin-top:8px">
+      选一段之后，每张卡片都会把<b>那一段的价格</b>顶到最上面，并在时段表里高亮。<b>不做筛选</b> —— 每处场地都有这三段，藏起来反而看不出差别；
+      这一段没公开价格会写明「未公示」，不会替你估一个数。<br>
+      羽毛球的价差很猛：同一片场地，晚上 7 点可能是早上 10 点的两倍；华体汇 22:00 后反而只要 ¥36。登山反过来 —— 早上人最少、光线最好，冬季下午 4 点就停止入园。
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">③ 懒得挑？让它替你决定</div>
+    <div class="decide-row">
+      <button class="btn" id="btnDecide">帮我选一个场地</button>
+      <span class="hint">在当前筛选里按「免费 + 分时价清楚 + 信息确定 + 你要的时段有场」加权随机，再点一次换一个</span>
+    </div>
+    <div id="pickResult"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">④ 筛选</div>
+    <div class="filters">
+      <span class="chip on" data-group="sport" data-val="all">全部运动 <b class="cnt" data-cnt="sport:all">0</b></span>
+      <span class="chip" data-group="sport" data-val="badminton">🏸 羽毛球 <b class="cnt" data-cnt="sport:badminton">0</b></span>
+      <span class="chip" data-group="sport" data-val="hike">⛰️ 登山 <b class="cnt" data-cnt="sport:hike">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="chip on" data-group="free" data-val="all">价钱不限 <b class="cnt" data-cnt="free:all">0</b></span>
+      <span class="chip" data-group="free" data-val="free">🆓 只看免费 <b class="cnt" data-cnt="free:free">0</b></span>
+      <span class="chip" data-group="free" data-val="paid">🎫 只看收费 <b class="cnt" data-cnt="free:paid">0</b></span>
+      <span class="chip" data-group="conf" data-val="high">✅ 只看已核实 <b class="cnt" data-cnt="conf:high">0</b></span>
+    </div>
+    <div class="filters" style="margin-top:10px">
+      <span class="hint" style="align-self:center;margin-right:2px">排序：</span>
+      <span class="chip on" data-sort="rec">推荐排序</span>
+      <span class="chip" data-sort="dist" style="display:none">📏 离我最近</span>
+      <span class="chip" data-sort="free-first">免费优先</span>
+    </div>
+    <div class="hint" style="margin-top:10px">当前 <b id="count">-</b> 个结果　·　<b>卡片上的价是「一片场地一小时」</b>，不是人均。四个人打两小时 = 场地价 × 2 ÷ 4。</div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="panel" style="margin-top:20px">
+    <div class="panel-title">🎟 两类运动各自的进入方式</div>
+    <div class="scene-grid" id="freeHow"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🛡️ 不白跑的五条</div>
+    <ul class="free-list" id="care"></ul>
+    <div class="free-care">
+      <div class="fc-h">⚠️ 三个最容易白跑的情形</div>
+      <ul class="free-list" style="margin-left:20px;color:#7a5310">
+        <li><b>学校场馆直接杀过去</b> —— 张江中学、香楠学校、竹园中学都是学校场地：上课日白天不对外、考试周可能整周关、寒暑假才开白天。地图上标「24 小时营业」的那几家，指的往往是学校门禁而不是球馆。先打电话。</li>
+        <li><b>以为「免费的山」不用预约</b> —— 东佘山、西佘山免费，但 2026 年园区要求实名预约；双子山免费，但必须抢分时段名额。到了门口被劝返是这类场地最常见的翻车。</li>
+        <li><b>把「一片」看成「一人」</b> —— 看到 ¥150 觉得贵、看到 ¥30 觉得便宜，其实单位都是整片场地一小时。四个人拼场，真实人均是报价的四分之一。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">✍️ 划词批注</div>
+    <div id="annoBar"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🗣 评论 / 讨论</div>
+    <div class="hint" style="margin-bottom:10px">和全站共用同一个留言区（讨论 #1）。哪家球馆涨价了、哪个山改时间了、或者想补一处场地 —— 直接留言：名字 + 现在多少钱 + 怎么约就行。</div>
+    <div id="giscusBox"></div>
+  </div>
+
+  <footer>
+    价格、时段、预约方式核对于 <b>2026-11-24</b>，来源为上观新闻对华体汇 24 小时自助模式的两轮报道（2021-06-03 / 2021-10-04）、上海佘山国家森林公园游园须知（2026）、辰山植物园与世博文化公园购票页、各场馆公开电话与地图 POI。<br>
+    ⚠️ 这三件事恰恰最容易变 —— 羽毛球旺季涨价、学校场馆跟着校历开关、登山跟着季节调开放时间。<b>下单前请以场馆小程序或电话公示为准</b>。<br>
+    ⚠️ 本页只写「怎么去、多少钱、怎么约」，<b>不排名、不构成推荐</b>；报价是一整片场地一小时的价，不是人均。<br>
+    想补一处场地？在 <code>data/sports.js</code> 里加一条，写清 <code>slots / hours / closed / howTo / book / conf</code> 六个字段即可（<code>slots</code> 按早 / 午 / 晚三段写）。
+  </footer>
+
+</div>
+
+<script src="data/metro.js?v=20261124a"></script>
+<script src="data/sports.js?v=20261124a"></script>
+<script src="assets/locate.js?v=20261124a"></script>
+<script>
+  /**
+   * 访客用 GitHub 账号留言（giscus）。
+   * 全站共用同一个讨论帖（仓库里唯一一个讨论：
+   *   #1「Welcome to weekend-go Discussions!」，分类 Announcements）。
+   * ⚠️ 用 mapping:'specific' + 该讨论的「完整标题」最稳：
+   *    - pathname 映射依赖 URL 形状（/weekend-go/ 与 /weekend-go/sports.html 是两个 term，
+   *      后者搜不到 → Discussion not found）；
+   *    - number 映射（term:'1'）在本仓库实测不可用，同样报 Discussion not found。
+   */
+  window.GISCUS_CFG = {
+    enabled: true, repo: 'NaphJohn/weekend-go', repoId: 'R_kgDOUY4zNw',
+    category: 'Announcements', categoryId: '',
+    mapping: 'specific', term: 'Welcome to weekend-go Discussions!'
+  };
+  (function () {
+    var cfg = window.GISCUS_CFG || {}, box = document.getElementById('giscusBox');
+    if (!box || !cfg.enabled || !cfg.repo) return;
+    var s = document.createElement('script');
+    s.src = 'https://giscus.app/client.js';
+    s.setAttribute('data-repo', cfg.repo);
+    s.setAttribute('data-repo-id', cfg.repoId || '');
+    s.setAttribute('data-category', cfg.category || 'Announcements');
+    s.setAttribute('data-category-id', cfg.categoryId || '');
+    s.setAttribute('data-mapping', cfg.mapping || 'pathname');
+    s.setAttribute('data-term', cfg.term || '');
+    s.setAttribute('data-strict', '0');
+    s.setAttribute('data-reactions-enabled', '1');
+    s.setAttribute('data-emit-metadata', '0');
+    s.setAttribute('data-input-position', 'bottom');
+    s.setAttribute('data-theme', 'light');
+    s.setAttribute('data-lang', 'zh-CN');
+    s.setAttribute('crossorigin', 'anonymous');
+    s.async = true;
+    box.appendChild(s);
+    window.addEventListener('message', function (ev) {
+      if (!ev || !ev.data || ev.origin !== 'https://giscus.app') return;
+      var d = ev.data.giscus || ev.data;
+      if (!d || !d.error || box.querySelector('.giscus-bad')) return;
+      var msg = String(d.error);
+      var tip = /not installed/i.test(msg)
+        ? 'giscus GitHub App 还没装。到 https://github.com/apps/giscus 安装并对 NaphJohn/weekend-go 授权。'
+        : /Discussion not found/i.test(msg)
+          ? '讨论没找到：全站评论区共用一个讨论帖，<code>GISCUS_CFG</code> 的 mapping/term 必须指向仓库里真实存在的讨论（当前是 #1「Welcome to weekend-go Discussions!」、分类 <b>Announcements</b>），各页面要一致。若该讨论确实不存在，直接发第一条留言会自动创建。'
+          : msg;
+      box.insertAdjacentHTML('afterbegin', '<div class="giscus-bad">⚠️ 评论区暂时加载不出来：' + tip + '</div>');
+    });
+  })();
+</script>
+<script src="assets/annotate.js?v=20261124a"></script>
+<script src="assets/sports.js?v=20261124a"></script>
+</body>
+</html>
